@@ -711,6 +711,42 @@ function renderAll(){if(document.getElementById('panel-historial').classList.con
   }
   document.getElementById('last-update').textContent='Iniciado: '+fmtNow();
 })();
+
+// ── Exponer funciones al window (requerido por type="module") ──
+window.goTab = goTab;
+window.actualizarStepper = actualizarStepper;
+window.mostrarPaso = mostrarPaso;
+window.onCiudadChange = onCiudadChange;
+window.onInmuebleChange = onInmuebleChange;
+window.buscarEquipo = buscarEquipo;
+window.guardarSolicitud = guardarSolicitud;
+window.guardarEjecucion = guardarEjecucion;
+window.guardarEvaluacion = guardarEvaluacion;
+window.selDecision = selDecision;
+window.guardarDecision = guardarDecision;
+window.cancelarPaso = cancelarPaso;
+window.continuarOrden = continuarOrden;
+window.initFirma = initFirma;
+window.clrFirma = clrFirma;
+window.syncEncuesta = syncEncuesta;
+window.renderEncuesta = renderEncuesta;
+window.limpiar = limpiar;
+window.renderHist = renderHist;
+window.eliminarReg = eliminarReg;
+window.buscarGlobal = buscarGlobal;
+window.abrirMod = abrirMod;
+window.cerrar = cerrar;
+window.abrirEditar = abrirEditar;
+window.guardarEdicion = guardarEdicion;
+window.cerrarEditar = cerrarEditar;
+window.exportar = exportar;
+window.imprimirResumen = imprimirResumen;
+window.imprimirResumenId = imprimirResumenId;
+window.renderDash = renderDash;
+window.renderAll = renderAll;
+window.recargarDatos = recargarDatos;
+window.conectarFirebase = conectarFirebase;
+window.usarModoLocal = usarModoLocal;
 </script>
 </body>
 </html>
