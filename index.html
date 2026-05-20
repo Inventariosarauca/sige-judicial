@@ -854,56 +854,6 @@
 
   select { cursor: pointer; }
 
-  /* ===== ORDEN CARDS ===== */
-  .orden-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 10px;
-    overflow: hidden;
-    transition: box-shadow 0.15s;
-  }
-  .orden-activa { border-left: 4px solid var(--primary-light); }
-  .orden-cerrada { border-left: 4px solid #16a34a; opacity: 0.85; }
-  .orden-card:hover { box-shadow: var(--shadow); }
-  .orden-card-head {
-    display: flex; align-items: flex-start;
-    justify-content: space-between;
-    padding: 14px 18px; gap: 16px; flex-wrap: wrap;
-  }
-  .orden-card-title {
-    display: flex; align-items: center; gap: 8px;
-    flex-wrap: wrap; margin-bottom: 4px;
-  }
-  .orden-serial {
-    font-family: var(--mono); font-size: 12px;
-    background: var(--surface2); padding: 2px 8px;
-    border-radius: 4px; color: var(--text2); font-weight: 500;
-  }
-  .orden-card-sub { font-size: 12px; color: var(--text3); margin-bottom: 2px; }
-  .orden-card-desc {
-    font-size: 12px; color: var(--text2);
-    margin-top: 4px; font-style: italic;
-    max-width: 520px;
-  }
-  .orden-card-actions {
-    display: flex; flex-direction: column; gap: 6px;
-    flex-shrink: 0; align-items: flex-end;
-  }
-  .orden-card-foot {
-    display: flex; gap: 20px; flex-wrap: wrap;
-    padding: 8px 18px; background: var(--surface);
-    border-top: 1px solid var(--surface2);
-    font-size: 11px; color: var(--text3);
-  }
-  .orden-group-label {
-    font-size: 11px; font-family: var(--mono);
-    text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text3); padding: 4px 0 8px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .badge-purple { background: #ede9fe; color: #5b21b6; }
-
   /* ===== DECISION CARDS ===== */
   .decision-card {
     border: 2px solid var(--border);
@@ -1499,11 +1449,10 @@
           </select>
           <select id="filtroEstado" onchange="filtrarOrdenes()" style="font-size:12px;padding:6px 10px">
             <option value="">Todos los estados</option>
-            <option value="Solicitud">Solicitud</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="Pendiente Evaluación">Pendiente Evaluación</option>
-            <option value="Entregado conforme">Entregado conforme</option>
-            <option value="No conforme — En seguimiento">No conforme</option>
+            <option value="Funcional">Funcional</option>
+            <option value="En Reparación">En Reparación</option>
+            <option value="Desmontado">Desmontado</option>
+            <option value="Fuera de Servicio">Fuera de Servicio</option>
           </select>
         </div>
         <div class="table-wrap">
@@ -1689,11 +1638,12 @@ let isDemoMode = false;
 
 // ===== DEMO DATA =====
 const DEMO_ORDENES = [
-  { id:'d1', ciudad:'Arauca', fecha:'2026-05-12', inmueble:'Palacio de Justicia Calle 21', despacho:'Palacio de Justicia Calle 21 — Despacho 1 Tribunal Superior', servicioSolicitado:'Aire acondicionado botando agua, requiere mantenimiento correctivo', tipoMantenimiento:'Correctivo', serial:'AC-001-ARA', tipo:'Mini-split', marca:'LG', modelo:'18000 BTU', capacidad:'18000', estado:'Entregado conforme', ubicacion:'Sala de Audiencias Piso 1', actividades:'Se limpió filtro, se revisó drenaje y se corrigió inclinación', observacion:'Drenaje tapado', observacionAdmin:'', fechaEjecucion:'2026-05-14', fechaSalida:'2026-05-14', contratista:'Carlos Méndez', estadoFinalTecnico:'Funcional', calidad:4, oportunidad:4, amabilidad:5, satisfaccion:4, responsableRecibe:'Alexander Salazar', cargoResponsable:'Técnico grado 11', observacionResponsable:'Servicio excelente', decision:'conforme', estadoOrden:'Entregado conforme', etapa:4, creadoEn: Date.now()-200000 },
-  { id:'d2', ciudad:'Arauca', fecha:'2026-05-10', inmueble:'Palacio de Justicia SPA', despacho:'Palacio de Justicia SPA — Juzgado 1º Civil Municipal', servicioSolicitado:'Mantenimiento preventivo trimestral', tipoMantenimiento:'Preventivo', serial:'AC-002-ARA', tipo:'Cassete', marca:'Samsung', modelo:'WindFree 12000', capacidad:'12000', estado:'En Mantenimiento', ubicacion:'Despacho Principal', actividades:'', observacion:'', fechaEjecucion:'', contratista:'', estadoOrden:'Solicitud', etapa:1, creadoEn: Date.now()-400000 },
-  { id:'d3', ciudad:'Tame', fecha:'2026-05-08', inmueble:'', despacho:'Juzgado Promiscuo Municipal Tame', servicioSolicitado:'Mantenimiento correctivo — no enfría', tipoMantenimiento:'Correctivo', serial:'AC-003-TAM', tipo:'Mini-split', marca:'Midea', modelo:'12000 BTU', capacidad:'12000', estado:'En Mantenimiento', ubicacion:'Oficina principal', actividades:'Recarga de gas refrigerante, limpieza de filtros', observacion:'Bajo nivel de gas', observacionAdmin:'Aprobado por coordinación', fechaEjecucion:'2026-05-09', fechaSalida:'2026-05-09', contratista:'Pedro Vargas', estadoFinalTecnico:'Funcional', estadoOrden:'En Mantenimiento', etapa:2, creadoEn: Date.now()-800000 },
-  { id:'d4', ciudad:'Arauca', fecha:'2026-04-20', inmueble:'CESPA', despacho:'CESPA — Centro de Servicios Judiciales de Arauca', servicioSolicitado:'Instalación equipo nuevo', tipoMantenimiento:'Instalación', serial:'AC-004-CES', tipo:'Multi-V', marca:'LG', modelo:'Multi-V 5', capacidad:'36000', estado:'Entregado conforme', ubicacion:'Sala de espera', actividades:'Instalación completa, pruebas de funcionamiento', observacion:'Sin novedad', fechaEjecucion:'2026-04-22', contratista:'Juan Torres', calidad:5, oportunidad:5, amabilidad:5, satisfaccion:5, responsableRecibe:'María López', cargoResponsable:'Secretaria', decision:'conforme', estadoOrden:'Entregado conforme', etapa:4, creadoEn: Date.now()-3000000 },
-  { id:'d5', ciudad:'Cravo Norte', fecha:'2026-04-15', inmueble:'', despacho:'Juzgado Promiscuo Municipal Cravo Norte', servicioSolicitado:'Revisión preventiva', tipoMantenimiento:'Preventivo', serial:'AC-005-CRA', tipo:'Pared', marca:'Haceb', modelo:'9000 BTU', capacidad:'9000', estado:'Pendiente Evaluación', ubicacion:'Sala de espera', actividades:'Limpieza de filtros y condensador', observacion:'Buen estado', fechaEjecucion:'2026-04-16', contratista:'Ana Torres', estadoFinalTecnico:'Funcional', calidad:4, oportunidad:3, amabilidad:4, satisfaccion:4, responsableRecibe:'Luis Gómez', cargoResponsable:'Juez', estadoOrden:'Pendiente Evaluación', etapa:3, creadoEn: Date.now()-5000000 },
+  { id:'d1', ciudad:'Arauca', fecha:'2026-05-12', despacho:'Secretaría Tribunal Superior de Arauca', funcionario:'Alexander Salazar Burgos', cargo:'Técnico grado 11', servicioSolicitado:'Mantenimiento aire acondicionado está botando agua', tipoMantenimiento:'Correctivo', canal:'Correo electrónico', serial:'AC-001-ARA', tipo:'Aire Acondicionado', marca:'LG', modelo:'Split 18000 BTU', estado:'En Reparación', ubicacion:'Sala de Audiencias, Piso 1', actividades:'Se limpió filtro, se revisó drenaje, se corrigió inclinación de unidad interior', observacion:'Drenaje tapado por mugre', fechaEjecucion:'2026-05-14', contratista:'Carlos Mendez', satisfaccion:3, oportunidad:3, amabilidad:4, creadoEn: Date.now()-200000 },
+  { id:'d2', ciudad:'Arauca', fecha:'2026-04-20', despacho:'Juzgado 1 Civil', funcionario:'María Rojas', cargo:'Secretaria', servicioSolicitado:'Mantenimiento preventivo aires acondicionados', tipoMantenimiento:'Preventivo', canal:'Oficio', serial:'AC-002-ARA', tipo:'Aire Acondicionado', marca:'Samsung', modelo:'WindFree 12000', estado:'Funcional', ubicacion:'Despacho Principal', actividades:'Limpieza de filtros, verificación de refrigerante, ajuste de correas', observacion:'Equipo en buen estado', fechaEjecucion:'2026-04-22', contratista:'Carlos Mendez', satisfaccion:4, oportunidad:4, amabilidad:4, creadoEn: Date.now()-500000 },
+  { id:'d3', ciudad:'Tame', fecha:'2026-04-15', despacho:'Juzgado Promiscuo Municipal Tame', funcionario:'Luis Hernandez', cargo:'Juez', servicioSolicitado:'Revisión equipo de seguridad CCTV', tipoMantenimiento:'Correctivo', canal:'Personal', serial:'CAM-001-TAM', tipo:'Equipo de Seguridad', marca:'Hikvision', modelo:'DS-2CD2T47G2', estado:'Fuera de Servicio', ubicacion:'Entrada principal', actividades:'Se diagnosticó daño en fuente de poder, pendiente repuesto', observacion:'Equipo requiere pieza de repuesto importada', fechaEjecucion:'2026-04-16', contratista:'Pedro Vargas', satisfaccion:2, oportunidad:2, amabilidad:3, creadoEn: Date.now()-800000 },
+  { id:'d4', ciudad:'Arauca', fecha:'2026-03-10', despacho:'Secretaría Tribunal Superior de Arauca', funcionario:'Alexander Salazar Burgos', cargo:'Técnico grado 11', servicioSolicitado:'Mantenimiento preventivo trimestral AC', tipoMantenimiento:'Preventivo', canal:'Correo electrónico', serial:'AC-001-ARA', tipo:'Aire Acondicionado', marca:'LG', modelo:'Split 18000 BTU', estado:'Funcional', ubicacion:'Sala de Audiencias, Piso 1', actividades:'Limpieza profunda, cambio de filtros, verificación de gas', observacion:'Sin novedad', fechaEjecucion:'2026-03-12', contratista:'Carlos Mendez', satisfaccion:4, oportunidad:3, amabilidad:4, creadoEn: Date.now()-2000000 },
+  { id:'d5', ciudad:'Cravo Norte', fecha:'2026-02-28', despacho:'Juzgado Promiscuo Cravo Norte', funcionario:'Ana Ruiz', cargo:'Secretaria', servicioSolicitado:'Instalación aire acondicionado nuevo', tipoMantenimiento:'Instalación', canal:'Oficio', serial:'AC-003-CRA', tipo:'Aire Acondicionado', marca:'Haceb', modelo:'Inverter 9000 BTU', estado:'Funcional', ubicacion:'Sala de Espera', actividades:'Instalación completa unidad interior y exterior, carga de gas, pruebas de funcionamiento', observacion:'Instalación exitosa', fechaEjecucion:'2026-03-01', contratista:'Juan Torres', satisfaccion:4, oportunidad:4, amabilidad:4, creadoEn: Date.now()-3000000 },
+  { id:'d6', ciudad:'Puerto Rondón', fecha:'2026-01-20', despacho:'Juzgado Municipal Puerto Rondón', funcionario:'Carlos Pérez', cargo:'Juez Municipal', servicioSolicitado:'Revisión planta eléctrica', tipoMantenimiento:'Preventivo', canal:'Personal', serial:'PE-001-PRO', tipo:'Planta Eléctrica', marca:'Generac', modelo:'GP5500', estado:'Funcional', ubicacion:'Cuarto técnico', actividades:'Cambio de aceite, revisión bujías, ajuste de tensión', observacion:'Buen estado general', fechaEjecucion:'2026-01-21', contratista:'Pedro Vargas', satisfaccion:3, oportunidad:3, amabilidad:4, creadoEn: Date.now()-5000000 },
 ];
 
 // ===== INIT =====
@@ -1799,7 +1749,7 @@ function mostrarEtapa(n) {
 }
 
 // Paso 1
-window.guardarEtapa1 = async () => {
+window.guardarEtapa1 = () => {
   const ciudad = document.getElementById('fCiudad').value;
   const servicioSolicitado = document.getElementById('fServicioSolicitado').value.trim();
   const tipoMantenimiento = document.getElementById('fTipoMantenimiento').value;
@@ -1832,62 +1782,39 @@ window.guardarEtapa1 = async () => {
     ubicacion: document.getElementById('fUbicacion').value,
     etapa: 1, creadoEn: Date.now()
   };
-  // Guardar en Firebase / demo
-  try {
-    if (isDemoMode) {
-      ordenEnCurso.id = 'demo_' + Date.now();
-      ordenEnCurso.estadoOrden = 'Solicitud';
-      allOrdenes.unshift({...ordenEnCurso});
-      buildEquipos(); updateAllViews();
-    } else {
-      ordenEnCurso.estadoOrden = 'Solicitud';
-      const ref = await addDoc(collection(db, 'ordenes'), { ...ordenEnCurso, creadoEn: Timestamp.now() });
-      ordenEnCurso.id = ref.id;
-      await loadData();
-    }
-    showToast('✓ Solicitud guardada — continúa desde Órdenes de Servicio', 'success');
-    resetForm();
-    showPage('ordenes');
-  } catch(e) { showToast('Error al guardar: ' + e.message, 'error'); }
+  document.getElementById('etapa2ResumenSolicitud').innerHTML =
+    `<strong>Solicitud:</strong> ${tipoMantenimiento} · Serial: ${serial} · ${despacho} · ${ciudad}`;
+  document.getElementById('fFechaEjecucion').value = new Date().toISOString().split('T')[0];
+  mostrarEtapa(2);
+  window.scrollTo(0,0);
+  showToast('Solicitud registrada — registra la ejecución', 'success');
 };
 
 // Paso 2
-window.guardarEtapa2 = async () => {
+window.guardarEtapa2 = () => {
   const actividades = document.getElementById('fActividades').value.trim();
   const contratista = document.getElementById('fContratista').value.trim();
   const fechaEjecucion = document.getElementById('fFechaEjecucion').value;
   if (!actividades || !contratista || !fechaEjecucion) {
     showToast('Completa actividades, técnico y fecha de ejecución', 'error'); return;
   }
-  const datosEjecucion = {
-    actividades,
-    observacion: document.getElementById('fObservacion').value,
-    observacionAdmin: document.getElementById('fObservacionAdmin').value,
-    fechaEjecucion,
-    fechaSalida: document.getElementById('fFechaSalida').value,
-    contratista,
-    estadoFinalTecnico: document.getElementById('fEstadoFinal').value,
-    estadoOrden: 'En Mantenimiento',
-    etapa: 2
-  };
-  try {
-    if (isDemoMode) {
-      const idx = allOrdenes.findIndex(x => x.id === ordenEnCurso.id);
-      if (idx >= 0) Object.assign(allOrdenes[idx], datosEjecucion);
-      buildEquipos(); updateAllViews();
-    } else {
-      if (!ordenEnCurso.id) { showToast('Error: no hay orden en curso', 'error'); return; }
-      await updateDoc(doc(db, 'ordenes', ordenEnCurso.id), datosEjecucion);
-      await loadData();
-    }
-    showToast('✓ Ejecución guardada — continúa desde Órdenes de Servicio', 'success');
-    resetForm();
-    showPage('ordenes');
-  } catch(e) { showToast('Error al guardar: ' + e.message, 'error'); }
+  ordenEnCurso.actividades = actividades;
+  ordenEnCurso.observacion = document.getElementById('fObservacion').value;
+  ordenEnCurso.observacionAdmin = document.getElementById('fObservacionAdmin').value;
+  ordenEnCurso.fechaEjecucion = fechaEjecucion;
+  ordenEnCurso.fechaSalida = document.getElementById('fFechaSalida').value;
+  ordenEnCurso.contratista = contratista;
+  ordenEnCurso.estadoFinalTecnico = document.getElementById('fEstadoFinal').value;
+  ordenEnCurso.etapa = 2;
+  document.getElementById('etapa3Resumen').innerHTML =
+    `<strong>Trabajos terminados:</strong> ${ordenEnCurso.tipoMantenimiento} · Técnico: ${contratista} · ${fechaEjecucion}`;
+  mostrarEtapa(3);
+  window.scrollTo(0,0);
+  showToast('Ejecución registrada — completa la encuesta y firma', 'success');
 };
 
 // Paso 3
-window.guardarEtapa3 = async () => {
+window.guardarEtapa3 = () => {
   const responsable = document.getElementById('fResponsableRecibe').value.trim();
   if (!responsable) { showToast('Ingresa el nombre del responsable que recibe', 'error'); return; }
   if (firmaVacia) { showToast('Registra la firma digital antes de continuar', 'error'); return; }
@@ -1899,32 +1826,17 @@ window.guardarEtapa3 = async () => {
   ordenEnCurso.responsableRecibe = responsable;
   ordenEnCurso.cargoResponsable = document.getElementById('fCargoResponsable').value;
   ordenEnCurso.firmaBase64 = document.getElementById('firmaCanvas').toDataURL('image/png');
-  const datosEval = {
-    calidad: ordenEnCurso.calidad,
-    oportunidad: ordenEnCurso.oportunidad,
-    amabilidad: ordenEnCurso.amabilidad,
-    satisfaccion: ordenEnCurso.satisfaccion,
-    observacionResponsable: ordenEnCurso.observacionResponsable,
-    responsableRecibe: ordenEnCurso.responsableRecibe,
-    cargoResponsable: ordenEnCurso.cargoResponsable,
-    firmaBase64: ordenEnCurso.firmaBase64,
-    estadoOrden: 'Pendiente Evaluación',
-    etapa: 3
-  };
-  try {
-    if (isDemoMode) {
-      const idx = allOrdenes.findIndex(x => x.id === ordenEnCurso.id);
-      if (idx >= 0) Object.assign(allOrdenes[idx], datosEval);
-      buildEquipos(); updateAllViews();
-    } else {
-      if (!ordenEnCurso.id) { showToast('Error: no hay orden en curso', 'error'); return; }
-      await updateDoc(doc(db, 'ordenes', ordenEnCurso.id), datosEval);
-      await loadData();
-    }
-    showToast('✓ Evaluación y firma guardadas — confirma la decisión desde Órdenes', 'success');
-    resetForm();
-    showPage('ordenes');
-  } catch(e) { showToast('Error al guardar: ' + e.message, 'error'); }
+  ordenEnCurso.etapa = 3;
+  document.getElementById('etapa4Resumen').innerHTML =
+    `<strong>Evaluación registrada.</strong> Firmado por ${responsable}. Confirme la conformidad del servicio.`;
+  decisionSeleccionada = null;
+  document.getElementById('btnFinalizarDecision').disabled = true;
+  document.getElementById('btnFinalizarDecision').style.opacity = '0.5';
+  document.getElementById('grupoInconformidad').style.display = 'none';
+  ['btnConforme','btnNoConforme'].forEach(id => { const el = document.getElementById(id); if (el) el.className = 'decision-card'; });
+  mostrarEtapa(4);
+  window.scrollTo(0,0);
+  showToast('Evaluación registrada — confirma la conformidad', 'success');
 };
 
 // Paso 4 — Decisión
@@ -1978,10 +1890,8 @@ window.guardarOrdenCompleta = async () => {
     document.getElementById('okEstadoBadge').innerHTML = `<span class="badge ${esConforme ? 'badge-green' : 'badge-red'}" style="font-size:13px;padding:6px 16px">${ordenEnCurso.estado}</span>`;
     [1,2,3,4].forEach(n => { const el = document.getElementById('sind'+n); if (el) el.className = 'step-ind done'; });
     [1,2,3].forEach(n => { const con = document.getElementById('scon'+n); if (con) con.className = 'step-connector done'; });
-    // Redirigir a órdenes tras guardar
-    setTimeout(() => {
-      showPage('ordenes');
-    }, 2200);
+    mostrarEtapa('ok');
+    window.scrollTo(0,0);
     ordenEnCurso = {}; decisionSeleccionada = null;
   } catch(e) { showToast('Error al guardar: ' + e.message, 'error'); }
 };
@@ -2380,79 +2290,25 @@ function renderLastOrders() {
   document.getElementById('lastOrdersTable').innerHTML = `
     <table>
       <thead><tr>
-        <th>Fecha</th><th>Municipio</th><th>Despacho</th><th>Equipo</th><th>Tipo</th><th>Estado proceso</th><th></th>
+        <th>Fecha</th><th>Municipio</th><th>Despacho</th><th>Equipo</th><th>Tipo</th><th>Estado</th>
       </tr></thead>
       <tbody>
         ${last5.map(o => `
-          <tr>
+          <tr onclick="verOrden('${o.id}')" style="cursor:pointer">
             <td style="font-family:var(--mono);font-size:12px">${o.fecha || '—'}</td>
             <td>${o.ciudad || '—'}</td>
-            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.despacho || '—'}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.despacho || '—'}</td>
             <td><span style="font-family:var(--mono);font-size:11px">${o.serial || '—'}</span></td>
             <td>${badgeTipo(o.tipoMantenimiento)}</td>
-            <td>${badgeOrden(o.estadoOrden || 'Solicitud')}</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="showPage('ordenes')"><i class="fa fa-arrow-right"></i></button></td>
+            <td>${badgeEstado(o.estado)}</td>
           </tr>`).join('')}
       </tbody>
     </table>`;
 }
-}
 
 // ===== ÓRDENES TABLE =====
-// ── Badge estado orden
-function badgeOrden(estado) {
-  const map = {
-    'Solicitud':            { cls:'badge-blue',  icon:'fa-file-circle-plus' },
-    'En Mantenimiento':     { cls:'badge-amber', icon:'fa-wrench' },
-    'Pendiente Evaluación': { cls:'badge-purple',icon:'fa-clock' },
-    'Entregado conforme':   { cls:'badge-green', icon:'fa-circle-check' },
-    'No conforme — En seguimiento': { cls:'badge-red', icon:'fa-circle-xmark' }
-  };
-  const s = map[estado] || { cls:'badge-gray', icon:'fa-circle' };
-  return `<span class="badge ${s.cls}"><i class="fa ${s.icon}"></i> ${estado || 'Sin estado'}</span>`;
-}
-
-// ── Mini timeline inline
-function miniTimeline(o) {
-  const estado = o.estadoOrden || 'Solicitud';
-  const pasos = [
-    { key:'Solicitud',            label:'Solicitud',   done: true },
-    { key:'En Mantenimiento',     label:'Ejecución',   done: ['En Mantenimiento','Pendiente Evaluación','Entregado conforme','No conforme — En seguimiento'].includes(estado) },
-    { key:'Pendiente Evaluación', label:'Evaluación',  done: ['Pendiente Evaluación','Entregado conforme','No conforme — En seguimiento'].includes(estado) },
-    { key:'decision',             label:'Decisión',    done: ['Entregado conforme','No conforme — En seguimiento'].includes(estado) }
-  ];
-  return `<div style="display:flex;align-items:center;gap:4px;margin-top:8px">
-    ${pasos.map((p,i) => `
-      <div style="display:flex;align-items:center;gap:4px">
-        <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;
-          background:${p.done?'#dcfce7':'var(--surface2)'};color:${p.done?'#166534':'var(--text3)'};
-          border:1.5px solid ${p.done?'#16a34a':'var(--border)'}">
-          <i class="fa ${p.done?'fa-check':'fa-circle'}" style="font-size:9px"></i>
-        </div>
-        <span style="font-size:10px;color:${p.done?'var(--text2)':'var(--text3)'};white-space:nowrap">${p.label}</span>
-        ${i<3?`<div style="width:18px;height:1.5px;background:${pasos[i+1].done?'#16a34a':'var(--border)'}"></div>`:''}
-      </div>`).join('')}
-  </div>`;
-}
-
-// ── Botón acción siguiente paso
-function btnSiguientePaso(o) {
-  const estado = o.estadoOrden || 'Solicitud';
-  if (estado === 'Solicitud') {
-    return `<button class="btn btn-primary btn-sm" onclick="continuarOrden('${o.id}','ejecucion')">
-      <i class="fa fa-wrench"></i> Registrar Ejecución</button>`;
-  } else if (estado === 'En Mantenimiento') {
-    return `<button class="btn btn-primary btn-sm" style="background:#92400e;border-color:#92400e" onclick="continuarOrden('${o.id}','evaluacion')">
-      <i class="fa fa-star"></i> Registrar Evaluación</button>`;
-  } else if (estado === 'Pendiente Evaluación') {
-    return `<button class="btn btn-primary btn-sm" style="background:#4338ca;border-color:#4338ca" onclick="continuarOrden('${o.id}','decision')">
-      <i class="fa fa-scale-balanced"></i> Registrar Decisión</button>`;
-  }
-  return '';
-}
-
 function renderOrdenes(filtradas = null) {
-  const data = (filtradas || allOrdenes).slice().sort((a,b)=>(b.creadoEn||0)-(a.creadoEn||0));
+  const data = filtradas || allOrdenes;
   const municipios = [...new Set(allOrdenes.map(o => o.ciudad).filter(Boolean))];
   const sel = document.getElementById('filtroMunicipio');
   const current = sel.value;
@@ -2463,94 +2319,43 @@ function renderOrdenes(filtradas = null) {
     return;
   }
 
-  // Agrupar: pendientes arriba, cerradas abajo
-  const pendientes = data.filter(o => !['Entregado conforme','No conforme — En seguimiento'].includes(o.estadoOrden));
-  const cerradas   = data.filter(o =>  ['Entregado conforme','No conforme — En seguimiento'].includes(o.estadoOrden));
-
-  const renderCard = (o) => {
-    const accion = btnSiguientePaso(o);
-    const cerrada = !accion;
-    return `
-    <div class="orden-card ${cerrada?'orden-cerrada':'orden-activa'}">
-      <div class="orden-card-head">
-        <div style="flex:1;min-width:0">
-          <div class="orden-card-title">
-            <span class="orden-serial">${o.serial || '—'}</span>
-            ${badgeTipo(o.tipoMantenimiento)}
-            ${badgeOrden(o.estadoOrden || 'Solicitud')}
-          </div>
-          <div class="orden-card-sub">${o.despacho || '—'} · ${o.ciudad || '—'} · ${o.fecha || '—'}</div>
-          ${o.servicioSolicitado ? `<div class="orden-card-desc">${o.servicioSolicitado}</div>` : ''}
-          ${miniTimeline(o)}
-        </div>
-        <div class="orden-card-actions">
-          ${accion}
-          <button class="btn btn-ghost btn-sm" onclick="verOrden('${o.id}')">
-            <i class="fa fa-eye"></i> Ver detalle
-          </button>
-        </div>
-      </div>
-      ${o.tipo||o.marca ? `
-      <div class="orden-card-foot">
-        <span><i class="fa fa-wind" style="margin-right:4px;color:var(--text3)"></i>${[o.tipo,o.marca,o.modelo,o.capacidad?o.capacidad+' BTU':''].filter(Boolean).join(' · ')}</span>
-        ${o.contratista ? `<span><i class="fa fa-user-tie" style="margin-right:4px;color:var(--text3)"></i>${o.contratista}</span>` : ''}
-        ${o.responsableRecibe ? `<span><i class="fa fa-signature" style="margin-right:4px;color:var(--text3)"></i>${o.responsableRecibe}</span>` : ''}
-      </div>` : ''}
-    </div>`;
-  };
-
-  let html = '';
-  if (pendientes.length) {
-    html += `<div class="orden-group-label"><i class="fa fa-clock"></i> En proceso (${pendientes.length})</div>`;
-    html += pendientes.map(renderCard).join('');
-  }
-  if (cerradas.length) {
-    html += `<div class="orden-group-label" style="margin-top:16px"><i class="fa fa-circle-check"></i> Finalizadas (${cerradas.length})</div>`;
-    html += cerradas.map(renderCard).join('');
-  }
-  document.getElementById('ordenesTableContainer').innerHTML = html;
+  document.getElementById('ordenesTableContainer').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Fecha</th><th>Municipio</th><th>Despacho</th><th>Funcionario</th>
+        <th>Serial</th><th>Tipo Mant.</th><th>Estado Equipo</th><th>Satisf.</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${data.map(o => `
+          <tr>
+            <td style="font-family:var(--mono);font-size:11px;white-space:nowrap">${o.fecha || '—'}</td>
+            <td>${o.ciudad || '—'}</td>
+            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${o.despacho || '—'}</td>
+            <td style="font-size:12px">${o.funcionario || '—'}</td>
+            <td><span style="font-family:var(--mono);font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px">${o.serial || '—'}</span></td>
+            <td>${badgeTipo(o.tipoMantenimiento)}</td>
+            <td>${badgeEstado(o.estado)}</td>
+            <td><span style="font-family:var(--mono);font-size:12px;font-weight:600">${o.satisfaccion ? `${o.satisfaccion}/4` : '—'}</span></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="verOrden('${o.id}')"><i class="fa fa-eye"></i></button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
 }
 
 window.filtrarOrdenes = () => {
   const search = document.getElementById('searchOrdenes').value.toLowerCase();
-  const mun    = document.getElementById('filtroMunicipio').value;
-  const tipo   = document.getElementById('filtroTipo').value;
+  const mun = document.getElementById('filtroMunicipio').value;
+  const tipo = document.getElementById('filtroTipo').value;
   const estado = document.getElementById('filtroEstado').value;
+
   const filtered = allOrdenes.filter(o => {
     const matchSearch = !search || JSON.stringify(o).toLowerCase().includes(search);
-    const matchMun    = !mun    || o.ciudad === mun;
-    const matchTipo   = !tipo   || o.tipoMantenimiento === tipo;
-    const matchEstado = !estado || (o.estadoOrden||'Solicitud') === estado;
+    const matchMun = !mun || o.ciudad === mun;
+    const matchTipo = !tipo || o.tipoMantenimiento === tipo;
+    const matchEstado = !estado || o.estado === estado;
     return matchSearch && matchMun && matchTipo && matchEstado;
   });
   renderOrdenes(filtered);
-};
-
-// ── Continuar orden desde la lista
-window.continuarOrden = (id, paso) => {
-  const o = allOrdenes.find(x => x.id === id);
-  if (!o) return;
-  ordenEnCurso = { ...o };
-  showPage('nueva-orden');
-  if (paso === 'ejecucion') {
-    document.getElementById('etapa2ResumenSolicitud').innerHTML =
-      `<strong>Solicitud:</strong> ${o.tipoMantenimiento} · Serial: ${o.serial} · ${o.despacho} · ${o.ciudad}`;
-    document.getElementById('fFechaEjecucion').value = new Date().toISOString().split('T')[0];
-    mostrarEtapa(2); actualizarStepper(2);
-  } else if (paso === 'evaluacion') {
-    document.getElementById('etapa3Resumen').innerHTML =
-      `<strong>Trabajos terminados:</strong> ${o.tipoMantenimiento} · Técnico: ${o.contratista||'—'} · ${o.fechaEjecucion||'—'}`;
-    mostrarEtapa(3); actualizarStepper(3); iniciarFirma();
-  } else if (paso === 'decision') {
-    document.getElementById('etapa4Resumen').innerHTML =
-      `<strong>Evaluación registrada.</strong> Confirme la conformidad del servicio.`;
-    decisionSeleccionada = null;
-    document.getElementById('btnFinalizarDecision').disabled = true;
-    document.getElementById('btnFinalizarDecision').style.opacity = '0.5';
-    document.getElementById('grupoInconformidad').style.display = 'none';
-    mostrarEtapa(4); actualizarStepper(4);
-  }
-  window.scrollTo(0,0);
 };
 
 // ===== INVENTARIO =====
@@ -2604,84 +2409,36 @@ window.filtrarInventario = () => {
 };
 
 // ===== MODAL =====
-function seccion(titulo, icono) {
-  return `<div style="margin:14px 0 8px;font-family:var(--mono);font-size:10px;color:var(--primary-light);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--surface2)"><i class="fa ${icono}"></i> ${titulo}</div>`;
-}
-function dr(label, val) {
-  if (!val) return '';
-  return `<div class="detail-row"><span class="detail-key">${label}</span><span class="detail-val">${val}</span></div>`;
-}
-
 window.verOrden = (id) => {
   const o = allOrdenes.find(x => x.id === id);
   if (!o) return;
-  const estado = o.estadoOrden || 'Solicitud';
 
   document.getElementById('modalTitle').textContent = `Orden — ${o.serial || 'S/N'}`;
   document.getElementById('btnEliminarModal').setAttribute('onclick', `eliminarOrden('${id}')`);
 
-  // Mini timeline en modal
-  const tlHtml = miniTimeline(o);
-
-  let html = `
-    <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
-      ${badgeTipo(o.tipoMantenimiento)} ${badgeOrden(estado)}
-    </div>
-    ${tlHtml}
-
-    ${seccion('Paso 1 — Solicitud','fa-file-circle-plus')}
-    ${dr('Fecha solicitud', o.fecha)}
-    ${dr('Ciudad', o.ciudad)}
-    ${dr('Inmueble', o.inmueble)}
-    ${dr('Despacho', o.despacho)}
-    ${dr('Descripción', o.servicioSolicitado)}
-
-    ${seccion('Equipo','fa-wind')}
-    ${dr('Serial', `<span style="font-family:var(--mono)">${o.serial||'—'}</span>`)}
-    ${dr('Tipo', o.tipo)}
-    ${dr('Marca · Modelo', [o.marca,o.modelo].filter(Boolean).join(' · '))}
-    ${dr('Capacidad', o.capacidad ? o.capacidad+' BTU' : '')}
-    ${dr('Ubicación', o.ubicacion)}
+  document.getElementById('modalBody').innerHTML = `
+    <div style="margin-bottom:16px">${badgeTipo(o.tipoMantenimiento)} ${badgeEstado(o.estado)}</div>
+    <div class="detail-row"><span class="detail-key">Fecha solicitud</span><span class="detail-val">${o.fecha || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Ciudad</span><span class="detail-val">${o.ciudad || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Despacho</span><span class="detail-val">${o.despacho || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Funcionario</span><span class="detail-val">${o.funcionario || '—'} · ${o.cargo || ''}</span></div>
+    <div class="detail-row"><span class="detail-key">Servicio solicitado</span><span class="detail-val">${o.servicioSolicitado || '—'}</span></div>
+    <div style="margin:12px 0 6px;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Equipo</div>
+    <div class="detail-row"><span class="detail-key">Serial</span><span class="detail-val" style="font-family:var(--mono)">${o.serial || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Tipo</span><span class="detail-val">${o.tipo || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Marca · Modelo</span><span class="detail-val">${o.marca || '—'} · ${o.modelo || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Ubicación</span><span class="detail-val">${o.ubicacion || '—'}</span></div>
+    <div style="margin:12px 0 6px;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Servicio prestado</div>
+    <div class="detail-row"><span class="detail-key">Actividades</span><span class="detail-val">${o.actividades || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Observaciones</span><span class="detail-val">${o.observacion || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Fecha ejecución</span><span class="detail-val">${o.fechaEjecucion || '—'}</span></div>
+    <div class="detail-row"><span class="detail-key">Contratista</span><span class="detail-val">${o.contratista || '—'}</span></div>
+    <div style="margin:12px 0 6px;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Calificación</div>
+    <div class="detail-row"><span class="detail-key">Satisfacción</span><span class="detail-val">${ratingStars(o.satisfaccion)}</span></div>
+    <div class="detail-row"><span class="detail-key">Oportunidad</span><span class="detail-val">${ratingStars(o.oportunidad)}</span></div>
+    <div class="detail-row"><span class="detail-key">Amabilidad</span><span class="detail-val">${ratingStars(o.amabilidad)}</span></div>
   `;
 
-  if (o.actividades || o.contratista) {
-    html += `
-    ${seccion('Paso 2 — Ejecución','fa-wrench')}
-    ${dr('Contratista', o.contratista)}
-    ${dr('Fecha ejecución', o.fechaEjecucion)}
-    ${dr('Fecha salida equipo', o.fechaSalida)}
-    ${dr('Actividades', o.actividades)}
-    ${dr('Obs. contratista', o.observacion)}
-    ${dr('Obs. administrativas', o.observacionAdmin)}
-    ${dr('Estado equipo al finalizar', o.estadoFinalTecnico)}
-    `;
-  }
-
-  if (o.responsableRecibe) {
-    const stars5 = (v) => v ? `${v}/5` : '—';
-    html += `
-    ${seccion('Paso 3 — Evaluación y Firma','fa-star')}
-    ${dr('Responsable que recibe', o.responsableRecibe)}
-    ${dr('Cargo', o.cargoResponsable)}
-    ${dr('Calidad del trabajo', stars5(o.calidad))}
-    ${dr('Oportunidad', stars5(o.oportunidad))}
-    ${dr('Atención y trato', stars5(o.amabilidad))}
-    ${dr('Satisfacción general', stars5(o.satisfaccion))}
-    ${dr('Observaciones', o.observacionResponsable)}
-    ${o.firmaBase64 ? `<div class="detail-row"><span class="detail-key">Firma</span><span class="detail-val"><img src="${o.firmaBase64}" style="max-width:200px;border:1px solid var(--border);border-radius:6px;background:#fff"></span></div>` : ''}
-    `;
-  }
-
-  if (o.decision) {
-    const esConforme = o.decision === 'conforme';
-    html += `
-    ${seccion('Paso 4 — Decisión','fa-scale-balanced')}
-    <div style="margin:8px 0">${badgeOrden(o.estado)}</div>
-    ${o.motivoInconformidad ? dr('Motivo inconformidad', o.motivoInconformidad) : ''}
-    `;
-  }
-
-  document.getElementById('modalBody').innerHTML = html;
   document.getElementById('modalOrden').classList.add('open');
 };
 
