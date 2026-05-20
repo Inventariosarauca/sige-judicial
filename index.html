@@ -230,8 +230,7 @@ tr:hover td{background:#f8fafc}
       <div class="step-item" id="si2"><div class="step-num" id="sn2">2</div><div><div class="step-lbl">Ejecución</div><div class="step-sub">Contratista</div></div></div>
       <div class="step-conn" id="sc2"></div>
       <div class="step-item" id="si3"><div class="step-num" id="sn3">3</div><div><div class="step-lbl">Evaluación</div><div class="step-sub">Firma despacho</div></div></div>
-      <div class="step-conn" id="sc3"></div>
-      <div class="step-item" id="si4"><div class="step-num" id="sn4">⚖</div><div><div class="step-lbl">Decisión</div><div class="step-sub">Conforme / No</div></div></div>
+
     </div>
 
     <!-- PASO 1 -->
@@ -276,7 +275,6 @@ tr:hover td{background:#f8fafc}
               <option value="">Seleccionar...</option>
               <option value="Preventivo">Preventivo</option>
               <option value="Correctivo">Correctivo</option>
-              <option value="Preventivo y Correctivo">Preventivo y Correctivo</option>
               <option value="Instalación">Instalación</option>
               <option value="Desmonte">Desmonte</option>
             </select>
@@ -308,7 +306,6 @@ tr:hover td{background:#f8fafc}
             </select>
           </div>
           <div class="field"><label>Marca</label><input type="text" id="f-marca" placeholder="LG, Samsung, Midea..."></div>
-          <div class="field"><label>Modelo</label><input type="text" id="f-modelo" placeholder="Ej: 18000 BTU Inverter"></div>
           <div class="field"><label>Capacidad (BTU)</label><input type="text" id="f-capacidad" placeholder="12000, 18000, 24000..."></div>
           <div class="field"><label>Ubicación del equipo</label><input type="text" id="f-ubicacion" placeholder="Oficina 201, Piso 2..."></div>
         </div>
@@ -330,7 +327,6 @@ tr:hover td{background:#f8fafc}
         <div class="fg fg3" style="margin-bottom:10px">
           <div class="field"><label>Contratista / Técnico *</label><input type="text" id="g-contratista" placeholder="Nombre completo"></div>
           <div class="field"><label>Fecha de ejecución *</label><input type="date" id="g-fechaej"></div>
-          <div class="field"><label>Fecha de salida del equipo</label><input type="date" id="g-fechasal"></div>
         </div>
         <div class="fg fg2" style="margin-bottom:10px">
           <div class="field"><label>Estado del equipo al finalizar</label>
@@ -339,14 +335,12 @@ tr:hover td{background:#f8fafc}
               <option value="Desmontado">Desmontado</option><option value="Fuera de Servicio">Fuera de Servicio</option>
             </select>
           </div>
-          <div class="field"><label>Empresa / Taller</label><input type="text" id="g-empresa" placeholder="Nombre de la empresa"></div>
         </div>
         <div class="fg fg1" style="margin-bottom:10px">
           <div class="field"><label>Actividades realizadas *</label><textarea id="g-actividades" placeholder="Limpieza de filtros, recarga de gas, cambio de componentes..." style="min-height:90px"></textarea></div>
         </div>
         <div class="fg fg2">
           <div class="field"><label>Observaciones del técnico</label><textarea id="g-obs-tec" placeholder="Novedades, materiales, recomendaciones..."></textarea></div>
-          <div class="field"><label>Observaciones administrativas</label><textarea id="g-obs-admin" placeholder="Seguimiento, instrucciones del área administrativa..."></textarea></div>
         </div>
       </div>
       <div class="arow">
@@ -355,21 +349,49 @@ tr:hover td{background:#f8fafc}
       </div>
     </div>
 
-    <!-- PASO 3 -->
+    <!-- PASO 3 — EVALUACIÓN + DECISIÓN UNIFICADAS -->
     <div id="etapa3" style="display:none">
       <div class="alert aw show" id="e3-resumen"><i class="ti ti-info-circle"></i> Cargando...</div>
       <div class="card">
-        <div class="slbl" style="background:linear-gradient(90deg,var(--amber-bg),transparent);padding:6px 10px;border-radius:6px;margin:-4px -4px 12px"><i class="ti ti-star" style="color:#d4871a"></i>Paso 3 — Encuesta de Satisfacción y Firma</div>
+        <div class="slbl" style="background:linear-gradient(90deg,var(--amber-bg),transparent);padding:6px 10px;border-radius:6px;margin:-4px -4px 12px"><i class="ti ti-star" style="color:#d4871a"></i>Paso 3 — Evaluación, Firma y Decisión de Conformidad</div>
+
+        <!-- ENLACE ENCUESTA POR CORREO -->
+        <div style="background:var(--blue-bg);border:.5px solid var(--blue-b);border-radius:9px;padding:11px 14px;margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;color:var(--c1);margin-bottom:7px;display:flex;align-items:center;gap:5px"><i class="ti ti-mail" style="font-size:14px"></i>Enviar encuesta por correo electrónico</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:9px">Genera un enlace único para que el responsable del despacho complete la evaluación desde su dispositivo.</div>
+          <div class="fg fg2">
+            <div class="field"><label>Correo del responsable</label><input type="email" id="g-correo-resp" placeholder="correo@ramajudicial.gov.co"></div>
+            <div style="display:flex;align-items:flex-end;gap:7px;padding-bottom:0">
+              <button class="btn btn-p btn-sm" onclick="generarEnlaceEncuesta()"><i class="ti ti-link"></i>Generar enlace</button>
+              <button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#1da851" onclick="compartirWhatsApp()"><i class="ti ti-brand-whatsapp"></i>WhatsApp</button>
+              <button class="btn btn-sm" onclick="enviarCorreo()"><i class="ti ti-send"></i>Enviar correo</button>
+            </div>
+          </div>
+          <div id="enc-link-box" style="display:none;margin-top:10px">
+            <div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:4px">ENLACE GENERADO — copie y envíe al responsable:</div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="enc-link-input" type="text" readonly style="flex:1;font-family:monospace;font-size:11px;background:#fff;border:.5px solid var(--border);border-radius:7px;padding:5px 8px">
+              <button class="btn btn-sm" onclick="copiarEnlace()"><i class="ti ti-copy"></i>Copiar</button>
+            </div>
+            <div id="enc-link-copied" style="display:none;font-size:10px;color:var(--green);margin-top:3px;font-weight:600"><i class="ti ti-check"></i> ¡Enlace copiado!</div>
+          </div>
+        </div>
+
+        <!-- CALIFICACIÓN -->
         <div style="margin-bottom:14px">
           <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px"><i class="ti ti-star" style="color:#f59e0b"></i> Calificación del servicio (1–5)</div>
           <div id="enc-opciones"></div>
         </div>
-        <div class="fg fg3" style="margin-bottom:12px">
+
+        <!-- DATOS RESPONSABLE -->
+        <div class="fg fg2" style="margin-bottom:12px">
           <div class="field"><label>Responsable que recibe *</label><input type="text" id="g-resp-recibe" placeholder="Nombre completo"></div>
           <div class="field"><label>Cargo</label><input type="text" id="g-cargo-resp" placeholder="Juez, Secretario, Director..."></div>
-          <div class="field"><label>Observaciones al recibir</label><textarea id="g-obs-e" style="min-height:38px" placeholder="Comentarios..."></textarea></div>
+          <div class="field form-full" style="margin-top:0"><label>Observaciones al recibir</label><textarea id="g-obs-e" style="min-height:38px" placeholder="Comentarios sobre el servicio recibido..."></textarea></div>
         </div>
-        <div class="firma-wrap">
+
+        <!-- FIRMA DIGITAL -->
+        <div class="firma-wrap" style="margin-bottom:16px">
           <div style="font-size:11px;color:var(--text2);margin-bottom:7px"><i class="ti ti-pen"></i> Firma digital del responsable — dibuje con el mouse o el dedo</div>
           <canvas id="firma-c" width="500" height="110" style="max-width:100%"></canvas>
           <div style="display:flex;gap:7px;justify-content:center;margin-top:8px">
@@ -377,41 +399,35 @@ tr:hover td{background:#f8fafc}
             <span id="firma-estado" style="font-size:11px;align-self:center;color:var(--green)"></span>
           </div>
         </div>
+
+        <!-- DECISIÓN DE CONFORMIDAD -->
+        <div style="border-top:.5px solid var(--border);padding-top:14px;margin-top:4px">
+          <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px"><i class="ti ti-scale"></i> Decisión de conformidad</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div id="dec-conf" class="dec-card" onclick="selDecision('conforme')">
+              <div class="dec-icon" style="background:var(--green-bg);color:var(--green)"><i class="ti ti-circle-check" style="font-size:24px"></i></div>
+              <div class="dec-title">✅ Conforme</div>
+              <div class="dec-desc">El servicio fue recibido a satisfacción. Se registra como entregado conforme.</div>
+            </div>
+            <div id="dec-nconf" class="dec-card" onclick="selDecision('no-conforme')">
+              <div class="dec-icon" style="background:var(--red-bg);color:var(--red)"><i class="ti ti-circle-x" style="font-size:24px"></i></div>
+              <div class="dec-title">❌ No conforme</div>
+              <div class="dec-desc">El servicio no cumple con lo esperado. Se registra la inconformidad.</div>
+            </div>
+          </div>
+          <div id="grupo-inconformidad" style="display:none;background:var(--red-bg);border:.5px solid var(--red-b);border-radius:8px;padding:11px 14px;margin-bottom:8px">
+            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:7px"><i class="ti ti-alert-triangle"></i> Se registrará la inconformidad — queda en seguimiento.</div>
+            <div class="field"><label>Motivo de la inconformidad *</label><textarea id="g-motivo-nc" placeholder="Trabajos incompletos, falla persistente, daños causados..." style="min-height:70px"></textarea></div>
+          </div>
+        </div>
       </div>
+
       <div class="arow">
-        <button class="btn btn-w" onclick="guardarEvaluacion()"><i class="ti ti-arrow-right"></i>Confirmar evaluación</button>
+        <button class="btn btn-p" id="btn-finalizar" onclick="guardarEvaluacion()" disabled style="opacity:.5"><i class="ti ti-device-floppy"></i>Finalizar y guardar orden</button>
         <button class="btn" onclick="cancelarPaso()"><i class="ti ti-x"></i>Cancelar</button>
       </div>
     </div>
 
-    <!-- PASO 4 -->
-    <div id="etapa4" style="display:none">
-      <div class="alert aw show" id="e4-resumen"><i class="ti ti-info-circle"></i> Cargando...</div>
-      <div class="card">
-        <div class="slbl" style="background:linear-gradient(90deg,var(--purple-bg),transparent);padding:6px 10px;border-radius:6px;margin:-4px -4px 12px"><i class="ti ti-scale" style="color:var(--purple)"></i>Paso 4 — Decisión de Conformidad</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Firma y calificación registradas. Indique si el servicio se recibe conforme o no conforme:</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div id="dec-conf" class="dec-card" onclick="selDecision('conforme')">
-            <div class="dec-icon" style="background:var(--green-bg);color:var(--green)"><i class="ti ti-circle-check" style="font-size:24px"></i></div>
-            <div class="dec-title">✅ Conforme</div>
-            <div class="dec-desc">El servicio fue recibido a satisfacción. Se registra como entregado conforme y el proceso concluye.</div>
-          </div>
-          <div id="dec-nconf" class="dec-card" onclick="selDecision('no-conforme')">
-            <div class="dec-icon" style="background:var(--red-bg);color:var(--red)"><i class="ti ti-circle-x" style="font-size:24px"></i></div>
-            <div class="dec-title">❌ No conforme</div>
-            <div class="dec-desc">El servicio no cumple con lo esperado. Se registra la inconformidad y queda en seguimiento.</div>
-          </div>
-        </div>
-        <div id="grupo-inconformidad" style="display:none;background:var(--red-bg);border:.5px solid var(--red-b);border-radius:8px;padding:12px 14px">
-          <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:8px"><i class="ti ti-alert-triangle"></i> Se registrará la inconformidad — queda en seguimiento para corrección.</div>
-          <div class="field"><label>Motivo de la inconformidad *</label><textarea id="g-motivo-nc" placeholder="Trabajos incompletos, falla persistente, daños causados..." style="min-height:80px"></textarea></div>
-        </div>
-      </div>
-      <div class="arow">
-        <button class="btn btn-p" id="btn-finalizar" onclick="guardarDecision()" disabled style="opacity:.5"><i class="ti ti-device-floppy"></i>Finalizar y guardar orden</button>
-        <button class="btn" onclick="cancelarPaso()"><i class="ti ti-x"></i>Cancelar</button>
-      </div>
-    </div>
   </div>
 
   <!-- HISTORIAL -->
@@ -427,7 +443,6 @@ tr:hover td{background:#f8fafc}
           <option value="">Todos los estados</option>
           <option value="Solicitud">Solicitud</option>
           <option value="En Mantenimiento">En Mantenimiento</option>
-          <option value="Pendiente Evaluación">Pendiente Evaluación</option>
           <option value="Entregado conforme">Entregado conforme</option>
           <option value="No conforme">No conforme</option>
         </select>
@@ -437,7 +452,6 @@ tr:hover td{background:#f8fafc}
         <select id="fil-tipo" onchange="renderHist()">
           <option value="">Todos los tipos</option>
           <option value="Preventivo">Preventivo</option><option value="Correctivo">Correctivo</option>
-          <option value="Preventivo y Correctivo">Preventivo y Correctivo</option>
           <option value="Instalación">Instalación</option><option value="Desmonte">Desmonte</option>
         </select>
       </div>
@@ -546,9 +560,9 @@ import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,orde
 
 const STORE_KEY='sige_ac_v1';
 const INMUEBLES={'Palacio de Justicia Calle 21':['Coordinación Administrativa de Arauca','Juzgado 1º de Familia','Juzgado 2º de Familia','Juzgado Civil del Circuito','Juzgado Laboral del Circuito','Juzgado 1º Administrativo','Juzgado 2º Administrativo','Juzgado 3º Administrativo','Juzgado 4º Administrativo','Juzgado 5º Administrativo','Juzgado 6º Administrativo','Juzgado 7º Administrativo','Despacho 1 Tribunal Administrativo','Despacho 2 Tribunal Administrativo','Despacho 3 Tribunal Administrativo','Despacho 1 Tribunal Superior','Despacho 2 Tribunal Superior','Despacho 3 Tribunal Superior'],'Palacio de Justicia SPA':['Juzgado 1º Civil Municipal','Juzgado 2º Civil Municipal','Juzgado 1º Penal Municipal','Juzgado 2º Penal Municipal','Juzgado 1º Penal del Circuito','Juzgado 2º Penal del Circuito','Juzgado 05 Penal Municipal con Funciones Mixtas','Juzgado Penal del Circuito Especializado de Arauca','Juzgado 2º Penal del Circuito Especializado de Arauca'],'Contraloría':['Juzgado Penal del Circuito de Saravena','Juzgado 3º Penal Municipal con Funciones Mixtas','Juzgado 4º Penal Municipal con Funciones Mixtas'],'CESPA':['Centro de Servicios Judiciales de Arauca','Juzgado 1º Penal del Circuito para Adolescentes - Conocimiento','Juzgado 1º Penal Municipal para Adolescentes']};
-const ESTADOS_ORDEN=['Solicitud','En Mantenimiento','Pendiente Evaluación','Entregado conforme','No conforme'];
-const CE_ESTADOS=['#378ADD','#EF9F27','#7c3aed','#1e8449','#c0392b'];
-const CT_TIPOS={'Preventivo':'#378ADD','Correctivo':'#EF9F27','Preventivo y Correctivo':'#7C3AED','Instalación':'#1e8449','Desmonte':'#E24B4A'};
+const ESTADOS_ORDEN=['Solicitud','En Mantenimiento','Entregado conforme','No conforme'];
+const CE_ESTADOS=['#378ADD','#EF9F27','#1e8449','#c0392b'];
+const CT_TIPOS={'Preventivo':'#378ADD','Correctivo':'#EF9F27','Instalación':'#1e8449','Desmonte':'#E24B4A'};
 const SATS={'1':'No Satisfactorio','2':'Poco Satisfactorio','3':'Normal','4':'Satisfactorio','5':'Muy Satisfactorio'};
 const SCOLORS={'1':'#c0392b','2':'#d4871a','3':'#7c6500','4':'#1e8449','5':'#1a4d8a'};
 const SBGS={'1':'#fce8e8','2':'#fff3e0','3':'#fffde7','4':'#e6f7ee','5':'#e8f0fa'};
@@ -645,30 +659,58 @@ function showA(msg,t){const el=document.getElementById('alert-box');el.className
 function bdgOrden(e){const m={'Solicitud':'b-sol','En Mantenimiento':'b-mant','Pendiente Evaluación':'b-eval','Entregado conforme':'b-conf','No conforme':'b-nconf'};const ico={'Solicitud':'ti-file-plus','En Mantenimiento':'ti-tool','Pendiente Evaluación':'ti-clock','Entregado conforme':'ti-circle-check','No conforme':'ti-circle-x'};return`<span class="bdg ${m[e]||'b-def'}"><i class="ti ${ico[e]||'ti-circle'}" style="font-size:9px"></i>${e||'—'}</span>`;}
 function bdgTipo(t){const c=CT_TIPOS[t]||'#94a3b8';return`<span class="bdg" style="background:${c}22;color:${c}">${t||'—'}</span>`;}
 function goTab(t,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+t).classList.add('active');btn.classList.add('active');if(t==='historial')renderHist();if(t==='dashboard')renderDash();if(t==='buscar'){document.getElementById('res-bus').innerHTML='<div class="empty"><i class="ti ti-search"></i>Escriba un número de serie</div>';document.getElementById('inp-bus').value='';}if(t==='nuevo'){mostrarPaso(1);limpiar();}if(t==='config'){const s=localStorage.getItem('sige_fb_cfg');if(s&&document.getElementById('fb-config-input'))document.getElementById('fb-config-input').value=s;}}
-function actualizarStepper(paso){[1,2,3,4].forEach(n=>{const si=document.getElementById('si'+n),sn=document.getElementById('sn'+n);if(!si)return;si.classList.remove('active','done');sn.classList.remove('active','done');if(n<paso){si.classList.add('done');sn.classList.add('done');sn.innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';}else if(n===paso){si.classList.add('active');sn.classList.add('active');sn.textContent=n===4?'⚖':n;}else{sn.textContent=n===4?'⚖':n;}});[1,2,3].forEach(n=>{const sc=document.getElementById('sc'+n);if(sc)sc.classList.toggle('done',n<paso);});}
-function mostrarPaso(n){['etapa1','etapa2','etapa3','etapa4'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});const e=document.getElementById('etapa'+n);if(e)e.style.display='block';actualizarStepper(n);if(n===3)initFirma();window.scrollTo(0,0);}
+function actualizarStepper(paso){[1,2,3].forEach(n=>{const si=document.getElementById('si'+n),sn=document.getElementById('sn'+n);if(!si)return;si.classList.remove('active','done');sn.classList.remove('active','done');if(n<paso){si.classList.add('done');sn.classList.add('done');sn.innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';}else if(n===paso){si.classList.add('active');sn.classList.add('active');sn.textContent=n;}else{sn.textContent=n;}});[1,2].forEach(n=>{const sc=document.getElementById('sc'+n);if(sc)sc.classList.toggle('done',n<paso);});}
+function mostrarPaso(n){['etapa1','etapa2','etapa3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});const e=document.getElementById('etapa'+n);if(e)e.style.display='block';actualizarStepper(n);if(n===3)initFirma();window.scrollTo(0,0);}
 function onCiudadChange(){const ciudad=document.getElementById('f-ciudad').value,gI=document.getElementById('grupo-inmueble'),gT=document.getElementById('grupo-despacho-texto'),gDA=document.getElementById('grupo-despacho-arauca');document.getElementById('f-inmueble').value='';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';document.getElementById('f-despacho').value='';const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';gDA.style.display='none';if(ciudad==='Arauca'){gI.style.display='block';gT.style.display='none';}else if(ciudad){gI.style.display='none';gT.style.display='block';}else{gI.style.display='none';gT.style.display='none';}}
 function onInmuebleChange(){const inm=document.getElementById('f-inmueble').value,sel=document.getElementById('f-despacho-arauca'),gDA=document.getElementById('grupo-despacho-arauca');sel.innerHTML='<option value="">Seleccionar despacho...</option>';document.getElementById('f-despacho').value='';if(inm&&INMUEBLES[inm]){INMUEBLES[inm].forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});gDA.style.display='block';}else{gDA.style.display='none';}}
 function getDespacho(){const ciudad=document.getElementById('f-ciudad').value;if(ciudad==='Arauca'){const inm=document.getElementById('f-inmueble').value,dep=document.getElementById('f-despacho-arauca').value;if(!inm||!dep)return null;return{despacho:`${inm} — ${dep}`,inmueble:inm};}else{const dep=(document.getElementById('f-despacho-texto')||{}).value||'';if(!dep.trim())return null;return{despacho:dep.trim(),inmueble:''};}}
 function buscarEquipo(){const serial=(document.getElementById('f-serial').value||'').trim().toUpperCase();const panel=document.getElementById('equipo-info-panel'),grupoNuevo=document.getElementById('grupo-equipo-nuevo');if(!serial){panel.style.display='none';grupoNuevo.style.display='grid';return;}const primero=regs.filter(r=>(r.serial||'').toUpperCase()===serial).sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];if(primero){document.getElementById('ei-tipo').textContent=primero.tipoEq||'—';document.getElementById('ei-marca').textContent=primero.marca||'—';document.getElementById('ei-modelo').textContent=primero.modelo||'—';document.getElementById('ei-cap').textContent=primero.capacidad?primero.capacidad+' BTU':'—';document.getElementById('ei-ubic').textContent=primero.ubicacion||'—';panel.style.display='block';grupoNuevo.style.display='none';}else{panel.style.display='none';grupoNuevo.style.display='grid';}}
-async function guardarSolicitud(){const ciudad=document.getElementById('f-ciudad').value,tipo=document.getElementById('f-tipo').value,serial=(document.getElementById('f-serial').value||'').trim().toUpperCase(),desc=document.getElementById('f-descripcion').value.trim();if(!ciudad||!tipo||!serial||!desc){showA('Complete todos los campos obligatorios (*)','e');return;}const despInfo=getDespacho();if(!despInfo){showA('Seleccione el inmueble y el despacho','e');return;}const primero=regs.filter(r=>(r.serial||'').toUpperCase()===serial).sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];const reg={id:gid(),serial,ciudad,inmueble:despInfo.inmueble,despacho:despInfo.despacho,tipoMant:tipo,descripcion:desc,fechaSolicitud:document.getElementById('f-fecha').value,tipoEq:primero?primero.tipoEq:document.getElementById('f-tipo-eq').value,marca:primero?primero.marca:document.getElementById('f-marca').value,modelo:primero?primero.modelo:document.getElementById('f-modelo').value,capacidad:primero?primero.capacidad:document.getElementById('f-capacidad').value,ubicacion:primero?primero.ubicacion:document.getElementById('f-ubicacion').value,estadoOrden:'Solicitud',estado:'Solicitado',creadoEn:fmtNow(),timeline:[{fecha:fmtNow(),evento:'Solicitud registrada',tipo:'i',detalle:`${tipo} · ${despInfo.despacho} · ${ciudad}`}],contratista:'',empresa:'',fechaEjecucion:'',fechaSalida:'',actividades:'',obsTecnico:'',obsAdmin:'',estadoFin:'',responsableRecibe:'',cargoResp:'',obsEntrega:'',satisfaccion:'',firma:null,decision:'',motivoInconformidad:''};await saveData(reg,true);showA(`✓ Solicitud guardada — ${serial} · ${despInfo.despacho}`,'s');limpiar();document.getElementById('last-update').textContent='Guardado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
-async function guardarEjecucion(){const contratista=document.getElementById('g-contratista').value.trim(),fechaej=document.getElementById('g-fechaej').value,actividades=document.getElementById('g-actividades').value.trim();if(!contratista||!fechaej||!actividades){showA('Complete contratista, fecha de ejecución y actividades','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}r.contratista=contratista;r.empresa=document.getElementById('g-empresa').value;r.fechaEjecucion=fechaej;r.fechaSalida=document.getElementById('g-fechasal').value;r.actividades=actividades;r.obsTecnico=document.getElementById('g-obs-tec').value;r.obsAdmin=document.getElementById('g-obs-admin').value;r.estadoFin=document.getElementById('g-estado-fin').value;r.estadoOrden='En Mantenimiento';r.estado='En Mantenimiento';r.timeline.push({fecha:fmtNow(),evento:'Trabajos completados — notificación al administrativo',tipo:'l',detalle:`Técnico: ${contratista} | ${actividades.substring(0,60)}`});await saveData(r,false);showA('✓ Ejecución guardada correctamente','s');ordenActiva=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
-async function guardarEvaluacion(){const resp=document.getElementById('g-resp-recibe').value.trim();if(!resp){showA('Ingrese el nombre del responsable que recibe','e');return;}if(firmaVacia){showA('Registre la firma digital antes de continuar','e');return;}const enc=document.querySelector('input[name="enc-sat"]:checked');if(!enc){showA('Seleccione una calificación de satisfacción','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}const canvas=document.getElementById('firma-c');r.responsableRecibe=resp;r.cargoResp=document.getElementById('g-cargo-resp').value;r.obsEntrega=document.getElementById('g-obs-e').value;r.satisfaccion=enc.value;r.firma=canvas.toDataURL('image/png');r.estadoOrden='Pendiente Evaluación';r.estado='Pendiente Evaluación';r.timeline.push({fecha:fmtNow(),evento:'Encuesta de satisfacción y firma registradas',tipo:'p',detalle:`Responsable: ${resp} | Satisfacción: ${SATS[enc.value]}`});await saveData(r,false);showA('✓ Evaluación y firma guardadas','s');ordenActiva=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
-function selDecision(tipo){decisionSeleccionada=tipo;document.getElementById('dec-conf').className='dec-card'+(tipo==='conforme'?' sel-conf':'');document.getElementById('dec-nconf').className='dec-card'+(tipo==='no-conforme'?' sel-nconf':'');document.getElementById('grupo-inconformidad').style.display=tipo==='no-conforme'?'block':'none';const btn=document.getElementById('btn-finalizar');btn.disabled=false;btn.style.opacity='1';}
-async function guardarDecision(){if(!decisionSeleccionada){showA('Seleccione Conforme o No conforme','e');return;}if(decisionSeleccionada==='no-conforme'&&!document.getElementById('g-motivo-nc').value.trim()){showA('Describa el motivo de la inconformidad','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}r.decision=decisionSeleccionada;if(decisionSeleccionada==='no-conforme')r.motivoInconformidad=document.getElementById('g-motivo-nc').value.trim();r.estadoOrden=decisionSeleccionada==='conforme'?'Entregado conforme':'No conforme';r.estado=r.estadoOrden;r.fechaEntrega=hoy();r.timeline.push({fecha:fmtNow(),evento:decisionSeleccionada==='conforme'?'Entregado conforme — proceso finalizado':'No conforme — inconformidad registrada',tipo:decisionSeleccionada==='conforme'?'e':'g',detalle:decisionSeleccionada==='no-conforme'?r.motivoInconformidad:''});await saveData(r,false);showA('✓ Orden finalizada: '+r.estadoOrden,'s');ordenActiva=null;decisionSeleccionada=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1500);}
+async function guardarSolicitud(){const ciudad=document.getElementById('f-ciudad').value,tipo=document.getElementById('f-tipo').value,serial=(document.getElementById('f-serial').value||'').trim().toUpperCase(),desc=document.getElementById('f-descripcion').value.trim();if(!ciudad||!tipo||!serial||!desc){showA('Complete todos los campos obligatorios (*)','e');return;}const despInfo=getDespacho();if(!despInfo){showA('Seleccione el inmueble y el despacho','e');return;}const primero=regs.filter(r=>(r.serial||'').toUpperCase()===serial).sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];const reg={id:gid(),serial,ciudad,inmueble:despInfo.inmueble,despacho:despInfo.despacho,tipoMant:tipo,descripcion:desc,fechaSolicitud:document.getElementById('f-fecha').value,tipoEq:primero?primero.tipoEq:document.getElementById('f-tipo-eq').value,marca:primero?primero.marca:document.getElementById('f-marca').value,modelo:'',capacidad:primero?primero.capacidad:document.getElementById('f-capacidad').value,ubicacion:primero?primero.ubicacion:document.getElementById('f-ubicacion').value,estadoOrden:'Solicitud',estado:'Solicitado',creadoEn:fmtNow(),timeline:[{fecha:fmtNow(),evento:'Solicitud registrada',tipo:'i',detalle:`${tipo} · ${despInfo.despacho} · ${ciudad}`}],contratista:'',empresa:'',fechaEjecucion:'',fechaSalida:'',actividades:'',obsTecnico:'',obsAdmin:'',estadoFin:'',responsableRecibe:'',cargoResp:'',obsEntrega:'',satisfaccion:'',firma:null,decision:'',motivoInconformidad:''};await saveData(reg,true);showA(`✓ Solicitud guardada — ${serial} · ${despInfo.despacho}`,'s');limpiar();document.getElementById('last-update').textContent='Guardado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
+async function guardarEjecucion(){const contratista=document.getElementById('g-contratista').value.trim(),fechaej=document.getElementById('g-fechaej').value,actividades=document.getElementById('g-actividades').value.trim();if(!contratista||!fechaej||!actividades){showA('Complete contratista, fecha de ejecución y actividades','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}r.contratista=contratista;r.empresa='';r.fechaEjecucion=fechaej;r.fechaSalida='';r.actividades=actividades;r.obsTecnico=document.getElementById('g-obs-tec').value;r.obsAdmin='';r.estadoFin=document.getElementById('g-estado-fin').value;r.estadoOrden='En Mantenimiento';r.estado='En Mantenimiento';r.timeline.push({fecha:fmtNow(),evento:'Trabajos completados — notificación al administrativo',tipo:'l',detalle:`Técnico: ${contratista} | ${actividades.substring(0,60)}`});await saveData(r,false);showA('✓ Ejecución guardada correctamente','s');ordenActiva=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
+async function guardarEvaluacion(){
+  if(!decisionSeleccionada){showA('Seleccione Conforme o No conforme antes de finalizar','e');return;}
+  const resp=document.getElementById('g-resp-recibe').value.trim();
+  if(!resp){showA('Ingrese el nombre del responsable que recibe','e');return;}
+  if(firmaVacia){showA('Registre la firma digital antes de continuar','e');return;}
+  const enc=document.querySelector('input[name="enc-sat"]:checked');
+  if(!enc){showA('Seleccione una calificación de satisfacción','e');return;}
+  if(decisionSeleccionada==='no-conforme'&&!document.getElementById('g-motivo-nc').value.trim()){showA('Describa el motivo de la inconformidad','e');return;}
+  if(!ordenActiva){showA('Error: no hay orden activa','e');return;}
+  const r=regs.find(x=>x.id===ordenActiva.id);
+  if(!r){showA('Error: orden no encontrada','e');return;}
+  const canvas=document.getElementById('firma-c');
+  r.responsableRecibe=resp;
+  r.cargoResp=document.getElementById('g-cargo-resp').value;
+  r.obsEntrega=document.getElementById('g-obs-e').value;
+  r.satisfaccion=enc.value;
+  r.firma=canvas.toDataURL('image/png');
+  r.decision=decisionSeleccionada;
+  if(decisionSeleccionada==='no-conforme')r.motivoInconformidad=document.getElementById('g-motivo-nc').value.trim();
+  r.estadoOrden=decisionSeleccionada==='conforme'?'Entregado conforme':'No conforme';
+  r.estado=r.estadoOrden;
+  r.fechaEntrega=hoy();
+  r.timeline.push({fecha:fmtNow(),evento:decisionSeleccionada==='conforme'?'Entregado conforme — proceso finalizado':'No conforme — inconformidad registrada',tipo:decisionSeleccionada==='conforme'?'e':'g',detalle:`Responsable: ${resp} | Satisfacción: ${SATS[enc.value]}${decisionSeleccionada==='no-conforme'?' | '+r.motivoInconformidad:''}`});
+  await saveData(r,false);
+  showA('✓ Orden finalizada: '+r.estadoOrden,'s');
+  ordenActiva=null;decisionSeleccionada=null;
+  document.getElementById('last-update').textContent='Actualizado: '+fmtNow();
+  setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1500);
+}
+function selDecision(tipo){decisionSeleccionada=tipo;document.getElementById('dec-conf').className='dec-card'+(tipo==='conforme'?' sel-conf':'');document.getElementById('dec-nconf').className='dec-card'+(tipo==='no-conforme'?' sel-nconf':'');document.getElementById('grupo-inconformidad').style.display=tipo==='no-conforme'?'block':'none';const btn=document.getElementById('btn-finalizar');if(btn){btn.disabled=false;btn.style.opacity='1';}}
+// guardarDecision: unificada en guardarEvaluacion
 function cancelarPaso(){ordenActiva=null;decisionSeleccionada=null;document.querySelectorAll('.nav-btn')[2].click();}
-function continuarOrden(id,paso){const r=regs.find(x=>x.id===id);if(!r)return;ordenActiva=r;decisionSeleccionada=null;firmaVacia=true;firmaCtx=null;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn')[1].classList.add('active');document.getElementById('panel-nuevo').classList.add('active');if(paso===2){document.getElementById('e2-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Solicitud:</strong> ${r.tipoMant} · Serial: <strong>${r.serial}</strong> · ${r.despacho} · ${r.ciudad}`;document.getElementById('g-fechaej').value=hoy();mostrarPaso(2);}else if(paso===3){document.getElementById('e3-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Ejecución:</strong> ${r.tipoMant} · Técnico: <strong>${r.contratista||'—'}</strong> · ${r.fechaEjecucion||'—'}`;renderEncuesta();mostrarPaso(3);}else if(paso===4){document.getElementById('e4-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Evaluación registrada.</strong> Firmado por: <strong>${r.responsableRecibe||'—'}</strong>`;document.getElementById('btn-finalizar').disabled=true;document.getElementById('btn-finalizar').style.opacity='.5';document.getElementById('grupo-inconformidad').style.display='none';['dec-conf','dec-nconf'].forEach(id=>{const el=document.getElementById(id);if(el)el.className='dec-card';});mostrarPaso(4);}}
+function continuarOrden(id,paso){const r=regs.find(x=>x.id===id);if(!r)return;ordenActiva=r;decisionSeleccionada=null;firmaVacia=true;firmaCtx=null;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn')[1].classList.add('active');document.getElementById('panel-nuevo').classList.add('active');if(paso===2){document.getElementById('e2-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Solicitud:</strong> ${r.tipoMant} · Serial: <strong>${r.serial}</strong> · ${r.despacho} · ${r.ciudad}`;document.getElementById('g-fechaej').value=hoy();mostrarPaso(2);}else if(paso===3){document.getElementById('e3-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Ejecución:</strong> ${r.tipoMant} · Técnico: <strong>${r.contratista||'—'}</strong> · ${r.fechaEjecucion||'—'}`;renderEncuesta();decisionSeleccionada=null;document.getElementById('btn-finalizar').disabled=true;document.getElementById('btn-finalizar').style.opacity='.5';document.getElementById('grupo-inconformidad').style.display='none';['dec-conf','dec-nconf'].forEach(id=>{const el=document.getElementById(id);if(el)el.className='dec-card';});mostrarPaso(3);}}
 function initFirma(){const canvas=document.getElementById('firma-c');if(!canvas)return;const newC=canvas.cloneNode(true);canvas.parentNode.replaceChild(newC,canvas);firmaVacia=true;firmaCtx=null;document.getElementById('firma-estado').textContent='';const ctx=newC.getContext('2d');firmaCtx=ctx;ctx.strokeStyle='#1a3a5c';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';let drawing=false,lx=0,ly=0;const gp=e=>{const r=newC.getBoundingClientRect(),sx=newC.width/r.width,sy=newC.height/r.height;const s=e.touches?e.touches[0]:e;return[(s.clientX-r.left)*sx,(s.clientY-r.top)*sy];};const start=e=>{e.preventDefault();drawing=true;[lx,ly]=gp(e);};const draw=e=>{e.preventDefault();if(!drawing)return;const[x,y]=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();[lx,ly]=[x,y];firmaVacia=false;document.getElementById('firma-estado').textContent='✓ Firma registrada';};const stop=e=>{e.preventDefault();drawing=false;};newC.addEventListener('mousedown',start);newC.addEventListener('mousemove',draw);newC.addEventListener('mouseup',stop);newC.addEventListener('mouseleave',stop);newC.addEventListener('touchstart',start,{passive:false});newC.addEventListener('touchmove',draw,{passive:false});newC.addEventListener('touchend',stop,{passive:false});}
 function clrFirma(){const c=document.getElementById('firma-c');if(firmaCtx)firmaCtx.clearRect(0,0,c.width,c.height);firmaVacia=true;document.getElementById('firma-estado').textContent='';}
 function renderEncuesta(){document.getElementById('enc-opciones').innerHTML=[{val:'5',lbl:'Muy Satisfactorio',ico:'ti-mood-happy'},{val:'4',lbl:'Satisfactorio',ico:'ti-mood-smile'},{val:'3',lbl:'Normal',ico:'ti-mood-neutral'},{val:'2',lbl:'Poco Satisfactorio',ico:'ti-mood-confused'},{val:'1',lbl:'No Satisfactorio',ico:'ti-mood-sad'}].map(o=>`<label class="enc-opt" onmouseover="this.style.borderColor='${SCOLORS[o.val]}';this.style.background='${SBGS[o.val]}'" onmouseout="syncEncuesta()"><input type="radio" name="enc-sat" value="${o.val}" style="accent-color:${SCOLORS[o.val]};width:15px;height:15px;flex-shrink:0" onchange="syncEncuesta()"><i class="ti ${o.ico}" style="font-size:20px;color:${SCOLORS[o.val]};flex-shrink:0"></i><span style="font-size:12px;font-weight:600;color:${SCOLORS[o.val]}">${o.lbl}</span><span style="font-size:11px;color:var(--text2);flex:1;padding-left:4px">${o.val}/5</span></label>`).join('');}
 function syncEncuesta(){document.querySelectorAll('#enc-opciones label').forEach(lbl=>{const inp=lbl.querySelector('input');lbl.style.borderColor=inp.checked?SCOLORS[inp.value]:'var(--border)';lbl.style.background=inp.checked?SBGS[inp.value]:'#fff';});}
-function limpiar(){['f-ciudad','f-inmueble','f-tipo','f-serial','f-tipo-eq','f-marca','f-modelo','f-capacidad','f-ubicacion','f-descripcion'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';if(el.tagName==='SELECT')el.selectedIndex=0;}});const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';document.getElementById('f-despacho').value='';document.getElementById('f-fecha').value=hoy();document.getElementById('grupo-inmueble').style.display='none';document.getElementById('grupo-despacho-arauca').style.display='none';document.getElementById('grupo-despacho-texto').style.display='none';document.getElementById('equipo-info-panel').style.display='none';document.getElementById('grupo-equipo-nuevo').style.display='grid';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';mostrarPaso(1);}
-function miniTimeline(r){const e=r.estadoOrden||'Solicitud';const pasos=[{lbl:'Solicitud',done:true},{lbl:'Ejecución',done:['En Mantenimiento','Pendiente Evaluación','Entregado conforme','No conforme'].includes(e)},{lbl:'Evaluación',done:['Pendiente Evaluación','Entregado conforme','No conforme'].includes(e)},{lbl:'Decisión',done:['Entregado conforme','No conforme'].includes(e)}];let h='<div class="mtl">';pasos.forEach((p,i)=>{const curr=!p.done&&(i===0||(pasos[i-1]&&pasos[i-1].done));h+=`<div class="mtl-dot ${p.done?'done':curr?'curr':''}"><i class="ti ${p.done?'ti-check':curr?'ti-point':'ti-circle'}" style="font-size:9px"></i></div><span class="mtl-lbl">${p.lbl}</span>`;if(i<3)h+=`<div class="mtl-line ${p.done?'done':''}"></div>`;});return h+'</div>';}
-function btnSiguiente(r){const e=r.estadoOrden||'Solicitud';if(e==='Solicitud')return`<button class="btn btn-p btn-sm" onclick="continuarOrden('${r.id}',2)"><i class="ti ti-tool"></i>Registrar ejecución</button>`;if(e==='En Mantenimiento')return`<button class="btn btn-sm btn-w" onclick="continuarOrden('${r.id}',3)"><i class="ti ti-star"></i>Registrar evaluación</button>`;if(e==='Pendiente Evaluación')return`<button class="btn btn-sm" style="background:var(--purple-bg);color:var(--purple);border-color:var(--purple-b)" onclick="continuarOrden('${r.id}',4)"><i class="ti ti-scale"></i>Registrar decisión</button>`;return'';}
+function limpiar(){['f-ciudad','f-inmueble','f-tipo','f-serial','f-tipo-eq','f-marca','f-capacidad','f-ubicacion','f-descripcion'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';if(el.tagName==='SELECT')el.selectedIndex=0;}});const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';document.getElementById('f-despacho').value='';document.getElementById('f-fecha').value=hoy();document.getElementById('grupo-inmueble').style.display='none';document.getElementById('grupo-despacho-arauca').style.display='none';document.getElementById('grupo-despacho-texto').style.display='none';document.getElementById('equipo-info-panel').style.display='none';document.getElementById('grupo-equipo-nuevo').style.display='grid';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';mostrarPaso(1);}
+function miniTimeline(r){const e=r.estadoOrden||'Solicitud';const pasos=[{lbl:'Solicitud',done:true},{lbl:'Ejecución',done:['En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Evaluación',done:['Entregado conforme','No conforme'].includes(e)}];let h='<div class="mtl">';pasos.forEach((p,i)=>{const curr=!p.done&&(i===0||(pasos[i-1]&&pasos[i-1].done));h+=`<div class="mtl-dot ${p.done?'done':curr?'curr':''}"><i class="ti ${p.done?'ti-check':curr?'ti-point':'ti-circle'}" style="font-size:9px"></i></div><span class="mtl-lbl">${p.lbl}</span>`;if(i<2)h+=`<div class="mtl-line ${p.done?'done':''}"></div>`;});return h+'</div>';}
+function btnSiguiente(r){const e=r.estadoOrden||'Solicitud';if(e==='Solicitud')return`<button class="btn btn-p btn-sm" onclick="continuarOrden('${r.id}',2)"><i class="ti ti-tool"></i>Registrar ejecución</button>`;if(e==='En Mantenimiento')return`<button class="btn btn-sm btn-w" onclick="continuarOrden('${r.id}',3)"><i class="ti ti-star"></i>Registrar evaluación</button>`;return'';}
 function renderHist(){const municipios=[...new Set(regs.map(r=>r.ciudad).filter(Boolean))];const selMun=document.getElementById('fil-municipio'),curMun=selMun.value;selMun.innerHTML='<option value="">Todos los municipios</option>'+municipios.map(m=>`<option value="${m}"${m===curMun?' selected':''}>${m}</option>`).join('');const q=(document.getElementById('inp-filtro').value||'').toLowerCase(),filEst=document.getElementById('fil-estado').value,filMun=document.getElementById('fil-municipio').value,filTipo=document.getElementById('fil-tipo').value;let data=regs.filter(r=>{const mQ=!q||JSON.stringify(r).toLowerCase().includes(q),mE=!filEst||(r.estadoOrden||'Solicitud')===filEst,mM=!filMun||r.ciudad===filMun,mT=!filTipo||r.tipoMant===filTipo;return mQ&&mE&&mM&&mT;});const c=document.getElementById('tabla-hist');if(!data.length){c.innerHTML='<div class="empty"><i class="ti ti-database"></i>Sin órdenes que coincidan.</div>';return;}const activas=data.filter(r=>!['Entregado conforme','No conforme'].includes(r.estadoOrden));const cerradas=data.filter(r=>['Entregado conforme','No conforme'].includes(r.estadoOrden));const renderCard=r=>{const sig=btnSiguiente(r);const cerrada=!sig;return`<div class="oc ${cerrada?'oc-cerrada':r.estadoOrden==='No conforme'?'oc-nconf':''}"><div class="oc-head"><div style="flex:1;min-width:0"><div class="oc-title"><span class="serial-tag">${r.serial}</span>${bdgTipo(r.tipoMant)}${bdgOrden(r.estadoOrden||'Solicitud')}</div><div class="oc-sub">${r.despacho||'—'} · ${r.ciudad||'—'} · ${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</div>${r.descripcion?`<div class="oc-desc">${r.descripcion.substring(0,100)}${r.descripcion.length>100?'...':''}</div>`:''}${miniTimeline(r)}</div><div class="oc-actions">${sig}<button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button><button class="btn btn-sm" onclick="abrirEditar('${r.id}')" style="background:var(--blue-bg);color:var(--c2);border-color:var(--blue-b)"><i class="ti ti-edit"></i></button><button class="btn btn-sm" onclick="eliminarReg('${r.id}')" style="background:var(--red-bg);color:var(--red);border-color:var(--red-b)"><i class="ti ti-trash"></i></button><button class="btn btn-sm" onclick="imprimirResumenId('${r.id}')"><i class="ti ti-printer"></i></button></div></div>${(r.tipoEq||r.marca||r.contratista)?`<div class="oc-foot">${r.tipoEq||r.marca?`<span><i class="ti ti-wind" style="margin-right:3px"></i>${[r.tipoEq,r.marca,r.modelo,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')}</span>`:''}${r.contratista?`<span><i class="ti ti-user-check" style="margin-right:3px"></i>${r.contratista}</span>`:''}${r.responsableRecibe?`<span><i class="ti ti-pen" style="margin-right:3px"></i>${r.responsableRecibe}</span>`:''}${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]}"><i class="ti ti-star-filled" style="margin-right:3px"></i>${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:''}</div>`:''}  </div>`;}; let html='';if(activas.length){html+=`<div class="oc-group-lbl"><i class="ti ti-clock"></i>En proceso (${activas.length})</div>`;html+=activas.map(renderCard).join('');}if(cerradas.length){html+=`<div class="oc-group-lbl" style="margin-top:14px"><i class="ti ti-check"></i>Finalizadas (${cerradas.length})</div>`;html+=cerradas.map(renderCard).join('');}c.innerHTML=html;}
 async function eliminarReg(id){const r=regs.find(x=>x.id===id);if(!r)return;if(!confirm(`¿Eliminar la orden de ${r.serial} — ${r.despacho}?\n\nEsta acción no se puede deshacer.`))return;await deleteData(id);}
 function buscarGlobal(){const q=document.getElementById('inp-bus').value.trim().toUpperCase();const c=document.getElementById('res-bus');if(!q){c.innerHTML='<div class="empty"><i class="ti ti-search"></i>Escriba un número de serie</div>';return;}const res=regs.filter(r=>(r.serial||'').toUpperCase().includes(q));if(!res.length){c.innerHTML=`<div class="empty"><i class="ti ti-file-off"></i>No se encontraron registros para "${q}"</div>`;return;}const primero=res.sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];let h=`<div style="background:var(--blue-bg);border-radius:9px;padding:10px 12px;margin-bottom:10px;border:.5px solid var(--blue-b)"><div style="font-size:10px;font-weight:700;color:var(--c1);margin-bottom:6px">DATOS DEL EQUIPO</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-size:11px">${[['Serial',primero.serial],['Tipo',primero.tipoEq||'—'],['Marca',primero.marca||'—'],['Modelo',primero.modelo||'—'],['Capacidad',primero.capacidad?primero.capacidad+' BTU':'—'],['Ubicación',primero.ubicacion||'—'],['Ciudad',primero.ciudad||'—']].map(([l,v])=>`<div><div style="color:var(--text2);font-size:10px">${l}</div><div style="font-weight:600;color:var(--c1)">${v}</div></div>`).join('')}</div></div>`;h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:8px">${res.length} registro(s) encontrado(s)</div>`;h+='<div class="tw"><table><thead><tr><th>Tipo mant.</th><th>Solicitud</th><th>Ejecución</th><th>Contratista</th><th>Responsable</th><th>Satisfacción</th><th>Estado</th><th></th></tr></thead><tbody>'+res.map(r=>`<tr><td>${bdgTipo(r.tipoMant)}</td><td>${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</td><td>${r.fechaEjecucion?fmt(r.fechaEjecucion):'—'}</td><td>${r.contratista||'—'}</td><td>${r.responsableRecibe||'—'}</td><td>${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]};font-weight:600">${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:'—'}</td><td>${bdgOrden(r.estadoOrden||'Solicitud')}</td><td><button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button></td></tr>`).join('')+'</tbody></table></div>';c.innerHTML=h;}
-function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span class="serial-tag">${r.serial}</span> &nbsp;${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-wind');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad?r.capacidad+' BTU':'');h+=dr('Ubicación',r.ubicacion);if(r.contratista||r.actividades){h+=sec('Paso 2 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Empresa',r.empresa);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Fecha salida equipo',r.fechaSalida?fmt(r.fechaSalida):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);h+=dr('Obs. administrativas',r.obsAdmin);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=sec('Paso 4 — Decisión','ti-scale');h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
+function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span class="serial-tag">${r.serial}</span> &nbsp;${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-wind');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad?r.capacidad+' BTU':'');h+=dr('Ubicación',r.ubicacion);if(r.contratista||r.actividades){h+=sec('Paso 2 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
 function cerrar(){document.getElementById('modal').classList.remove('open');raReg=null;}
 function abrirEditar(id){const r=regs.find(x=>x.id===id);if(!r)return;document.getElementById('me-title').innerHTML=`<i class="ti ti-edit"></i> Editar — <span class="serial-tag">${r.serial}</span>`;const sel=(arr,val)=>arr.map(v=>`<option value="${v}"${v===val?' selected':''}>${v}</option>`).join('');const TM=['Preventivo','Correctivo','Preventivo y Correctivo','Instalación','Desmonte'];const TE=['Mini-split','Multi-V','Cassete','Pared','Ventana','Otro'];const EO=['Solicitud','En Mantenimiento','Pendiente Evaluación','Entregado conforme','No conforme'];document.getElementById('me-body').innerHTML=`<div class="alert" id="me-alert" style="margin-bottom:10px"></div><div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--amber);margin-bottom:12px"><i class="ti ti-alert-triangle"></i> Edite los campos necesarios. La línea de tiempo no se modifica para preservar la trazabilidad.</div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Serial</label><input type="text" id="me-serial" value="${r.serial||''}" readonly style="opacity:.7"></div><div class="field"><label>Tipo mantenimiento</label><select id="me-tipomant">${sel(TM,r.tipoMant)}</select></div><div class="field"><label>Fecha solicitud</label><input type="date" id="me-fecha" value="${r.fechaSolicitud||''}"></div></div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Tipo equipo</label><select id="me-tipoeq">${sel(TE,r.tipoEq)}</select></div><div class="field"><label>Marca</label><input type="text" id="me-marca" value="${(r.marca||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Modelo</label><input type="text" id="me-modelo" value="${(r.modelo||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Capacidad (BTU)</label><input type="text" id="me-cap" value="${r.capacidad||''}"></div><div class="field"><label>Ubicación</label><input type="text" id="me-ubic" value="${(r.ubicacion||'').replace(/"/g,'&quot;')}"></div></div><div class="fg fg1" style="margin-bottom:10px"><div class="field"><label>Descripción</label><textarea id="me-desc" style="min-height:55px">${r.descripcion||''}</textarea></div></div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Contratista</label><input type="text" id="me-cont" value="${(r.contratista||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Fecha ejecución</label><input type="date" id="me-fechaej" value="${r.fechaEjecucion||''}"></div><div class="field"><label>Estado del proceso</label><select id="me-estord">${sel(EO,r.estadoOrden||'Solicitud')}</select></div></div><div class="fg fg1" style="margin-bottom:10px"><div class="field"><label>Actividades realizadas</label><textarea id="me-activ" style="min-height:55px">${r.actividades||''}</textarea></div></div><div style="display:flex;gap:8px"><button class="btn btn-s" onclick="guardarEdicion('${id}')"><i class="ti ti-device-floppy"></i>Guardar</button><button class="btn" onclick="cerrarEditar()"><i class="ti ti-x"></i>Cancelar</button></div>`;document.getElementById('modal-editar').classList.add('open');}
 async function guardarEdicion(id){const r=regs.find(x=>x.id===id);if(!r)return;r.tipoMant=document.getElementById('me-tipomant').value;r.fechaSolicitud=document.getElementById('me-fecha').value;r.tipoEq=document.getElementById('me-tipoeq').value;r.marca=document.getElementById('me-marca').value;r.modelo=document.getElementById('me-modelo').value;r.capacidad=document.getElementById('me-cap').value;r.ubicacion=document.getElementById('me-ubic').value;r.descripcion=document.getElementById('me-desc').value;r.contratista=document.getElementById('me-cont').value;r.fechaEjecucion=document.getElementById('me-fechaej').value;r.estadoOrden=document.getElementById('me-estord').value;r.estado=r.estadoOrden;r.actividades=document.getElementById('me-activ').value;r.timeline.push({fecha:fmtNow(),evento:'Registro editado manualmente',tipo:'i',detalle:`Estado: ${r.estadoOrden}`});await saveData(r,false);const el=document.getElementById('me-alert');el.className='alert show as';el.innerHTML='<i class="ti ti-circle-check"></i> Cambios guardados';setTimeout(()=>{cerrarEditar();renderAll();},900);}
@@ -712,6 +754,43 @@ function renderAll(){if(document.getElementById('panel-historial').classList.con
   document.getElementById('last-update').textContent='Iniciado: '+fmtNow();
 })();
 
+
+// ── ENLACE ENCUESTA POR CORREO ──
+function generarEnlaceEncuesta(){
+  if(!ordenActiva){showA('No hay orden activa','e');return;}
+  const r=ordenActiva;
+  const payload={id:r.id,serial:r.serial,tipoMant:r.tipoMant,despacho:r.despacho,ciudad:r.ciudad,contratista:r.contratista||'',fechaEjecucion:r.fechaEjecucion||'',actividades:r.actividades||''};
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const url=window.location.href.split('?')[0]+'?encuesta='+encoded;
+  document.getElementById('enc-link-box').style.display='block';
+  document.getElementById('enc-link-input').value=url;
+  document.getElementById('enc-link-copied').style.display='none';
+}
+function copiarEnlace(){
+  const inp=document.getElementById('enc-link-input');
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    const m=document.getElementById('enc-link-copied');m.style.display='block';setTimeout(()=>m.style.display='none',3000);
+  }).catch(()=>{inp.select();document.execCommand('copy');});
+}
+function enviarCorreo(){
+  if(!ordenActiva){showA('No hay orden activa','e');return;}
+  const correo=document.getElementById('g-correo-resp').value.trim();
+  if(!correo){showA('Ingrese el correo del responsable primero','e');return;}
+  generarEnlaceEncuesta();
+  const url=document.getElementById('enc-link-input').value;
+  const r=ordenActiva;
+  const asunto=encodeURIComponent(`Encuesta de satisfacción — Mantenimiento AC ${r.serial} · Rama Judicial Arauca`);
+  const cuerpo=encodeURIComponent(`Estimado/a responsable,\n\nLe solicitamos completar la encuesta de satisfacción sobre el servicio de mantenimiento del equipo serial ${r.serial} (${r.tipoMant}) realizado en ${r.despacho} el ${r.fechaEjecucion||'—'}.\n\nAcceda a la encuesta mediante el siguiente enlace:\n${url}\n\nGracias por su participación.\n\nDirección Seccional Administrativa — Rama Judicial Arauca`);
+  window.open(`mailto:${correo}?subject=${asunto}&body=${cuerpo}`,'_blank');
+}
+function compartirWhatsApp(){
+  if(!ordenActiva){showA('No hay orden activa','e');return;}
+  generarEnlaceEncuesta();
+  const url=document.getElementById('enc-link-input').value;
+  const r=ordenActiva;
+  const msg=encodeURIComponent(`*Encuesta de satisfacción — Rama Judicial Arauca*\n\nEstimado responsable, le solicitamos completar la encuesta de satisfacción sobre el mantenimiento del equipo serial *${r.serial}* (${r.tipoMant}) realizado en ${r.despacho}.\n\n🔗 Enlace:\n${url}`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+}
 // ── Exponer funciones al window (requerido por type="module") ──
 window.goTab = goTab;
 window.actualizarStepper = actualizarStepper;
@@ -723,7 +802,11 @@ window.guardarSolicitud = guardarSolicitud;
 window.guardarEjecucion = guardarEjecucion;
 window.guardarEvaluacion = guardarEvaluacion;
 window.selDecision = selDecision;
-window.guardarDecision = guardarDecision;
+window.generarEnlaceEncuesta = generarEnlaceEncuesta;
+window.copiarEnlace = copiarEnlace;
+window.enviarCorreo = enviarCorreo;
+window.compartirWhatsApp = compartirWhatsApp;
+// guardarDecision unificada en guardarEvaluacion
 window.cancelarPaso = cancelarPaso;
 window.continuarOrden = continuarOrden;
 window.initFirma = initFirma;
