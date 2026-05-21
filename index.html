@@ -933,13 +933,205 @@ function syncEncuesta(){document.querySelectorAll('#enc-opciones label').forEach
 function limpiar(){['f-ciudad','f-inmueble','f-tipo','f-serial','f-tipo-eq','f-marca','f-capacidad','f-ubicacion','f-descripcion'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';if(el.tagName==='SELECT')el.selectedIndex=0;}});const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';document.getElementById('f-despacho').value='';document.getElementById('f-fecha').value=hoy();document.getElementById('grupo-inmueble').style.display='none';document.getElementById('grupo-despacho-arauca').style.display='none';document.getElementById('grupo-despacho-texto').style.display='none';document.getElementById('equipo-info-panel').style.display='none';document.getElementById('grupo-equipo-nuevo').style.display='grid';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';mostrarPaso(1);}
 function miniTimeline(r){const e=r.estadoOrden||'Solicitud';const pasos=[{lbl:'Solicitud',done:true},{lbl:'Ejecución',done:['En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Evaluación',done:['Entregado conforme','No conforme'].includes(e)}];let h='<div class="mtl">';pasos.forEach((p,i)=>{const curr=!p.done&&(i===0||(pasos[i-1]&&pasos[i-1].done));h+=`<div class="mtl-dot ${p.done?'done':curr?'curr':''}"><i class="ti ${p.done?'ti-check':curr?'ti-point':'ti-circle'}" style="font-size:9px"></i></div><span class="mtl-lbl">${p.lbl}</span>`;if(i<2)h+=`<div class="mtl-line ${p.done?'done':''}"></div>`;});return h+'</div>';}
 function btnSiguiente(r){const e=r.estadoOrden||'Solicitud';if(e==='Solicitud')return`<button class="btn btn-p btn-sm" onclick="continuarOrden('${r.id}',2)"><i class="ti ti-tool"></i>Registrar ejecución</button>`;if(e==='En Mantenimiento')return`<button class="btn btn-sm btn-w" onclick="continuarOrden('${r.id}',3)"><i class="ti ti-star"></i>Registrar evaluación</button>`;return'';}
-function renderHist(){const municipios=[...new Set(regs.map(r=>r.ciudad).filter(Boolean))];const selMun=document.getElementById('fil-municipio'),curMun=selMun.value;selMun.innerHTML='<option value="">Todos los municipios</option>'+municipios.map(m=>`<option value="${m}"${m===curMun?' selected':''}>${m}</option>`).join('');const q=(document.getElementById('inp-filtro').value||'').toLowerCase(),filEst=document.getElementById('fil-estado').value,filMun=document.getElementById('fil-municipio').value,filTipo=document.getElementById('fil-tipo').value;let data=regs.filter(r=>{const mQ=!q||JSON.stringify(r).toLowerCase().includes(q),mE=!filEst||(r.estadoOrden||'Solicitud')===filEst,mM=!filMun||r.ciudad===filMun,mT=!filTipo||r.tipoMant===filTipo;return mQ&&mE&&mM&&mT;});const c=document.getElementById('tabla-hist');if(!data.length){c.innerHTML='<div class="empty"><i class="ti ti-database"></i>Sin órdenes que coincidan.</div>';return;}const activas=data.filter(r=>!['Entregado conforme','No conforme'].includes(r.estadoOrden));const cerradas=data.filter(r=>['Entregado conforme','No conforme'].includes(r.estadoOrden));const renderCard=r=>{const sig=btnSiguiente(r);const cerrada=!sig;return`<div class="oc ${cerrada?'oc-cerrada':r.estadoOrden==='No conforme'?'oc-nconf':''}"><div class="oc-head"><div style="flex:1;min-width:0"><div class="oc-title"><span style="font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--c1);background:var(--blue-bg);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span>`:''}${bdgTipo(r.tipoMant)}${bdgOrden(r.estadoOrden||'Solicitud')}</div><div class="oc-sub">${r.despacho||'—'} · ${r.ciudad||'—'} · ${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</div>${r.descripcion?`<div class="oc-desc">${r.descripcion.substring(0,100)}${r.descripcion.length>100?'...':''}</div>`:''}${miniTimeline(r)}</div><div class="oc-actions">${sig}<button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button><button class="btn btn-sm" onclick="abrirEditar('${r.id}')" style="background:var(--blue-bg);color:var(--c2);border-color:var(--blue-b)"><i class="ti ti-edit"></i></button><button class="btn btn-sm" onclick="eliminarReg('${r.id}')" style="background:var(--red-bg);color:var(--red);border-color:var(--red-b)"><i class="ti ti-trash"></i></button><button class="btn btn-sm" onclick="imprimirResumenId('${r.id}')"><i class="ti ti-printer"></i></button></div></div>${(r.tipoEq||r.marca||r.contratista)?`<div class="oc-foot">${r.tipoEq||r.marca?`<span><i class="ti ti-wind" style="margin-right:3px"></i>${[r.tipoEq,r.marca,r.modelo,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')}</span>`:''}${r.contratista?`<span><i class="ti ti-user-check" style="margin-right:3px"></i>${r.contratista}</span>`:''}${r.responsableRecibe?`<span><i class="ti ti-pen" style="margin-right:3px"></i>${r.responsableRecibe}</span>`:''}${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]}"><i class="ti ti-star-filled" style="margin-right:3px"></i>${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:''}</div>`:''}  </div>`;}; let html='';if(activas.length){html+=`<div class="oc-group-lbl"><i class="ti ti-clock"></i>En proceso (${activas.length})</div>`;html+=activas.map(renderCard).join('');}if(cerradas.length){html+=`<div class="oc-group-lbl" style="margin-top:14px"><i class="ti ti-check"></i>Finalizadas (${cerradas.length})</div>`;html+=cerradas.map(renderCard).join('');}c.innerHTML=html;}
+function renderHist(){const municipios=[...new Set(regs.map(r=>r.ciudad).filter(Boolean))];const selMun=document.getElementById('fil-municipio'),curMun=selMun.value;selMun.innerHTML='<option value="">Todos los municipios</option>'+municipios.map(m=>`<option value="${m}"${m===curMun?' selected':''}>${m}</option>`).join('');const q=(document.getElementById('inp-filtro').value||'').toLowerCase(),filEst=document.getElementById('fil-estado').value,filMun=document.getElementById('fil-municipio').value,filTipo=document.getElementById('fil-tipo').value;let data=regs.filter(r=>{const mQ=!q||JSON.stringify(r).toLowerCase().includes(q),mE=!filEst||(r.estadoOrden||'Solicitud')===filEst,mM=!filMun||r.ciudad===filMun,mT=!filTipo||r.tipoMant===filTipo;return mQ&&mE&&mM&&mT;});const c=document.getElementById('tabla-hist');if(!data.length){c.innerHTML='<div class="empty"><i class="ti ti-database"></i>Sin órdenes que coincidan.</div>';return;}const activas=data.filter(r=>!['Entregado conforme','No conforme'].includes(r.estadoOrden));const cerradas=data.filter(r=>['Entregado conforme','No conforme'].includes(r.estadoOrden));const renderCard=r=>{const sig=btnSiguiente(r);const cerrada=!sig;return`<div class="oc ${cerrada?'oc-cerrada':r.estadoOrden==='No conforme'?'oc-nconf':''}"><div class="oc-head"><div style="flex:1;min-width:0"><div class="oc-title"><span style="font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--c1);background:var(--blue-bg);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span>`:`<button class="btn btn-sm" style="padding:2px 8px;font-size:10px;background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)" onclick="abrirEditar('${r.id}')" title="Asignar número de serie"><i class="ti ti-barcode"></i> Asignar serial</button>`}${bdgTipo(r.tipoMant)}${bdgOrden(r.estadoOrden||'Solicitud')}</div><div class="oc-sub">${r.despacho||'—'} · ${r.ciudad||'—'} · ${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</div>${r.descripcion?`<div class="oc-desc">${r.descripcion.substring(0,100)}${r.descripcion.length>100?'...':''}</div>`:''}${miniTimeline(r)}</div><div class="oc-actions">${sig}<button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button><button class="btn btn-sm" onclick="abrirEditar('${r.id}')" style="background:var(--blue-bg);color:var(--c2);border-color:var(--blue-b)"><i class="ti ti-edit"></i></button><button class="btn btn-sm" onclick="eliminarReg('${r.id}')" style="background:var(--red-bg);color:var(--red);border-color:var(--red-b)"><i class="ti ti-trash"></i></button><button class="btn btn-sm" onclick="imprimirResumenId('${r.id}')"><i class="ti ti-printer"></i></button></div></div>${(r.tipoEq||r.marca||r.contratista)?`<div class="oc-foot">${r.tipoEq||r.marca?`<span><i class="ti ti-wind" style="margin-right:3px"></i>${[r.tipoEq,r.marca,r.modelo,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')}</span>`:''}${r.contratista?`<span><i class="ti ti-user-check" style="margin-right:3px"></i>${r.contratista}</span>`:''}${r.responsableRecibe?`<span><i class="ti ti-pen" style="margin-right:3px"></i>${r.responsableRecibe}</span>`:''}${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]}"><i class="ti ti-star-filled" style="margin-right:3px"></i>${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:''}</div>`:''}  </div>`;}; let html='';if(activas.length){html+=`<div class="oc-group-lbl"><i class="ti ti-clock"></i>En proceso (${activas.length})</div>`;html+=activas.map(renderCard).join('');}if(cerradas.length){html+=`<div class="oc-group-lbl" style="margin-top:14px"><i class="ti ti-check"></i>Finalizadas (${cerradas.length})</div>`;html+=cerradas.map(renderCard).join('');}c.innerHTML=html;}
 async function eliminarReg(id){const r=regs.find(x=>x.id===id);if(!r)return;if(!confirm(`¿Eliminar la orden de ${r.serial} — ${r.despacho}?\n\nEsta acción no se puede deshacer.`))return;await deleteData(id);}
 function buscarGlobal(){const q=document.getElementById('inp-bus').value.trim().toUpperCase();const c=document.getElementById('res-bus');if(!q){c.innerHTML='<div class="empty"><i class="ti ti-search"></i>Escriba un número de serie</div>';return;}const res=regs.filter(r=>(r.serial||'').toUpperCase().includes(q));if(!res.length){c.innerHTML=`<div class="empty"><i class="ti ti-file-off"></i>No se encontraron registros para "${q}"</div>`;return;}const primero=res.sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];let h=`<div style="background:var(--blue-bg);border-radius:9px;padding:10px 12px;margin-bottom:10px;border:.5px solid var(--blue-b)"><div style="font-size:10px;font-weight:700;color:var(--c1);margin-bottom:6px">DATOS DEL EQUIPO</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-size:11px">${[['Serial',primero.serial],['Tipo',primero.tipoEq||'—'],['Marca',primero.marca||'—'],['Modelo',primero.modelo||'—'],['Capacidad',primero.capacidad?primero.capacidad+' BTU':'—'],['Ubicación',primero.ubicacion||'—'],['Ciudad',primero.ciudad||'—']].map(([l,v])=>`<div><div style="color:var(--text2);font-size:10px">${l}</div><div style="font-weight:600;color:var(--c1)">${v}</div></div>`).join('')}</div></div>`;h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:8px">${res.length} registro(s) encontrado(s)</div>`;h+='<div class="tw"><table><thead><tr><th>N° Orden</th><th>Tipo mant.</th><th>Solicitud</th><th>Ejecución</th><th>Contratista</th><th>Responsable</th><th>Satisfacción</th><th>Estado</th><th></th></tr></thead><tbody>'+res.map(r=>`<tr><td style="font-family:monospace;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</td><td>${bdgTipo(r.tipoMant)}</td><td>${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</td><td>${r.fechaEjecucion?fmt(r.fechaEjecucion):'—'}</td><td>${r.contratista||'—'}</td><td>${r.responsableRecibe||'—'}</td><td>${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]};font-weight:600">${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:'—'}</td><td>${bdgOrden(r.estadoOrden||'Solicitud')}</td><td style="white-space:nowrap"><button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button> <button class="btn btn-sm btn-p" onclick="usarEquipoEnNuevaOrden('${r.serial}')" title="Usar este equipo en nueva orden"><i class="ti ti-plus"></i>Nueva orden</button></td></tr>`).join('')+'</tbody></table></div>';c.innerHTML=h;}
-function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span style="font-family:monospace;font-size:12px;font-weight:700;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px;margin-right:6px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span> &nbsp;`:''} ${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=dr('N° de Orden',`<span style="font-family:monospace;font-size:14px;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</span>`);h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-wind');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad?r.capacidad+' BTU':'');h+=dr('Ubicación',r.ubicacion);if(r.contratista||r.actividades){h+=sec('Paso 2 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
+function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span style="font-family:monospace;font-size:12px;font-weight:700;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px;margin-right:6px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span> &nbsp;`:''} ${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=dr('N° de Orden',`<span style="font-family:monospace;font-size:14px;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</span>`);if(!r.serial)h+=`<div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:7px;padding:8px 12px;margin:6px 0;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:8px"><i class="ti ti-barcode"></i><span>Esta orden no tiene número de serie asignado.</span><button class="btn btn-sm" style="margin-left:auto;background:var(--amber);color:#fff;border-color:var(--amber)" onclick="cerrar();abrirEditar('${r.id}')"><i class="ti ti-barcode"></i> Asignar serial</button></div>`;h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-wind');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad?r.capacidad+' BTU':'');h+=dr('Ubicación',r.ubicacion);if(r.contratista||r.actividades){h+=sec('Paso 2 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
 function cerrar(){document.getElementById('modal').classList.remove('open');raReg=null;}
-function abrirEditar(id){const r=regs.find(x=>x.id===id);if(!r)return;document.getElementById('me-title').innerHTML=`<i class="ti ti-edit"></i> Editar — <span class="serial-tag">${r.serial}</span>`;const sel=(arr,val)=>arr.map(v=>`<option value="${v}"${v===val?' selected':''}>${v}</option>`).join('');const TM=['Preventivo','Correctivo','Preventivo y Correctivo','Instalación','Desmonte'];const TE=['Mini-split','Multi-V','Cassete','Pared','Ventana','Otro'];const EO=['Solicitud','En Mantenimiento','Pendiente Evaluación','Entregado conforme','No conforme'];document.getElementById('me-body').innerHTML=`<div class="alert" id="me-alert" style="margin-bottom:10px"></div><div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--amber);margin-bottom:12px"><i class="ti ti-alert-triangle"></i> Edite los campos necesarios. La línea de tiempo no se modifica para preservar la trazabilidad.</div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Serial</label><input type="text" id="me-serial" value="${r.serial||''}" readonly style="opacity:.7"></div><div class="field"><label>Tipo mantenimiento</label><select id="me-tipomant">${sel(TM,r.tipoMant)}</select></div><div class="field"><label>Fecha solicitud</label><input type="date" id="me-fecha" value="${r.fechaSolicitud||''}"></div></div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Tipo equipo</label><select id="me-tipoeq">${sel(TE,r.tipoEq)}</select></div><div class="field"><label>Marca</label><input type="text" id="me-marca" value="${(r.marca||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Modelo</label><input type="text" id="me-modelo" value="${(r.modelo||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Capacidad (BTU)</label><input type="text" id="me-cap" value="${r.capacidad||''}"></div><div class="field"><label>Ubicación</label><input type="text" id="me-ubic" value="${(r.ubicacion||'').replace(/"/g,'&quot;')}"></div></div><div class="fg fg1" style="margin-bottom:10px"><div class="field"><label>Descripción</label><textarea id="me-desc" style="min-height:55px">${r.descripcion||''}</textarea></div></div><div class="fg fg3" style="margin-bottom:10px"><div class="field"><label>Contratista</label><input type="text" id="me-cont" value="${(r.contratista||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Fecha ejecución</label><input type="date" id="me-fechaej" value="${r.fechaEjecucion||''}"></div><div class="field"><label>Estado del proceso</label><select id="me-estord">${sel(EO,r.estadoOrden||'Solicitud')}</select></div></div><div class="fg fg1" style="margin-bottom:10px"><div class="field"><label>Actividades realizadas</label><textarea id="me-activ" style="min-height:55px">${r.actividades||''}</textarea></div></div><div style="display:flex;gap:8px"><button class="btn btn-s" onclick="guardarEdicion('${id}')"><i class="ti ti-device-floppy"></i>Guardar</button><button class="btn" onclick="cerrarEditar()"><i class="ti ti-x"></i>Cancelar</button></div>`;document.getElementById('modal-editar').classList.add('open');}
-async function guardarEdicion(id){const r=regs.find(x=>x.id===id);if(!r)return;r.tipoMant=document.getElementById('me-tipomant').value;r.fechaSolicitud=document.getElementById('me-fecha').value;r.tipoEq=document.getElementById('me-tipoeq').value;r.marca=document.getElementById('me-marca').value;r.modelo=document.getElementById('me-modelo').value;r.capacidad=document.getElementById('me-cap').value;r.ubicacion=document.getElementById('me-ubic').value;r.descripcion=document.getElementById('me-desc').value;r.contratista=document.getElementById('me-cont').value;r.fechaEjecucion=document.getElementById('me-fechaej').value;r.estadoOrden=document.getElementById('me-estord').value;r.estado=r.estadoOrden;r.actividades=document.getElementById('me-activ').value;r.timeline.push({fecha:fmtNow(),evento:'Registro editado manualmente',tipo:'i',detalle:`Estado: ${r.estadoOrden}`});await saveData(r,false);const el=document.getElementById('me-alert');el.className='alert show as';el.innerHTML='<i class="ti ti-circle-check"></i> Cambios guardados';setTimeout(()=>{cerrarEditar();renderAll();},900);}
+function abrirEditar(id){
+  const r=regs.find(x=>x.id===id); if(!r) return;
+  document.getElementById('me-title').innerHTML=
+    `<i class="ti ti-edit"></i> Editar orden &nbsp;<span style="font-family:monospace;font-size:12px;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 9px;border-radius:5px">${fmtConsecutivo(r)}</span>`;
+  const sel=(arr,val)=>arr.map(v=>`<option value="${v}"${v===val?' selected':''}>${v}</option>`).join('');
+  const TM=['Preventivo','Correctivo','Instalación','Desmonte'];
+  const TE=['Mini-split','Multi-V','Cassete','Pared','Ventana','Otro'];
+  const EO=['Solicitud','En Mantenimiento','Entregado conforme','No conforme'];
+
+  document.getElementById('me-body').innerHTML=`
+    <div class="alert" id="me-alert" style="margin-bottom:10px"></div>
+    <div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--amber);margin-bottom:12px">
+      <i class="ti ti-alert-triangle"></i> Edite los campos necesarios. La línea de tiempo se actualiza automáticamente.
+    </div>
+
+    <!-- SECCIÓN NÚMERO DE SERIE -->
+    <div style="background:var(--blue-bg);border:.5px solid var(--blue-b);border-radius:9px;padding:11px 14px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--c1);margin-bottom:8px;display:flex;align-items:center;gap:5px">
+        <i class="ti ti-barcode"></i> NÚMERO DE SERIE DEL EQUIPO
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div class="field" style="flex:1;min-width:160px">
+          <label>N° de serie actual</label>
+          <input type="text" id="me-serial" value="${r.serial||''}"
+            placeholder="Ingrese el número de serie"
+            oninput="buscarSerialEnEdicion()"
+            style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:1px">
+        </div>
+        <button class="btn btn-p btn-sm" style="padding:8px 14px" onclick="buscarSerialEnEdicion()">
+          <i class="ti ti-search"></i> Buscar equipo
+        </button>
+      </div>
+      <!-- Panel resultado búsqueda en edición -->
+      <div id="me-serial-resultado" style="margin-top:8px"></div>
+    </div>
+
+    <!-- DATOS DEL EQUIPO -->
+    <div class="fg fg2" style="margin-bottom:10px">
+      <div class="field"><label>Tipo equipo</label><select id="me-tipoeq">${sel(TE,r.tipoEq)}</select></div>
+      <div class="field"><label>Marca</label><input type="text" id="me-marca" value="${(r.marca||'').replace(/"/g,'&quot;')}"></div>
+      <div class="field"><label>Capacidad (BTU)</label><input type="text" id="me-cap" value="${r.capacidad||''}"></div>
+      <div class="field"><label>Ubicación</label><input type="text" id="me-ubic" value="${(r.ubicacion||'').replace(/"/g,'&quot;')}"></div>
+    </div>
+
+    <!-- DATOS DE LA SOLICITUD -->
+    <div class="fg fg3" style="margin-bottom:10px">
+      <div class="field"><label>Tipo mantenimiento</label><select id="me-tipomant">${sel(TM,r.tipoMant)}</select></div>
+      <div class="field"><label>Fecha solicitud</label><input type="date" id="me-fecha" value="${r.fechaSolicitud||''}"></div>
+      <div class="field"><label>Estado del proceso</label><select id="me-estord">${sel(EO,r.estadoOrden||'Solicitud')}</select></div>
+    </div>
+    <div class="fg fg1" style="margin-bottom:10px">
+      <div class="field"><label>Descripción</label><textarea id="me-desc" style="min-height:55px">${r.descripcion||''}</textarea></div>
+    </div>
+
+    <!-- EJECUCIÓN -->
+    <div class="fg fg2" style="margin-bottom:10px">
+      <div class="field"><label>Contratista</label><input type="text" id="me-cont" value="${(r.contratista||'').replace(/"/g,'&quot;')}"></div>
+      <div class="field"><label>Fecha ejecución</label><input type="date" id="me-fechaej" value="${r.fechaEjecucion||''}"></div>
+    </div>
+    <div class="fg fg1" style="margin-bottom:12px">
+      <div class="field"><label>Actividades realizadas</label><textarea id="me-activ" style="min-height:55px">${r.actividades||''}</textarea></div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-s" onclick="guardarEdicion('${id}')"><i class="ti ti-device-floppy"></i>Guardar cambios</button>
+      <button class="btn" onclick="cerrarEditar()"><i class="ti ti-x"></i>Cancelar</button>
+    </div>`;
+
+  // Si ya tiene serial, mostrar info del equipo
+  if(r.serial) setTimeout(()=>buscarSerialEnEdicion(),80);
+
+  document.getElementById('modal-editar').classList.add('open');
+}
+
+// Buscar equipo dentro del modal de edición
+function buscarSerialEnEdicion(){
+  const serialInput = document.getElementById('me-serial');
+  if(!serialInput) return;
+  const serial = (serialInput.value||'').trim().toUpperCase();
+  const res = document.getElementById('me-serial-resultado');
+  if(!res) return;
+
+  if(!serial){ res.innerHTML=''; return; }
+
+  // Buscar todos los registros con ese serial
+  const encontrados = [...new Map(
+    regs.filter(r=>(r.serial||'').toUpperCase().includes(serial))
+        .sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)
+        .map(r=>[r.serial.toUpperCase(),r])
+  ).values()];
+
+  if(!encontrados.length){
+    res.innerHTML=`<div style="font-size:11px;color:var(--text3);padding:6px 0"><i class="ti ti-info-circle"></i> Serial no encontrado en registros existentes — se guardará como nuevo equipo.</div>`;
+    return;
+  }
+
+  // Exacto
+  const exacto = encontrados.find(r=>(r.serial||'').toUpperCase()===serial);
+  if(exacto){
+    res.innerHTML=renderEquipoEdicion(exacto);
+  } else {
+    // Sugerencias
+    res.innerHTML=`<div style="font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600">Seriales encontrados — haga clic para seleccionar:</div>`+
+      encontrados.slice(0,5).map(r=>`
+        <div onclick="aplicarEquipoEdicion('${r.serial}')" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;border:.5px solid var(--border);margin-bottom:4px;background:#fff;transition:all .15s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='#fff'">
+          <span style="font-family:monospace;font-weight:700;font-size:12px;color:var(--c1);background:var(--blue-bg);padding:2px 8px;border-radius:4px">${r.serial}</span>
+          <span style="font-size:11px;color:var(--text2)">${[r.tipoEq,r.marca,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')||'Sin datos'}</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--text3)">${r.despacho||'—'}</span>
+        </div>`).join('');
+  }
+}
+
+function renderEquipoEdicion(r){
+  const historial = regs.filter(x=>(x.serial||'').toUpperCase()===(r.serial||'').toUpperCase())
+                        .sort((a,b)=>b.creadoEn>a.creadoEn?1:-1);
+  return `
+    <div style="background:#fff;border:.5px solid var(--green-b);border-radius:8px;padding:10px 12px;margin-top:4px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <i class="ti ti-circle-check" style="color:var(--green);font-size:15px"></i>
+        <span style="font-size:11px;font-weight:700;color:var(--green)">Equipo encontrado</span>
+        <button onclick="aplicarEquipoEdicion('${r.serial}')" class="btn btn-s btn-sm" style="margin-left:auto;padding:3px 10px">
+          <i class="ti ti-arrow-right"></i> Aplicar a esta orden
+        </button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;margin-bottom:8px">
+        <div><div style="color:var(--text2);font-size:10px">Tipo</div><div style="font-weight:600">${r.tipoEq||'—'}</div></div>
+        <div><div style="color:var(--text2);font-size:10px">Marca</div><div style="font-weight:600">${r.marca||'—'}</div></div>
+        <div><div style="color:var(--text2);font-size:10px">Capacidad</div><div style="font-weight:600">${r.capacidad?r.capacidad+' BTU':'—'}</div></div>
+        <div><div style="color:var(--text2);font-size:10px">Ubicación</div><div style="font-weight:600;font-size:10px">${r.ubicacion||'—'}</div></div>
+      </div>
+      <div style="font-size:10px;color:var(--text2);font-weight:600;margin-bottom:4px">Historial (${historial.length} orden${historial.length!==1?'es':''}):</div>
+      <div style="max-height:100px;overflow-y:auto">
+        ${historial.map(h=>`
+          <div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:.5px solid var(--border);font-size:10px">
+            <span style="font-family:monospace;color:var(--c1);font-weight:700;flex-shrink:0">${fmtConsecutivo(h)}</span>
+            ${bdgTipo(h.tipoMant)}
+            <span style="color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.despacho||'—'}</span>
+            <span style="color:var(--text3);flex-shrink:0">${h.fechaSolicitud?fmt(h.fechaSolicitud):'—'}</span>
+            ${bdgOrden(h.estadoOrden||'Solicitud')}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function aplicarEquipoEdicion(serial){
+  const r = regs.filter(x=>(x.serial||'').toUpperCase()===serial.toUpperCase())
+                .sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];
+  if(!r) return;
+  // Rellenar el campo serial con el valor exacto
+  const inp=document.getElementById('me-serial');
+  if(inp) inp.value=r.serial;
+  // Rellenar datos del equipo
+  const tipoeq=document.getElementById('me-tipoeq');
+  const marca=document.getElementById('me-marca');
+  const cap=document.getElementById('me-cap');
+  const ubic=document.getElementById('me-ubic');
+  if(tipoeq) tipoeq.value=r.tipoEq||'';
+  if(marca) marca.value=r.marca||'';
+  if(cap) cap.value=r.capacidad||'';
+  if(ubic) ubic.value=r.ubicacion||'';
+  // Actualizar resultado con panel de confirmación
+  const res=document.getElementById('me-serial-resultado');
+  if(res) res.innerHTML=renderEquipoEdicion(r);
+  // Feedback visual
+  const alertEl=document.getElementById('me-alert');
+  if(alertEl){alertEl.className='alert show as';alertEl.innerHTML='<i class="ti ti-circle-check"></i> Equipo '+r.serial+' aplicado — revise y guarde los cambios';}
+}
+async function guardarEdicion(id){
+  const r=regs.find(x=>x.id===id); if(!r) return;
+  const serialAnterior=r.serial||'';
+  const serialNuevo=(document.getElementById('me-serial').value||'').trim().toUpperCase();
+  r.serial=serialNuevo;
+  r.tipoMant=document.getElementById('me-tipomant').value;
+  r.fechaSolicitud=document.getElementById('me-fecha').value;
+  r.tipoEq=document.getElementById('me-tipoeq').value;
+  r.marca=document.getElementById('me-marca').value;
+  r.capacidad=document.getElementById('me-cap').value;
+  r.ubicacion=document.getElementById('me-ubic').value;
+  r.descripcion=document.getElementById('me-desc').value;
+  r.contratista=document.getElementById('me-cont').value;
+  r.fechaEjecucion=document.getElementById('me-fechaej').value;
+  r.estadoOrden=document.getElementById('me-estord').value;
+  r.estado=r.estadoOrden;
+  r.actividades=document.getElementById('me-activ').value;
+  const detalle=serialNuevo!==serialAnterior
+    ? `Serial: ${serialAnterior||'(vacío)'} → ${serialNuevo||'(vacío)'} | Estado: ${r.estadoOrden}`
+    : `Estado: ${r.estadoOrden}`;
+  r.timeline.push({fecha:fmtNow(),evento:'Registro editado manualmente',tipo:'i',detalle});
+  await saveData(r,false);
+  const el=document.getElementById('me-alert');
+  el.className='alert show as';
+  el.innerHTML='<i class="ti ti-circle-check"></i> Cambios guardados'+(serialNuevo!==serialAnterior?` — Serial actualizado a <strong>${serialNuevo}</strong>`:'');
+  setTimeout(()=>{cerrarEditar();renderAll();},1200);
+}
 function cerrarEditar(){document.getElementById('modal-editar').classList.remove('open');}
 function exportar(){if(!regs.length){alert('No hay datos para exportar');return;}const enc=s=>`"${(s||'').toString().replace(/"/g,"''")}"`; const cab='ID,Serial,Ciudad,Inmueble,Despacho,Tipo Mant.,Fecha Solicitud,Tipo Equipo,Marca,Modelo,Capacidad,Ubicación,Estado Orden,Contratista,Fecha Ejecución,Actividades,Responsable Recibe,Cargo,Satisfacción,Decisión\n';const fil=regs.map(r=>[r.id,r.serial,r.ciudad,r.inmueble,enc(r.despacho),r.tipoMant,r.fechaSolicitud||'',r.tipoEq||'',r.marca||'',r.modelo||'',r.capacidad||'',enc(r.ubicacion||''),r.estadoOrden||'',r.contratista||'',r.fechaEjecucion||'',enc(r.actividades||''),r.responsableRecibe||'',r.cargoResp||'',r.satisfaccion?SATS[r.satisfaccion]:'',r.decision||''].join(',')).join('\n');const blob=new Blob(['\uFEFF'+cab+fil],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`SIGE_AC_${hoy()}.csv`;a.click();}
 function imprimirResumen(){if(raReg)imprimirResumenId(raReg.id);}
@@ -1380,6 +1572,9 @@ window.abrirMod = abrirMod;
 window.cerrar = cerrar;
 window.abrirEditar = abrirEditar;
 window.guardarEdicion = guardarEdicion;
+window.buscarSerialEnEdicion = buscarSerialEnEdicion;
+window.aplicarEquipoEdicion = aplicarEquipoEdicion;
+window.renderEquipoEdicion = renderEquipoEdicion;
 window.cerrarEditar = cerrarEditar;
 window.exportar = exportar;
 window.imprimirResumen = imprimirResumen;
