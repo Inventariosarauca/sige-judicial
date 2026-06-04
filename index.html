@@ -112,7 +112,7 @@ tr:hover td{background:#f8fafc}
 .evl{font-size:11px;font-weight:700;min-width:28px;text-align:right;color:var(--text2)}
 .tli-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:.5px solid var(--border)}
 .tli-row:last-child{border-bottom:none}
-.storage-info{background:linear-gradient(135deg,#e8f0fa,#f0f7ff);border:.5px solid var(--blue-b);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--c1);display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.storage-info{background:linear-gradient(135deg,#e8f0fa,#f0f7ff);border:.5px solid var(--blue-b);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--c1);display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
 .enc-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:2px solid var(--border);cursor:pointer;margin-bottom:8px;transition:all .18s;background:#fff;width:100%;text-align:left;font-family:inherit}
 .enc-opt:hover{border-color:var(--c2);background:var(--blue-bg)}
 .steps-hdr{display:flex;align-items:center;gap:0;background:#fff;border:.5px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:1rem;overflow-x:auto}
@@ -175,6 +175,92 @@ tr:hover td{background:#f8fafc}
 </style>
 </head>
 <body>
+<!-- ═══════ VISTA PÚBLICA DE ENCUESTA (solo con ?encuesta=) ═══════ -->
+<div id="vista-encuesta" style="display:none;min-height:100vh;background:linear-gradient(135deg,#1a3a5c,#2563a8);padding:20px 14px">
+  <div style="max-width:560px;margin:0 auto">
+    <!-- Encabezado -->
+    <div style="text-align:center;color:#fff;margin-bottom:18px;padding-top:10px">
+      <div style="width:54px;height:54px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px"><i class="ti ti-clipboard-check"></i></div>
+      <h1 style="font-size:17px;font-weight:600">Encuesta de Satisfacción del Servicio</h1>
+      <p style="font-size:12px;opacity:.8;margin-top:4px">Dirección Seccional Administrativa — Rama Judicial Arauca</p>
+    </div>
+
+    <!-- Tarjeta de la encuesta -->
+    <div style="background:#fff;border-radius:16px;padding:1.4rem;box-shadow:0 12px 40px rgba(0,0,0,.25)">
+      <!-- Datos de la orden -->
+      <div id="enc-pub-datos" style="background:var(--blue-bg);border:.5px solid var(--blue-b);border-radius:10px;padding:12px 14px;margin-bottom:16px"></div>
+
+      <!-- Formulario encuesta -->
+      <div id="enc-pub-form">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">
+          <i class="ti ti-star" style="color:#f59e0b"></i> Califique el servicio recibido
+        </div>
+        <div id="enc-pub-opciones" style="margin-bottom:16px"></div>
+
+        <div class="fg fg1" style="margin-bottom:12px">
+          <div class="field"><label>Nombre del responsable que recibe *</label><input type="text" id="enc-pub-resp" placeholder="Nombre completo" oninput="chkEncPubReady()"></div>
+        </div>
+        <div class="fg fg1" style="margin-bottom:12px">
+          <div class="field"><label>Cargo</label><input type="text" id="enc-pub-cargo" placeholder="Juez, Secretario, Director..."></div>
+        </div>
+        <div class="fg fg1" style="margin-bottom:14px">
+          <div class="field"><label>Observaciones sobre el servicio</label><textarea id="enc-pub-obs" placeholder="Comentarios, aspectos a mejorar..." style="min-height:60px"></textarea></div>
+        </div>
+
+        <!-- Firma -->
+        <div class="firma-wrap" style="margin-bottom:16px">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:7px"><i class="ti ti-pen"></i> Firme como constancia de recibido — dibuje con el mouse o el dedo</div>
+          <canvas id="enc-pub-firma" width="480" height="110" style="max-width:100%"></canvas>
+          <div style="display:flex;gap:7px;justify-content:center;margin-top:8px">
+            <button class="btn btn-sm" onclick="clrFirmaPub()"><i class="ti ti-eraser"></i>Limpiar firma</button>
+            <span id="enc-pub-firma-estado" style="font-size:11px;align-self:center;color:var(--green)"></span>
+          </div>
+        </div>
+
+        <!-- Decisión conformidad -->
+        <div style="border-top:.5px solid var(--border);padding-top:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px"><i class="ti ti-scale"></i> ¿Recibe el servicio conforme?</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div id="enc-pub-conf" class="dec-card" onclick="encPubDecision('conforme')">
+              <div class="dec-icon" style="background:var(--green-bg);color:var(--green)"><i class="ti ti-circle-check" style="font-size:22px"></i></div>
+              <div class="dec-title">✅ Conforme</div>
+              <div class="dec-desc">El servicio fue recibido a satisfacción.</div>
+            </div>
+            <div id="enc-pub-nconf" class="dec-card" onclick="encPubDecision('no-conforme')">
+              <div class="dec-icon" style="background:var(--red-bg);color:var(--red)"><i class="ti ti-circle-x" style="font-size:22px"></i></div>
+              <div class="dec-title">❌ No conforme</div>
+              <div class="dec-desc">El servicio no cumple lo esperado.</div>
+            </div>
+          </div>
+          <div id="enc-pub-inconf" style="display:none;background:var(--red-bg);border:.5px solid var(--red-b);border-radius:8px;padding:11px 14px;margin-top:10px">
+            <div class="field"><label>Motivo de la inconformidad *</label><textarea id="enc-pub-motivo" placeholder="Describa el motivo..." style="min-height:60px"></textarea></div>
+          </div>
+        </div>
+
+        <button class="btn btn-p" style="width:100%;justify-content:center;padding:11px" id="enc-pub-enviar" onclick="enviarEncuestaPublica()" disabled style="opacity:.5">
+          <i class="ti ti-send"></i> Enviar evaluación
+        </button>
+      </div>
+
+      <!-- Mensaje de éxito -->
+      <div id="enc-pub-exito" style="display:none;text-align:center;padding:30px 10px">
+        <div style="width:64px;height:64px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:30px;color:var(--green)"><i class="ti ti-circle-check"></i></div>
+        <div style="font-size:17px;font-weight:600;color:var(--text);margin-bottom:8px">¡Gracias por su evaluación!</div>
+        <div style="font-size:13px;color:var(--text2)">Su respuesta ha sido registrada correctamente.</div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div id="enc-pub-error" style="display:none;text-align:center;padding:30px 10px">
+        <div style="width:64px;height:64px;background:var(--red-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:30px;color:var(--red)"><i class="ti ti-alert-triangle"></i></div>
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Enlace no válido</div>
+        <div style="font-size:13px;color:var(--text2)" id="enc-pub-error-msg">No se pudo cargar la información de la orden de servicio.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:rgba(255,255,255,.5);font-size:10px;margin-top:14px">SIGE — Sistema de Gestión de Mantenimiento · Rama Judicial Arauca</div>
+  </div>
+</div>
+
 <div class="app">
   <div class="header">
     <div class="hicon"><i class="ti ti-wind"></i></div>
@@ -565,7 +651,19 @@ tr:hover td{background:#f8fafc}
   <div id="panel-config" class="panel">
     <div class="card">
       <div class="slbl"><i class="ti ti-database"></i>Configuración de Firebase Firestore</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:14px">Conecta tu base de datos Firebase Firestore para que los datos se guarden en la nube y sean accesibles desde cualquier dispositivo. Si no configuras Firebase, los datos se guardan solo en este navegador.</p>
+      <!-- Estado de configuración embebida -->
+      <div id="cfg-status-panel" style="border-radius:9px;padding:11px 14px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;background:var(--green-bg);border:.5px solid var(--green-b)">
+        <i class="ti ti-code" style="font-size:18px;color:var(--green);flex-shrink:0;margin-top:1px"></i>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">Configuración embebida en el archivo</div>
+          <div style="font-size:11px;color:var(--green);line-height:1.7">
+            La configuración Firebase está guardada directamente en el código del archivo HTML.
+            El sistema se conectará <strong>automáticamente</strong> en cualquier dispositivo o red sin configuración adicional.<br>
+            Para cambiarla: edite el bloque <code style="background:#d1fae5;padding:1px 5px;border-radius:3px">FB_CONFIG</code> al inicio del script en el archivo HTML.
+          </div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:14px">También puede pegar una nueva configuración abajo y hacer clic en <strong>Conectar</strong> para cambiar de proyecto Firebase en esta sesión.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div style="background:var(--green-bg);border:.5px solid var(--green-b);border-radius:10px;padding:12px 14px">
@@ -649,6 +747,21 @@ tr:hover td{background:#f8fafc}
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,orderBy,Timestamp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+// ══════════════════════════════════════════════════════
+// CONFIGURACIÓN FIREBASE — edite solo esta sección
+// Pegue aquí su firebaseConfig y el sistema se conectará
+// automáticamente en cualquier dispositivo o red
+// ══════════════════════════════════════════════════════
+const FB_CONFIG = {
+  apiKey:            "AIzaSyDx5Mqy2Tq2fKJer6-iHt54qKYxKA-zcl4",
+  authDomain:        "sige-judicial-arauca.firebaseapp.com",
+  projectId:         "sige-judicial-arauca",
+  storageBucket:     "sige-judicial-arauca.firebasestorage.app",
+  messagingSenderId: "268823929652",
+  appId:             "1:268823929652:web:eb507d87a3163b9af87b61"
+};
+// ══════════════════════════════════════════════════════
+
 const STORE_KEY='sige_ac_v1';
 const INMUEBLES={'Palacio de Justicia Calle 21':['Juzgado de Pequeñas Causas Laborales','Ejecución de Penas y Medidas','Sala de Audiencia 2 Familia','Sala de Audiencia 1 Familia','Sala de Audiencia Civil','Sala de Audiencia Laboral','Sala Plena Tribunal Admin','Sala Plena Tribunal Superior','Auditorio','Oficina de Apoyo Judicial','Coordinación Administrativa de Arauca','Juzgado 1º de Familia','Juzgado 2º de Familia','Juzgado Civil del Circuito','Juzgado Laboral del Circuito','Juzgado 1º Administrativo','Juzgado 2º Administrativo','Juzgado 3º Administrativo','Juzgado 4º Administrativo','Juzgado 5º Administrativo','Juzgado 6º Administrativo','Juzgado 7º Administrativo','Despacho 1 Tribunal Administrativo','Despacho 2 Tribunal Administrativo','Despacho 3 Tribunal Administrativo','Despacho 1 Tribunal Superior','Despacho 2 Tribunal Superior','Despacho 3 Tribunal Superior','Secretaría del Tribunal Administrativo','Secretaría del Tribunal Superior'],'Palacio de Justicia SPA':['Sala de Audiencia Piso 3-2','Sala de Audiencia Piso 3-1','Sala de Audiencia Piso 2','Sala de Audiencia Piso 1','Juzgado 1º Civil Municipal','Juzgado 2º Civil Municipal','Juzgado 1º Penal Municipal','Juzgado 2º Penal Municipal','Juzgado 1º Penal del Circuito','Juzgado 2º Penal del Circuito','Juzgado 05 Penal Municipal con Funciones Mixtas','Juzgado Penal del Circuito Especializado de Arauca','Juzgado 2º Penal del Circuito Especializado de Arauca'],'Contraloría':['Sala de Audiencia','Juzgado Penal del Circuito de Saravena','Juzgado 3º Penal Municipal con Funciones Mixtas','Juzgado 4º Penal Municipal con Funciones Mixtas'],'CESPA':['Sala de Audiencia','Centro de Servicios Judiciales de Arauca','Juzgado 1º Penal del Circuito para Adolescentes - Conocimiento','Juzgado 1º Penal Municipal para Adolescentes']};
 const ESTADOS_ORDEN=['Solicitud','Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'];
@@ -686,15 +799,54 @@ window.usarModoLocal=()=>{
 
 function setDbStatus(modo){
   const st=document.getElementById('storage-status'),tx=document.getElementById('storage-status-txt');
+  const proyectoId=(typeof FB_CONFIG!=='undefined'&&FB_CONFIG.projectId)?FB_CONFIG.projectId:'—';
   if(modo==='firebase'){
-    st.style.background='linear-gradient(135deg,#e6f7ee,#f0fff4)';st.style.borderColor='#a8d5b8';
-    tx.innerHTML='<i class="ti ti-database" style="color:#155230"></i> <strong style="color:#155230">✓ Firebase Firestore conectado.</strong> Los datos se sincronizan en la nube. <button class="btn btn-sm" style="margin-left:8px" onclick="goTab(\'config\',document.querySelector(\'.nav-btn:last-child\'))">Ver config</button>';
+    st.style.background='linear-gradient(135deg,#e6f7ee,#f0fff4)';
+    st.style.borderColor='#a8d5b8';
+    tx.innerHTML=`<i class="ti ti-cloud" style="color:#155230;font-size:16px"></i>
+      <span><strong style="color:#155230">✓ Firebase conectado automáticamente</strong> —
+      Proyecto: <code style="background:#d1fae5;padding:1px 6px;border-radius:3px;font-size:11px">${proyectoId}</code>
+      · Los datos se sincronizan en la nube en tiempo real.</span>
+      <button class="btn btn-sm" style="margin-left:auto;flex-shrink:0" onclick="reconectar()"><i class="ti ti-refresh"></i>Reconectar</button>`;
+  }else if(modo==='offline'){
+    st.style.background='linear-gradient(135deg,#fff8e1,#fffde7)';
+    st.style.borderColor='#fde68a';
+    tx.innerHTML=`<i class="ti ti-wifi-off" style="color:#7c5800;font-size:16px"></i>
+      <span><strong style="color:#7c5800">Sin conexión a Firebase</strong> —
+      Usando datos en caché local. Los cambios se guardarán localmente hasta restablecer la conexión.</span>
+      <button class="btn btn-sm btn-p" style="margin-left:auto;flex-shrink:0" onclick="reconectar()"><i class="ti ti-refresh"></i>Reintentar</button>`;
   }else if(modo==='local'){
-    st.style.background='linear-gradient(135deg,#fff8e1,#fffde7)';st.style.borderColor='#fde68a';
-    tx.innerHTML='<i class="ti ti-device-floppy" style="color:#7c5800"></i> <strong style="color:#7c5800">Modo local.</strong> Datos en este navegador. <button class="btn btn-sm btn-p" style="margin-left:8px" onclick="goTab(\'config\',document.querySelector(\'.nav-btn:last-child\'))">Conectar Firebase</button>';
+    st.style.background='linear-gradient(135deg,#fff8e1,#fffde7)';
+    st.style.borderColor='#fde68a';
+    tx.innerHTML=`<i class="ti ti-device-floppy" style="color:#7c5800;font-size:16px"></i>
+      <span><strong style="color:#7c5800">Modo local activo</strong> —
+      No hay configuración Firebase embebida. Los datos se guardan solo en este navegador.</span>
+      <button class="btn btn-sm btn-p" style="margin-left:auto;flex-shrink:0" onclick="goTab('config',document.querySelector('.nav-btn:last-child'))"><i class="ti ti-settings"></i>Configurar</button>`;
   }else{
-    st.style.background='#fce8e8';st.style.borderColor='#f5c6c6';
-    tx.innerHTML='<i class="ti ti-alert-circle" style="color:#8b1a1a"></i> <strong style="color:#8b1a1a">Error de conexión.</strong> Revisa la configuración. <button class="btn btn-sm" style="margin-left:8px" onclick="goTab(\'config\',document.querySelector(\'.nav-btn:last-child\'))">Reintentar</button>';
+    st.style.background='#fce8e8';
+    st.style.borderColor='#f5c6c6';
+    tx.innerHTML=`<i class="ti ti-alert-circle" style="color:#8b1a1a;font-size:16px"></i>
+      <span><strong style="color:#8b1a1a">Error de conexión.</strong> Verifique la configuración Firebase.</span>
+      <button class="btn btn-sm" style="margin-left:auto;flex-shrink:0" onclick="reconectar()"><i class="ti ti-refresh"></i>Reintentar</button>`;
+  }
+}
+
+// Reconexión manual desde el banner
+async function reconectar(){
+  const cfg=(typeof FB_CONFIG!=='undefined'&&FB_CONFIG.projectId)?FB_CONFIG:null;
+  if(!cfg){showToast('No hay configuración Firebase embebida en el archivo','w');return;}
+  showToast('Reconectando a Firebase...','s');
+  try{
+    fbApp=initializeApp(cfg,'sige_rc_'+Date.now());
+    db=getFirestore(fbApp);
+    await getDocs(query(collection(db,'ordenes'),orderBy('_ts','desc')));
+    isDemoMode=false;
+    setDbStatus('firebase');
+    await loadData();
+    showToast('✓ Reconectado correctamente','s');
+  }catch(e){
+    showToast('No se pudo reconectar: '+e.message,'e');
+    setDbStatus('offline');
   }
 }
 
@@ -1709,31 +1861,213 @@ function renderSatGlobal(){const todos=regs.filter(r=>r.satisfaccion).map(r=>par
 
 async function recargarDatos(){await loadData();showToast('Datos actualizados','s');}
 function renderAll(){if(document.getElementById('panel-historial').classList.contains('active'))renderHist();if(document.getElementById('panel-dashboard').classList.contains('active'))renderDash();if(document.getElementById('panel-buscar').classList.contains('active')){const q=document.getElementById('inp-bus').value;if(q)buscarGlobal();}document.getElementById('last-update').textContent='Actualizado: '+fmtNow();}
+
+// ══════════════════════════════════════════════════════
+// VISTA PÚBLICA DE ENCUESTA — solo encuesta de 1 orden
+// ══════════════════════════════════════════════════════
+let encPubData=null, encPubDecisionSel=null, encPubFirmaCtx=null, encPubFirmaVacia=true;
+
+function detectarEncuesta(){
+  const params=new URLSearchParams(window.location.search);
+  const enc=params.get('encuesta');
+  if(!enc) return false;
+  // Ocultar el aplicativo y mostrar solo la encuesta
+  document.querySelector('.app').style.display='none';
+  document.getElementById('vista-encuesta').style.display='block';
+  try{
+    encPubData=JSON.parse(decodeURIComponent(escape(atob(enc))));
+    renderEncuestaPublica();
+  }catch(e){
+    document.getElementById('enc-pub-form').style.display='none';
+    document.getElementById('enc-pub-error').style.display='block';
+    document.getElementById('enc-pub-error-msg').textContent='El enlace está dañado o incompleto.';
+  }
+  return true;
+}
+
+function renderEncuestaPublica(){
+  const d=encPubData;
+  // Mostrar datos de la orden
+  document.getElementById('enc-pub-datos').innerHTML=`
+    <div style="font-size:10px;font-weight:700;color:var(--c1);margin-bottom:7px;display:flex;align-items:center;gap:5px">
+      <i class="ti ti-clipboard-text"></i> ORDEN DE SERVICIO ${d.codigoOrden||''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11px">
+      ${d.serial?`<div><span style="color:var(--text2)">Equipo (serial):</span> <strong>${d.serial}</strong></div>`:''}
+      <div><span style="color:var(--text2)">Tipo:</span> <strong>${d.tipoMant||'—'}</strong></div>
+      <div style="grid-column:span 2"><span style="color:var(--text2)">Despacho:</span> <strong>${d.despacho||'—'}</strong></div>
+      <div><span style="color:var(--text2)">Municipio:</span> <strong>${d.ciudad||'—'}</strong></div>
+      ${d.contratista?`<div><span style="color:var(--text2)">Técnico:</span> <strong>${d.contratista}</strong></div>`:''}
+      ${d.fechaEjecucion?`<div style="grid-column:span 2"><span style="color:var(--text2)">Fecha ejecución:</span> <strong>${fmt(d.fechaEjecucion)}</strong></div>`:''}
+    </div>
+    ${d.actividades?`<div style="margin-top:7px;padding-top:7px;border-top:.5px solid var(--blue-b)"><span style="color:var(--text2);font-size:10px">Actividades realizadas:</span><div style="font-size:11px;margin-top:2px">${d.actividades}</div></div>`:''}`;
+
+  // Opciones de calificación
+  const opts=[
+    {val:'5',lbl:'Muy Satisfactorio',ico:'ti-mood-happy'},
+    {val:'4',lbl:'Satisfactorio',ico:'ti-mood-smile'},
+    {val:'3',lbl:'Normal',ico:'ti-mood-neutral'},
+    {val:'2',lbl:'Poco Satisfactorio',ico:'ti-mood-confused'},
+    {val:'1',lbl:'No Satisfactorio',ico:'ti-mood-sad'}
+  ];
+  document.getElementById('enc-pub-opciones').innerHTML=opts.map(o=>`
+    <label class="enc-opt" onmouseover="this.style.borderColor='${SCOLORS[o.val]}';this.style.background='${SBGS[o.val]}'" onmouseout="syncEncPub()">
+      <input type="radio" name="enc-pub-sat" value="${o.val}" style="accent-color:${SCOLORS[o.val]};width:16px;height:16px;flex-shrink:0" onchange="syncEncPub();chkEncPubReady()">
+      <i class="ti ${o.ico}" style="font-size:22px;color:${SCOLORS[o.val]};flex-shrink:0"></i>
+      <span style="font-size:13px;font-weight:600;color:${SCOLORS[o.val]}">${o.lbl}</span>
+      <span style="font-size:11px;color:var(--text2);margin-left:auto">${o.val}/5</span>
+    </label>`).join('');
+
+  // Inicializar firma
+  setTimeout(()=>initFirmaPub(),100);
+}
+
+function syncEncPub(){
+  document.querySelectorAll('#enc-pub-opciones label').forEach(lbl=>{
+    const inp=lbl.querySelector('input');
+    lbl.style.borderColor=inp.checked?SCOLORS[inp.value]:'var(--border)';
+    lbl.style.background=inp.checked?SBGS[inp.value]:'#fff';
+  });
+}
+
+function initFirmaPub(){
+  const canvas=document.getElementById('enc-pub-firma');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  encPubFirmaCtx=ctx;encPubFirmaVacia=true;
+  ctx.strokeStyle='#1a3a5c';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  let drawing=false,lx=0,ly=0;
+  const gp=e=>{const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return[(s.clientX-r.left)*sx,(s.clientY-r.top)*sy];};
+  const start=e=>{e.preventDefault();drawing=true;[lx,ly]=gp(e);};
+  const draw=e=>{e.preventDefault();if(!drawing)return;const[x,y]=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();[lx,ly]=[x,y];encPubFirmaVacia=false;document.getElementById('enc-pub-firma-estado').textContent='✓ Firma registrada';chkEncPubReady();};
+  const stop=e=>{e.preventDefault();drawing=false;};
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',draw);canvas.addEventListener('mouseup',stop);canvas.addEventListener('mouseleave',stop);
+  canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',draw,{passive:false});canvas.addEventListener('touchend',stop,{passive:false});
+}
+
+function clrFirmaPub(){
+  const c=document.getElementById('enc-pub-firma');
+  if(encPubFirmaCtx)encPubFirmaCtx.clearRect(0,0,c.width,c.height);
+  encPubFirmaVacia=true;
+  document.getElementById('enc-pub-firma-estado').textContent='';
+  chkEncPubReady();
+}
+
+function encPubDecision(tipo){
+  encPubDecisionSel=tipo;
+  document.getElementById('enc-pub-conf').className='dec-card'+(tipo==='conforme'?' sel-conf':'');
+  document.getElementById('enc-pub-nconf').className='dec-card'+(tipo==='no-conforme'?' sel-nconf':'');
+  document.getElementById('enc-pub-inconf').style.display=tipo==='no-conforme'?'block':'none';
+  chkEncPubReady();
+}
+
+function chkEncPubReady(){
+  const sat=document.querySelector('input[name="enc-pub-sat"]:checked');
+  const resp=(document.getElementById('enc-pub-resp').value||'').trim();
+  const ready=sat&&!encPubFirmaVacia&&encPubDecisionSel&&resp;
+  const btn=document.getElementById('enc-pub-enviar');
+  btn.disabled=!ready;
+  btn.style.opacity=ready?'1':'.5';
+}
+
+async function enviarEncuestaPublica(){
+  const sat=document.querySelector('input[name="enc-pub-sat"]:checked');
+  const resp=(document.getElementById('enc-pub-resp').value||'').trim();
+  if(!sat){alert('Seleccione una calificación');return;}
+  if(!resp){alert('Ingrese el nombre del responsable');return;}
+  if(encPubFirmaVacia){alert('Registre su firma');return;}
+  if(!encPubDecisionSel){alert('Indique si recibe conforme o no conforme');return;}
+  if(encPubDecisionSel==='no-conforme'&&!(document.getElementById('enc-pub-motivo').value||'').trim()){alert('Describa el motivo de la inconformidad');return;}
+
+  const btn=document.getElementById('enc-pub-enviar');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader"></i> Enviando...';
+
+  const datos={
+    satisfaccion:sat.value,
+    responsableRecibe:resp,
+    cargoResp:(document.getElementById('enc-pub-cargo').value||'').trim(),
+    obsEntrega:(document.getElementById('enc-pub-obs').value||'').trim(),
+    firma:document.getElementById('enc-pub-firma').toDataURL('image/png'),
+    decision:encPubDecisionSel,
+    motivoInconformidad:encPubDecisionSel==='no-conforme'?(document.getElementById('enc-pub-motivo').value||'').trim():'',
+    estadoOrden:encPubDecisionSel==='conforme'?'Entregado conforme':'No conforme',
+    estado:encPubDecisionSel==='conforme'?'Entregado conforme':'No conforme',
+    fechaEntrega:hoy(),
+    _encuestaExterna:true,
+    _tsEvaluacion:fmtNow()
+  };
+
+  try{
+    // Conectar a Firebase con la config embebida
+    const cfg=(typeof FB_CONFIG!=='undefined'&&FB_CONFIG.projectId)?FB_CONFIG:null;
+    if(!cfg){throw new Error('No hay configuración de base de datos');}
+    const app=initializeApp(cfg,'sige_enc_'+Date.now());
+    const dbEnc=getFirestore(app);
+    // Actualizar el documento de la orden
+    await updateDoc(doc(dbEnc,'ordenes',encPubData.id),datos);
+    // Éxito
+    document.getElementById('enc-pub-form').style.display='none';
+    document.getElementById('enc-pub-exito').style.display='block';
+    window.scrollTo(0,0);
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='<i class="ti ti-send"></i> Enviar evaluación';
+    document.getElementById('enc-pub-form').style.display='none';
+    document.getElementById('enc-pub-error').style.display='block';
+    document.getElementById('enc-pub-error-msg').textContent='No se pudo guardar la evaluación: '+e.message+'. Verifique su conexión a internet e intente nuevamente.';
+  }
+}
+
 (async function(){
+  // ── Si la URL trae ?encuesta=, mostrar SOLO la encuesta pública ──
+  if(detectarEncuesta()){
+    return; // No cargar el resto del aplicativo
+  }
+
   ['modal','modal-editar'].forEach(id=>{const m=document.getElementById(id);if(m)m.addEventListener('click',function(e){if(e.target===this){if(id==='modal')cerrar();else cerrarEditar();}});});
   document.getElementById('f-fecha').value=hoy();
   renderEncuesta();
 
-  // Auto-reconectar Firebase si hay config guardada
-  const savedCfg=localStorage.getItem('sige_fb_cfg');
-  if(savedCfg){
-    if(document.getElementById('fb-config-input'))document.getElementById('fb-config-input').value=savedCfg;
+  // ── Conexión automática a Firebase ──
+  // Prioridad: 1) FB_CONFIG embebida en el archivo
+  //            2) Config guardada en localStorage (sesiones anteriores)
+  //            3) Modo local si ambas fallan
+
+  const cfgEmbebida = (typeof FB_CONFIG !== 'undefined' && FB_CONFIG.projectId) ? FB_CONFIG : null;
+  const cfgGuardada = (() => {
+    try {
+      const s = localStorage.getItem('sige_fb_cfg');
+      return s ? JSON.parse(s.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*/g,'')) : null;
+    } catch(e){ return null; }
+  })();
+
+  const cfg = cfgEmbebida || cfgGuardada;
+
+  // Mostrar config en el panel de configuración
+  if(cfg){
+    const inp = document.getElementById('fb-config-input');
+    if(inp) inp.value = JSON.stringify(cfg, null, 2);
+  }
+
+  if(cfg){
     try{
-      const cfg=JSON.parse(savedCfg.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*/g,''));
-      fbApp=initializeApp(cfg,'sige_'+Date.now());
-      db=getFirestore(fbApp);
-      await getDocs(query(collection(db,'ordenes'),orderBy('_ts','desc')));
-      isDemoMode=false;
+      fbApp = initializeApp(cfg, 'sige_' + Date.now());
+      db    = getFirestore(fbApp);
+      // Test de conexión
+      await getDocs(query(collection(db,'ordenes'), orderBy('_ts','desc')));
+      isDemoMode = false;
+      // Guardar en localStorage para respaldo offline
+      try{ localStorage.setItem('sige_fb_cfg', JSON.stringify(cfg)); }catch(e){}
       setDbStatus('firebase');
       await loadData();
     }catch(e){
-      console.warn('Firebase auto-connect failed:',e.message);
-      isDemoMode=true;db=null;
-      setDbStatus('local');
+      console.warn('Firebase auto-connect failed:', e.message);
+      // Si falla la red pero hay datos locales, usarlos como caché
+      isDemoMode = true; db = null;
+      setDbStatus('offline');
       await loadData();
     }
   }else{
-    isDemoMode=true;db=null;
+    isDemoMode = true; db = null;
     setDbStatus('local');
     await loadData();
   }
@@ -1745,9 +2079,21 @@ function renderAll(){if(document.getElementById('panel-historial').classList.con
 function generarEnlaceEncuesta(){
   if(!ordenActiva){showA('No hay orden activa','e');return;}
   const r=ordenActiva;
-  const payload={id:r.id,serial:r.serial,tipoMant:r.tipoMant,despacho:r.despacho,ciudad:r.ciudad,contratista:r.contratista||'',fechaEjecucion:r.fechaEjecucion||'',actividades:r.actividades||''};
+  // Incluir solo lo necesario para identificar la orden
+  const payload={
+    id:r.id,
+    serial:r.serial||'',
+    tipoMant:r.tipoMant,
+    despacho:r.despacho,
+    ciudad:r.ciudad,
+    inmueble:r.inmueble||'',
+    contratista:r.contratista||r.tecnicoAsignado||'',
+    fechaEjecucion:r.fechaEjecucion||'',
+    actividades:r.actividades||'',
+    codigoOrden:fmtConsecutivo(r)
+  };
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const url=window.location.href.split('?')[0]+'?encuesta='+encoded;
+  const url=window.location.href.split('?')[0].split('#')[0]+'?encuesta='+encoded;
   document.getElementById('enc-link-box').style.display='block';
   document.getElementById('enc-link-input').value=url;
   document.getElementById('enc-link-copied').style.display='none';
@@ -1818,6 +2164,11 @@ window.guardarEntregaTecnico = guardarEntregaTecnico;
 window.guardarEvaluacion = guardarEvaluacion;
 window.selDecision = selDecision;
 window.generarEnlaceEncuesta = generarEnlaceEncuesta;
+window.clrFirmaPub = clrFirmaPub;
+window.encPubDecision = encPubDecision;
+window.syncEncPub = syncEncPub;
+window.chkEncPubReady = chkEncPubReady;
+window.enviarEncuestaPublica = enviarEncuestaPublica;
 window.copiarEnlace = copiarEnlace;
 window.enviarCorreo = enviarCorreo;
 window.compartirWhatsApp = compartirWhatsApp;
@@ -1851,6 +2202,7 @@ window.renderAll = renderAll;
 window.recargarDatos = recargarDatos;
 window.conectarFirebase = conectarFirebase;
 window.usarModoLocal = usarModoLocal;
+window.reconectar = reconectar;
 </script>
 </body>
 </html>
