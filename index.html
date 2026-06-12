@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -342,7 +341,7 @@
           <div class="fld"><label>Artículo</label><div class="combo" id="genArticuloCombo"></div></div>
         </div>
         <div class="filters-foot" style="margin-top:14px">
-          <span class="count">Mostrando <b id="genCount">0</b> de <b id="genTotal">0</b> registros</span>
+          <span class="count">Mostrando <b id="genCount">0</b> de <b id="genTotal">0</b> registros <span id="genDupNote" style="color:var(--teal-deep);font-weight:600"></span></span>
           <button class="btn ghost" id="genReset">&#8635; Limpiar</button>
           <button class="btn ghost" id="genExcel">&#128202; Descargar .xls</button>
           <button class="btn teal" id="genCsv">&#10515; Exportar CSV</button>
@@ -917,7 +916,8 @@ function makeCombo(mountSel, allLabel, onChange){
 let GEN_ROWS=[];      // todas las filas (objetos col->valor)
 let GEN_COLS=[];      // nombres de columnas
 let GEN_VIEW=[];      // filas tras filtros
-let genEstadoCol="", genCentroCol="", genArticuloCol="";
+let genEstadoCol="", genCentroCol="", genArticuloCol="", genPlacaCol="";
+let genDupRemoved=0;
 const genEstadoSel=new Set();
 const genMuniSel=new Set();
 let genCombos=null;
@@ -986,6 +986,20 @@ function ingestGen(aoa){
     const o={}; cols.forEach((c,i)=>o[c]=r[i]!==undefined?r[i]:""); return o;
   });
 
+  // ---- eliminar placas repetidas (una fila por placa) ----
+  genPlacaCol = GEN_COLS.find(c=>norm(c)==="placa")
+            || GEN_COLS.find(c=>norm(c).includes("placa")&&!norm(c).includes("externa")&&!norm(c).includes("observ"))
+            || GEN_COLS[0];
+  const antes=GEN_ROWS.length;
+  const vistas=new Set(); const unicas=[];
+  for(const r of GEN_ROWS){
+    const p=String(r[genPlacaCol]??"").trim();
+    if(p){ if(vistas.has(p)) continue; vistas.add(p); }
+    unicas.push(r);
+  }
+  genDupRemoved=antes-unicas.length;
+  GEN_ROWS=unicas;
+
   genEstadoCol=detectCol("estado");
   genCentroCol=detectCol("centro");
   genArticuloCol=detectCol("articulo");
@@ -1007,7 +1021,10 @@ function ingestGen(aoa){
   $("#genEmpty").style.display="none";
   $("#genContent").style.display="block";
   applyGen();
-  toast(GEN_ROWS.length.toLocaleString("es-CO")+" registros cargados", "ok");
+  const msg = genDupRemoved>0
+    ? `${GEN_ROWS.length.toLocaleString("es-CO")} registros · ${genDupRemoved.toLocaleString("es-CO")} placas repetidas eliminadas`
+    : `${GEN_ROWS.length.toLocaleString("es-CO")} registros cargados`;
+  toast(msg, "ok");
 }
 
 // detecta columna por tipo: 'estado' | 'centro' | 'articulo'
@@ -1118,6 +1135,7 @@ function applyGen(){
   });
   $("#genCount").textContent=GEN_VIEW.length.toLocaleString("es-CO");
   $("#genTotal").textContent=GEN_ROWS.length.toLocaleString("es-CO");
+  $("#genDupNote").textContent = genDupRemoved>0 ? `(✓ ${genDupRemoved.toLocaleString("es-CO")} placas duplicadas eliminadas)` : "";
   buildGenKpis();
   buildGenChart();
   renderGenTable();
