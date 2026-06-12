@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
@@ -986,19 +987,19 @@ function ingestGen(aoa){
     const o={}; cols.forEach((c,i)=>o[c]=r[i]!==undefined?r[i]:""); return o;
   });
 
-  // ---- eliminar placas repetidas (una fila por placa) ----
+  // ---- eliminar filas con placa repetida (una fila por placa) ----
   genPlacaCol = GEN_COLS.find(c=>norm(c)==="placa")
-            || GEN_COLS.find(c=>norm(c).includes("placa")&&!norm(c).includes("externa")&&!norm(c).includes("observ"))
+            || GEN_COLS.find(c=>norm(c).includes("placa") && !norm(c).includes("externa") && !norm(c).includes("observ"))
             || GEN_COLS[0];
-  const antes=GEN_ROWS.length;
-  const vistas=new Set(); const unicas=[];
+  const antesDedup=GEN_ROWS.length;
+  const placasVistas=new Set(); const filasUnicas=[];
   for(const r of GEN_ROWS){
     const p=String(r[genPlacaCol]??"").trim();
-    if(p){ if(vistas.has(p)) continue; vistas.add(p); }
-    unicas.push(r);
+    if(p){ if(placasVistas.has(p)) continue; placasVistas.add(p); }
+    filasUnicas.push(r);
   }
-  genDupRemoved=antes-unicas.length;
-  GEN_ROWS=unicas;
+  genDupRemoved=antesDedup-filasUnicas.length;
+  GEN_ROWS=filasUnicas;
 
   genEstadoCol=detectCol("estado");
   genCentroCol=detectCol("centro");
@@ -1021,10 +1022,10 @@ function ingestGen(aoa){
   $("#genEmpty").style.display="none";
   $("#genContent").style.display="block";
   applyGen();
-  const msg = genDupRemoved>0
+  const msgDedup = genDupRemoved>0
     ? `${GEN_ROWS.length.toLocaleString("es-CO")} registros · ${genDupRemoved.toLocaleString("es-CO")} placas repetidas eliminadas`
     : `${GEN_ROWS.length.toLocaleString("es-CO")} registros cargados`;
-  toast(msg, "ok");
+  toast(msgDedup, "ok");
 }
 
 // detecta columna por tipo: 'estado' | 'centro' | 'articulo'
