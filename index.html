@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>SIGE — Mantenimiento Plantas Eléctricas · Rama Judicial Arauca</title>
+<title>SIGE — Mantenimiento Aires Acondicionados · Rama Judicial Arauca</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -175,25 +175,6 @@ tr:hover td{background:#f8fafc}
 </style>
 </head>
 <body>
-<!-- ═══════ PANTALLA DE INICIO DE SESIÓN ═══════ -->
-<div id="login-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:linear-gradient(135deg,#1a3a5c,#2563a8);align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:400px;overflow:hidden">
-    <div style="background:linear-gradient(135deg,#1a3a5c,#2563a8);padding:24px;text-align:center;color:#fff">
-      <div style="width:54px;height:54px;background:rgba(255,255,255,.15);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px"><i class="ti ti-engine" style="font-size:28px"></i></div>
-      <h2 style="font-size:17px;margin:0;font-weight:700">SIGE — Plantas Eléctricas</h2>
-      <p style="font-size:11px;opacity:.8;margin:4px 0 0">Rama Judicial Arauca · Control de acceso</p>
-    </div>
-    <div style="padding:22px">
-      <div class="field" style="margin-bottom:12px"><label>Usuario</label><input type="text" id="login-user" placeholder="admin / tecnico" autocomplete="username" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
-      <div class="field" style="margin-bottom:6px"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
-      <div id="login-error" style="display:none;font-size:11px;color:#c0392b;margin-bottom:8px"><i class="ti ti-alert-circle"></i> <span id="login-error-txt"></span></div>
-      <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px;padding:10px" onclick="iniciarSesion()"><i class="ti ti-login"></i>Ingresar</button>
-      <div style="display:flex;align-items:center;gap:8px;margin:16px 0;color:var(--text2)"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:10px">o</span><div style="flex:1;height:1px;background:var(--border)"></div></div>
-      <button class="btn" style="width:100%;justify-content:center;padding:9px" onclick="entrarComoFinal()"><i class="ti ti-eye"></i>Entrar como usuario final (consulta)</button>
-      <p style="font-size:10px;color:var(--text2);text-align:center;margin:12px 0 0;line-height:1.5">El usuario final consulta el estado de las plantas sin contraseña.</p>
-    </div>
-  </div>
-</div>
 <!-- ═══════ VISTA PÚBLICA DE ENCUESTA (solo con ?encuesta=) ═══════ -->
 <div id="vista-encuesta" style="display:none;min-height:100vh;background:linear-gradient(135deg,#1a3a5c,#2563a8);padding:20px 14px">
   <div style="max-width:560px;margin:0 auto">
@@ -280,47 +261,30 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
-<div class="app" id="app-main" style="display:none">
+<div class="app">
   <div class="header">
-    <div class="hicon"><i class="ti ti-engine"></i></div>
+    <div class="hicon"><i class="ti ti-wind"></i></div>
     <div style="flex:1">
-      <h1>SIGE — Gestión de Mantenimiento de Plantas Eléctricas</h1>
+      <h1>SIGE — Gestión de Mantenimiento de Aires Acondicionados</h1>
       <p>Dirección Seccional Administrativa — Rama Judicial Arauca</p>
     </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div id="user-chip" style="display:none;text-align:right;line-height:1.3">
-        <div style="font-size:12px;font-weight:700" id="user-nombre"></div>
-        <div style="font-size:10px;opacity:.75" id="user-rol"></div>
-      </div>
-      <button id="btn-logout" class="btn btn-sm" style="display:none;background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" onclick="cerrarSesion()"><i class="ti ti-logout"></i>Salir</button>
-      <div style="font-size:10px;opacity:.65;text-align:right;line-height:1.5" id="last-update"></div>
-    </div>
+    <div style="font-size:10px;opacity:.65;text-align:right;line-height:1.5" id="last-update"></div>
   </div>
   <div id="storage-status" class="storage-info">
     <i class="ti ti-database" style="font-size:16px;flex-shrink:0"></i>
     <span id="storage-status-txt"><strong>Verificando almacenamiento...</strong></span>
   </div>
   <nav class="nav">
-    <button class="nav-btn active" data-tab="dashboard" onclick="goTab('dashboard',this)"><i class="ti ti-layout-dashboard"></i><span class="nav-txt">Dashboard</span></button>
-    <button class="nav-btn" data-tab="nuevo" onclick="goTab('nuevo',this)"><i class="ti ti-plus"></i><span class="nav-txt">Nueva orden</span></button>
-    <button class="nav-btn" data-tab="historial" onclick="goTab('historial',this)"><i class="ti ti-list"></i><span class="nav-txt">Historial</span></button>
-    <button class="nav-btn" data-tab="hojas" onclick="goTab('hojas',this)"><i class="ti ti-id-badge-2"></i><span class="nav-txt">Hojas de vida</span></button>
-    <button class="nav-btn" data-tab="config" onclick="goTab('config',this)"><i class="ti ti-database"></i><span class="nav-txt">Firebase</span></button>
+    <button class="nav-btn active" onclick="goTab('dashboard',this)"><i class="ti ti-layout-dashboard"></i><span class="nav-txt">Dashboard</span></button>
+    <button class="nav-btn" onclick="goTab('nuevo',this)"><i class="ti ti-plus"></i><span class="nav-txt">Nueva orden</span></button>
+    <button class="nav-btn" onclick="goTab('historial',this)"><i class="ti ti-list"></i><span class="nav-txt">Historial</span></button>
+    <button class="nav-btn" onclick="goTab('buscar',this)"><i class="ti ti-search"></i><span class="nav-txt">Buscar equipo</span></button>
+    <button class="nav-btn" onclick="goTab('config',this)"><i class="ti ti-database"></i><span class="nav-txt">Firebase</span></button>
   </nav>
 
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel active">
     <div class="krow" id="krow"></div>
-    <div class="drow2">
-      <div class="card">
-        <div class="slbl"><i class="ti ti-engine"></i>Funcionamiento de las plantas</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center">
-          <div class="cwrap" style="height:155px"><canvas id="ch-func"></canvas></div>
-          <div id="func-leg"></div>
-        </div>
-      </div>
-      <div class="card"><div class="slbl"><i class="ti ti-alert-triangle"></i>Plantas fuera de servicio</div><div id="func-det"></div></div>
-    </div>
     <div class="drow2">
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -356,13 +320,13 @@ tr:hover td{background:#f8fafc}
   <div id="panel-nuevo" class="panel">
     <div id="alert-box" class="alert"></div>
     <div class="steps-hdr">
-      <div class="step-item active" id="si1"><div class="step-num active" id="sn1">1</div><div><div class="step-lbl">Solicitud</div><div class="step-sub">Inmueble</div></div></div>
+      <div class="step-item active" id="si1"><div class="step-num active" id="sn1">1</div><div><div class="step-lbl">Solicitud</div><div class="step-sub">Despacho</div></div></div>
       <div class="step-conn" id="sc1"></div>
       <div class="step-item" id="si2"><div class="step-num" id="sn2">2</div><div><div class="step-lbl">Al Técnico</div><div class="step-sub">Asignación</div></div></div>
       <div class="step-conn" id="sc2"></div>
       <div class="step-item" id="si3"><div class="step-num" id="sn3">3</div><div><div class="step-lbl">Ejecución</div><div class="step-sub">Contratista</div></div></div>
       <div class="step-conn" id="sc3"></div>
-      <div class="step-item" id="si4"><div class="step-num" id="sn4">4</div><div><div class="step-lbl">Evaluación</div><div class="step-sub">Firma y entrega</div></div></div>
+      <div class="step-item" id="si4"><div class="step-num" id="sn4">4</div><div><div class="step-lbl">Evaluación</div><div class="step-sub">Firma despacho</div></div></div>
       <div class="step-conn" id="sc4"></div>
       <div class="step-item" id="si5"><div class="step-num" id="sn5">⚖</div><div><div class="step-lbl">Decisión</div><div class="step-sub">Conforme / No</div></div></div>
 
@@ -385,50 +349,49 @@ tr:hover td{background:#f8fafc}
           <div class="field"><label>Fecha de solicitud *</label><input type="date" id="f-fecha"></div>
         </div>
         <div id="grupo-inmueble" style="display:none;margin-bottom:10px">
-          <div class="field"><label>Inmueble *</label>
-            <select id="f-inmueble" onchange="onInmuebleChange()">
-              <option value="">Seleccionar...</option>
-              <option value="Palacio de Justicia Calle 21">Palacio de Justicia Calle 21</option>
-              <option value="Palacio de Justicia SPA">Palacio de Justicia SPA</option>
-              <option value="Contraloría">Contraloría</option>
-              <option value="CESPA">CESPA</option>
-            </select>
+          <div class="fg fg2">
+            <div class="field"><label>Inmueble *</label>
+              <select id="f-inmueble" onchange="onInmuebleChange()">
+                <option value="">Seleccionar...</option>
+                <option value="Palacio de Justicia Calle 21">Palacio de Justicia Calle 21</option>
+                <option value="Palacio de Justicia SPA">Palacio de Justicia SPA</option>
+                <option value="Contraloría">Contraloría</option>
+                <option value="CESPA">CESPA</option>
+              </select>
+            </div>
+            <div class="field" id="grupo-despacho-arauca" style="display:none"><label>Oficina / Despacho *</label>
+              <select id="f-despacho-arauca"><option value="">Seleccionar despacho...</option></select>
+            </div>
           </div>
         </div>
-        <div id="grupo-planta" style="display:none;margin-bottom:10px">
-          <div class="field"><label>Planta eléctrica *</label>
-            <select id="f-planta" onchange="onPlantaChange()"><option value="">Seleccionar planta...</option></select>
-            <div style="font-size:10px;color:var(--text2);margin-top:4px"><i class="ti ti-info-circle"></i> La planta da respaldo a todo el inmueble. Al seleccionarla se cargan por defecto su tipo, marca y capacidad.</div>
-          </div>
+        <div id="grupo-despacho-texto" style="display:none;margin-bottom:10px">
+          <div class="field"><label>Oficina / Despacho *</label><input type="text" id="f-despacho-texto" placeholder="Ej: Juzgado Promiscuo Municipal"></div>
         </div>
         <input type="hidden" id="f-despacho">
-        <input type="hidden" id="f-serial">
         <div class="fg fg2" style="margin-bottom:10px">
           <div class="field"><label>Tipo de mantenimiento *</label>
-            <select id="f-tipo" onchange="onTipoMantChange()">
+            <select id="f-tipo">
               <option value="">Seleccionar...</option>
               <option value="Preventivo">Preventivo</option>
               <option value="Correctivo">Correctivo</option>
-              <option value="Evaluación">Evaluación (encendido / inspección)</option>
-              <option value="Tanqueo">Tanqueo (carga de combustible)</option>
               <option value="Instalación">Instalación</option>
+              <option value="Desmonte">Desmonte</option>
             </select>
           </div>
-          <div class="field"><label>¿La planta está funcionando? *</label>
-            <select id="f-funcionando">
-              <option value="">Seleccionar...</option>
-              <option value="Sí">Sí — operativa</option>
-              <option value="No">No — fuera de servicio</option>
-            </select>
+          <div class="field"><label>Número de serie del equipo</label>
+            <div style="display:flex;gap:6px">
+              <input type="text" id="f-serial" placeholder="Ej: AC-2023-001" style="flex:1" oninput="buscarEquipo()" autocomplete="off">
+              <button class="btn btn-sm" onclick="buscarEquipo()"><i class="ti ti-search"></i></button>
+            </div>
           </div>
         </div>
         <!-- PANEL EQUIPO ENCONTRADO -->
-        <div id="equipo-info-panel" class="equipo-info" style="padding:0;overflow:hidden;display:none">
+        <div id="equipo-info-panel" class="equipo-info" style="padding:0;overflow:hidden">
           <!-- Cabecera equipo -->
           <div style="background:var(--c1);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px">
-            <i class="ti ti-engine" style="font-size:16px"></i>
-            <span style="font-size:11px;font-weight:700">Datos de la planta — cargados por defecto del inventario</span>
-            <button onclick="limpiarSeleccionEquipo()" style="margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;cursor:pointer;font-size:10px;padding:3px 8px;border-radius:4px">✕ Cambiar planta</button>
+            <i class="ti ti-device-air-conditioning" style="font-size:16px"></i>
+            <span style="font-size:11px;font-weight:700">Equipo registrado — datos preservados del registro original</span>
+            <button onclick="limpiarSeleccionEquipo()" style="margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;cursor:pointer;font-size:10px;padding:3px 8px;border-radius:4px">✕ Cambiar equipo</button>
           </div>
           <!-- Datos del equipo -->
           <div style="padding:10px 12px">
@@ -437,108 +400,38 @@ tr:hover td{background:#f8fafc}
               <div><div class="ei-l">Marca</div><div class="ei-v" id="ei-marca">—</div></div>
               <div><div class="ei-l">Capacidad</div><div class="ei-v" id="ei-cap">—</div></div>
               <div><div class="ei-l">Ubicación</div><div class="ei-v" id="ei-ubic">—</div></div>
-              <div><div class="ei-l">Inmueble</div><div class="ei-v" id="ei-despacho" style="font-size:10px">—</div></div>
+              <div><div class="ei-l">Último despacho</div><div class="ei-v" id="ei-despacho" style="font-size:10px">—</div></div>
             </div>
             <!-- Historial del equipo -->
             <div id="ei-historial" style="margin-top:6px"></div>
           </div>
         </div>
 
-        <!-- Campos de equipo ocultos: se cargan por defecto desde el catálogo al elegir la planta -->
-        <input type="hidden" id="f-tipo-eq"><input type="hidden" id="f-marca"><input type="hidden" id="f-capacidad"><input type="hidden" id="f-ubicacion">
-        <div class="fg fg1">
-          <div class="field"><label>Diagnóstico de la solicitud *</label><textarea id="f-descripcion" placeholder="Síntomas del equipo, tipo de falla, condición observada..."></textarea></div>
-        </div>
+        <!-- SUGERENCIAS AUTOCOMPLETE SERIAL -->
+        <div id="serial-sugerencias" style="display:none;position:relative;z-index:50;margin-top:-6px;margin-bottom:8px;background:#fff;border:.5px solid var(--blue-b);border-radius:0 0 8px 8px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:200px;overflow-y:auto"></div>
 
-        <!-- PANEL DE TANQUEO (solo visible cuando el tipo es Tanqueo) -->
-        <div id="tanqueo-panel" style="display:none;margin-top:4px;border:1px solid #b2dfdb;border-radius:9px;overflow:hidden">
-          <div style="background:linear-gradient(90deg,#e0f7f7,transparent);padding:7px 12px;display:flex;align-items:center;gap:8px">
-            <i class="ti ti-droplet-filled" style="color:#0d7377"></i>
-            <span style="font-size:11px;font-weight:700;color:#0d7377">Registro de tanqueo — carga de combustible</span>
+        <!-- BUSCADOR INVERSO POR DESPACHO -->
+        <div id="busq-despacho-panel" style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:9px;padding:10px 12px;margin-bottom:10px;display:none">
+          <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+            <i class="ti ti-building"></i>Equipos registrados en este despacho
           </div>
-          <div style="padding:10px 12px">
-            <div class="fg fg3" style="margin-bottom:10px">
-              <div class="field"><label>Tipo de combustible</label>
-                <select id="tq-tipo-comb">
-                  <option value="ACPM">ACPM (Diésel)</option>
-                  <option value="Gasolina">Gasolina</option>
-                  <option value="Gas">Gas natural</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-              <div class="field"><label>Litros cargados *</label>
-                <input type="number" id="tq-litros" placeholder="Ej: 50" min="0" step="0.1" style="width:100%">
-              </div>
-              <div class="field"><label>Fecha del tanqueo</label>
-                <input type="date" id="tq-fecha">
-              </div>
-            </div>
-            <div class="fg fg2" style="margin-bottom:10px">
-              <div class="field"><label>Nivel antes del tanqueo</label>
-                <select id="tq-nivel-antes">
-                  <option value="">Sin registro</option>
-                  <option value="Vacío">Vacío (0%)</option>
-                  <option value="Bajo">Bajo (1–25%)</option>
-                  <option value="Medio">Medio (26–75%)</option>
-                  <option value="Lleno">Lleno (76–100%)</option>
-                </select>
-              </div>
-              <div class="field"><label>Nivel después del tanqueo</label>
-                <select id="tq-nivel-despues">
-                  <option value="">Sin registro</option>
-                  <option value="Bajo">Bajo (1–25%)</option>
-                  <option value="Medio">Medio (26–75%)</option>
-                  <option value="Lleno">Lleno (76–100%)</option>
-                </select>
-              </div>
-            </div>
-            <div class="fg fg1">
-              <div class="field"><label>Observaciones del tanqueo</label>
-                <textarea id="tq-obs" placeholder="Proveedor, remisión, estado del tanque, observaciones..." style="min-height:55px"></textarea>
-              </div>
-            </div>
-          </div>
+          <div id="busq-despacho-resultado"></div>
         </div>
-        <div id="checklist-eval" style="display:none;margin-top:4px;border:1px solid #d9ccef;border-radius:9px;overflow:hidden">
-          <div style="background:linear-gradient(90deg,var(--purple-bg),transparent);padding:7px 12px;display:flex;align-items:center;gap:8px">
-            <i class="ti ti-clipboard-check" style="color:var(--purple)"></i>
-            <span style="font-size:11px;font-weight:700;color:var(--purple)">Checklist de evaluación — encendido / inspección</span>
+        <div class="fg fg3" style="margin-bottom:10px" id="grupo-equipo-nuevo">
+          <div class="field"><label>Tipo de equipo</label>
+            <select id="f-tipo-eq">
+              <option value="">Seleccionar...</option>
+              <option value="Mini-split">Mini-split</option><option value="Multi-V">Multi-V</option>
+              <option value="Cassete">Cassete</option><option value="Pared">Pared</option>
+              <option value="Ventana">Ventana</option><option value="Otro">Otro</option>
+            </select>
           </div>
-          <div style="padding:10px 12px">
-            <div class="fg fg3" style="margin-bottom:10px">
-              <div class="field"><label>¿Encendió? *</label>
-                <select id="ev-encendido"><option value="Sí">Sí</option><option value="No">No</option></select>
-              </div>
-              <div class="field"><label>Tiempo de encendido</label>
-                <input type="text" id="ev-tiempo" placeholder="Ej: 15 min">
-              </div>
-              <div class="field"><label>Fecha de encendido</label>
-                <input type="date" id="ev-fecha">
-              </div>
-            </div>
-            <div class="fg fg3" style="margin-bottom:10px">
-              <div class="field"><label>Horas del motor (horómetro)</label>
-                <input type="number" id="ev-horas" placeholder="Ej: 1250" min="0" style="width:100%">
-                <div style="font-size:10px;color:var(--text2);margin-top:3px"><i class="ti ti-info-circle"></i> Lectura actual del horómetro en horas</div>
-              </div>
-              <div class="field"><label>Nivel de aceite</label>
-                <select id="ev-aceite"><option value="Normal">Normal</option><option value="Bajo">Bajo</option></select>
-              </div>
-              <div class="field"><label>Nivel de refrigerante</label>
-                <select id="ev-refrigerante"><option value="Normal">Normal</option><option value="Bajo">Bajo</option></select>
-              </div>
-            </div>
-            <div class="fg fg2" style="margin-bottom:10px">
-              <div class="field"><label>Nivel de combustible</label>
-                <select id="ev-combustible"><option value="Normal">Normal</option><option value="Bajo">Bajo</option></select>
-              </div>
-            </div>
-            <div class="fg fg1">
-              <div class="field"><label>Observaciones de la evaluación</label>
-                <textarea id="ev-obs" placeholder="Anotaciones del encendido, hallazgos, recomendaciones..." style="min-height:60px"></textarea>
-              </div>
-            </div>
-          </div>
+          <div class="field"><label>Marca</label><input type="text" id="f-marca" placeholder="LG, Samsung, Midea..."></div>
+          <div class="field"><label>Capacidad (BTU)</label><input type="text" id="f-capacidad" placeholder="12000, 18000, 24000..."></div>
+          <div class="field"><label>Ubicación del equipo</label><input type="text" id="f-ubicacion" placeholder="Oficina 201, Piso 2..."></div>
+        </div>
+        <div class="fg fg1">
+          <div class="field"><label>Descripción de la solicitud *</label><textarea id="f-descripcion" placeholder="Síntomas del equipo, tipo de falla, trabajos requeridos..."></textarea></div>
         </div>
       </div>
       <div class="arow">
@@ -593,13 +486,13 @@ tr:hover td{background:#f8fafc}
         <div class="fg fg2" style="margin-bottom:10px">
           <div class="field"><label>Estado del equipo al finalizar</label>
             <select id="g-estado-fin">
-              <option value="Operando">Operando</option><option value="Revisión">En revisión</option>
-              <option value="Dañado">Dañado</option>
+              <option value="Funcional">Funcional</option><option value="En Reparación">En Reparación</option>
+              <option value="Desmontado">Desmontado</option><option value="Fuera de Servicio">Fuera de Servicio</option>
             </select>
           </div>
         </div>
         <div class="fg fg1" style="margin-bottom:10px">
-          <div class="field"><label>Procedimiento del servicio *</label><textarea id="g-actividades" placeholder="Cambio de aceite y filtros, purga separador agua/combustible, prueba de carga del alternador, revisión ATS..." style="min-height:90px"></textarea></div>
+          <div class="field"><label>Actividades realizadas *</label><textarea id="g-actividades" placeholder="Limpieza de filtros, recarga de gas, cambio de componentes..." style="min-height:90px"></textarea></div>
         </div>
         <div class="fg fg2">
           <div class="field"><label>Observaciones del técnico</label><textarea id="g-obs-tec" placeholder="Novedades, materiales, recomendaciones..."></textarea></div>
@@ -614,10 +507,6 @@ tr:hover td{background:#f8fafc}
     <!-- PASO 3 — EVALUACIÓN + DECISIÓN UNIFICADAS -->
     <div id="etapa3" style="display:none">
       <div class="alert aw show" id="e3-resumen"><i class="ti ti-info-circle"></i> Cargando...</div>
-      <div id="tecnico-firma-banner" style="display:none;background:linear-gradient(90deg,#e8f0fa,#f0f4ff);border:.5px solid #b8d0f0;border-radius:9px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:var(--c1);align-items:center;gap:10px">
-        <i class="ti ti-user-check" style="font-size:18px;color:#2563a8;flex-shrink:0"></i>
-        <div><strong>Paso de firma y decisión de conformidad</strong><br><span style="color:var(--text2)">Solicite al funcionario que complete la calificación del servicio, luego recoja su firma y seleccione la decisión correspondiente.</span></div>
-      </div>
       <div class="card">
         <div class="slbl" style="background:linear-gradient(90deg,var(--amber-bg),transparent);padding:6px 10px;border-radius:6px;margin:-4px -4px 12px"><i class="ti ti-star" style="color:#d4871a"></i>Paso 4 — Evaluación, Firma y Decisión de Conformidad</div>
 
@@ -747,14 +636,13 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
-  <!-- HOJAS DE VIDA -->
-  <div id="panel-hojas" class="panel">
+  <!-- BUSCAR -->
+  <div id="panel-buscar" class="panel">
     <div class="card">
-      <div class="slbl"><i class="ti ti-id-badge-2"></i>Hojas de vida — 16 plantas eléctricas</div>
-      <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Seleccione una planta para ver su ficha técnica, estadísticas e historial de mantenimientos.</p>
-      <div id="hoja-selector"></div>
+      <div class="slbl"><i class="ti ti-search"></i>Buscar por número de serie</div>
+      <div class="sbar"><input type="text" id="inp-bus" placeholder="Escriba el número de serie..." oninput="buscarGlobal()"></div>
+      <div id="res-bus"><div class="empty"><i class="ti ti-search"></i>Escriba un número de serie para buscar</div></div>
     </div>
-    <div id="hoja-detalle"></div>
   </div>
 </div>
 
@@ -823,10 +711,10 @@ tr:hover td{background:#f8fafc}
       <div class="slbl"><i class="ti ti-brand-github"></i>Publicar en GitHub Pages (opcional)</div>
       <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Para que el sistema esté disponible desde cualquier navegador sin instalar nada:</p>
       <div style="font-size:12px;color:var(--text2);line-height:2">
-        <strong>1.</strong> Ve a <a href="https://github.com" target="_blank" style="color:var(--c2)">github.com</a> → Crear repositorio público → "sige-plantas-judicial"<br>
+        <strong>1.</strong> Ve a <a href="https://github.com" target="_blank" style="color:var(--c2)">github.com</a> → Crear repositorio público → "sige-ac-judicial"<br>
         <strong>2.</strong> Sube este archivo HTML como <code style="background:var(--bg2);padding:1px 6px;border-radius:3px">index.html</code><br>
         <strong>3.</strong> Settings → Pages → Branch: main / root → Save<br>
-        <strong>4.</strong> URL disponible en: <code style="background:var(--bg2);padding:1px 6px;border-radius:3px">https://tu-usuario.github.io/sige-plantas-judicial/</code>
+        <strong>4.</strong> URL disponible en: <code style="background:var(--bg2);padding:1px 6px;border-radius:3px">https://tu-usuario.github.io/sige-ac-judicial/</code>
       </div>
     </div>
   </div>
@@ -854,74 +742,6 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
-<!-- MODAL EDITAR PLANTA -->
-<div class="mo" id="modal-planta">
-  <div class="mbox" style="max-width:580px">
-    <div class="mhdr"><h3 id="mp-title"><i class="ti ti-engine"></i> Editar datos de la planta</h3><button class="cbtn" onclick="cerrarEditarPlanta()"><i class="ti ti-x"></i></button></div>
-    <div style="padding:16px 18px">
-      <div class="alert ai show" style="margin-bottom:12px"><i class="ti ti-info-circle"></i> Los cambios actualizan el catálogo base del sistema y se reflejan en todas las hojas de vida y órdenes de esa planta.</div>
-      <input type="hidden" id="mp-serial">
-      <div class="fg fg2">
-        <div class="field"><label>Código / Serial</label><input type="text" id="mp-serial-vis" disabled style="background:var(--bg2);color:var(--text2)"></div>
-        <div class="field"><label>Descripción</label><input type="text" id="mp-descripcion" placeholder="Ej: Planta Roja - Normal"></div>
-      </div>
-      <div class="fg fg2">
-        <div class="field"><label>Tipo de equipo</label>
-          <select id="mp-tipo">
-            <option value="Planta Diésel Estacionaria">Planta Diésel Estacionaria</option>
-            <option value="Planta No Encabinada">Planta No Encabinada</option>
-            <option value="Planta Diésel Portátil">Planta Diésel Portátil</option>
-            <option value="Grupo Electrógeno">Grupo Electrógeno</option>
-            <option value="Planta Diésel">Planta Diésel</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-        <div class="field"><label>Marca</label><input type="text" id="mp-marca" placeholder="CUMMINS, KAMA, ALTERMAN..."></div>
-      </div>
-      <div class="fg fg3">
-        <div class="field"><label>Modelo</label><input type="text" id="mp-modelo" placeholder="Ej: G2R200SD/4"></div>
-        <div class="field"><label>Capacidad (kVA / kW)</label><input type="text" id="mp-capacidad" placeholder="Ej: 75 kVA"></div>
-        <div class="field"><label>Ubicación</label><input type="text" id="mp-ubicacion" placeholder="Cuarto de planta..."></div>
-      </div>
-      <div class="fg fg2">
-        <div class="field"><label>Municipio</label>
-          <select id="mp-ciudad">
-            <option value="Arauca">Arauca</option><option value="Saravena">Saravena</option>
-            <option value="Tame">Tame</option><option value="Fortul">Fortul</option>
-            <option value="Puerto Rondón">Puerto Rondón</option><option value="Cravo Norte">Cravo Norte</option>
-            <option value="Cubará">Cubará</option><option value="Arauquita">Arauquita</option>
-          </select>
-        </div>
-        <div class="field"><label>Inmueble / Despacho</label><input type="text" id="mp-despacho" placeholder="Palacio de Justicia..."></div>
-      </div>
-      <div class="fg fg2">
-        <div class="field"><label>N° de serie / Placa</label><input type="text" id="mp-nserie" placeholder="N° de placa o serie del fabricante"></div>
-        <div class="field"><label>Año de fabricación</label><input type="text" id="mp-anio" placeholder="Ej: 2019"></div>
-      </div>
-      <div style="font-size:10px;font-weight:700;color:#0d7377;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:4px;border-bottom:1px solid #b2dfdb"><i class="ti ti-droplet-filled"></i> Datos de combustible</div>
-      <div class="fg fg3">
-        <div class="field"><label>Capacidad del tanque (Lts)</label><input type="text" id="mp-cap-tanque" placeholder="Ej: 150"></div>
-        <div class="field"><label>Tipo de combustible</label>
-          <select id="mp-tipo-comb">
-            <option value="ACPM">ACPM (Diésel)</option>
-            <option value="Gasolina">Gasolina</option>
-            <option value="Gas">Gas natural</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-        <div class="field"><label>Uso promedio (Lts/hora)</label><input type="text" id="mp-uso-comb" placeholder="Ej: 8.5"></div>
-      </div>
-      <div class="fg fg1">
-        <div class="field"><label>Observaciones / Notas técnicas</label><textarea id="mp-notas" style="min-height:55px" placeholder="Características especiales, historial de intervenciones mayores..."></textarea></div>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
-        <button class="btn" onclick="cerrarEditarPlanta()">Cancelar</button>
-        <button class="btn btn-p" onclick="guardarEditarPlanta()"><i class="ti ti-device-floppy"></i>Guardar cambios</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script type="module">
 // ══ FIREBASE SDK ══
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -933,67 +753,25 @@ import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,orde
 // automáticamente en cualquier dispositivo o red
 // ══════════════════════════════════════════════════════
 const FB_CONFIG = {
-  apiKey:            "AIzaSyDGj2pc9pEvWbo-XSZvLu2NJ3YvIsYeZIQ",
-  authDomain:        "sige-plantas-arauca.firebaseapp.com",
-  projectId:         "sige-plantas-arauca",
-  storageBucket:     "sige-plantas-arauca.firebasestorage.app",
-  messagingSenderId: "710499533396",
-  appId:             "1:710499533396:web:73963d4cbe867ddccbe3c1"
+  apiKey:            "AIzaSyDx5Mqy2Tq2fKJer6-iHt54qKYxKA-zcl4",
+  authDomain:        "sige-judicial-arauca.firebaseapp.com",
+  projectId:         "sige-judicial-arauca",
+  storageBucket:     "sige-judicial-arauca.firebasestorage.app",
+  messagingSenderId: "268823929652",
+  appId:             "1:268823929652:web:eb507d87a3163b9af87b61"
 };
 // ══════════════════════════════════════════════════════
 
-const STORE_KEY='sige_pe_v1';
+const STORE_KEY='sige_ac_v1';
 const INMUEBLES={'Palacio de Justicia Calle 21':['Coordinación Administrativa de Arauca','Juzgado 1º de Familia','Juzgado 2º de Familia','Juzgado Civil del Circuito','Juzgado Laboral del Circuito','Juzgado 1º Administrativo','Juzgado 2º Administrativo','Juzgado 3º Administrativo','Juzgado 4º Administrativo','Juzgado 5º Administrativo','Juzgado 6º Administrativo','Juzgado 7º Administrativo','Despacho 1 Tribunal Administrativo','Despacho 2 Tribunal Administrativo','Despacho 3 Tribunal Administrativo','Despacho 1 Tribunal Superior','Despacho 2 Tribunal Superior','Despacho 3 Tribunal Superior','Secretaría del Tribunal Administrativo','Secretaría del Tribunal Superior'],'Palacio de Justicia SPA':['Juzgado 1º Civil Municipal','Juzgado 2º Civil Municipal','Juzgado 1º Penal Municipal','Juzgado 2º Penal Municipal','Juzgado 1º Penal del Circuito','Juzgado 2º Penal del Circuito','Juzgado 05 Penal Municipal con Funciones Mixtas','Juzgado Penal del Circuito Especializado de Arauca','Juzgado 2º Penal del Circuito Especializado de Arauca'],'Contraloría':['Juzgado Penal del Circuito de Saravena','Juzgado 3º Penal Municipal con Funciones Mixtas','Juzgado 4º Penal Municipal con Funciones Mixtas'],'CESPA':['Centro de Servicios Judiciales de Arauca','Juzgado 1º Penal del Circuito para Adolescentes - Conocimiento','Juzgado 1º Penal Municipal para Adolescentes']};
-const ESTADOS_ORDEN=['Solicitud','Entregado al Técnico','En Mantenimiento','Evaluación realizada','Tanqueo realizado','Entregado conforme','No conforme'];
-const CE_ESTADOS=['#378ADD','#7C3AED','#EF9F27','#0d9488','#0d7377','#1e8449','#c0392b'];
-const CT_TIPOS={'Preventivo':'#378ADD','Correctivo':'#EF9F27','Evaluación':'#7C3AED','Tanqueo':'#0d7377','Instalación':'#1e8449'};
+const ESTADOS_ORDEN=['Solicitud','Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'];
+const CE_ESTADOS=['#378ADD','#7C3AED','#EF9F27','#1e8449','#c0392b'];
+const CT_TIPOS={'Preventivo':'#378ADD','Correctivo':'#EF9F27','Instalación':'#1e8449','Desmonte':'#E24B4A'};
 const SATS={'1':'No Satisfactorio','2':'Poco Satisfactorio','3':'Normal','4':'Satisfactorio','5':'Muy Satisfactorio'};
 const SCOLORS={'1':'#c0392b','2':'#d4871a','3':'#7c6500','4':'#1e8449','5':'#1a4d8a'};
 const SBGS={'1':'#fce8e8','2':'#fff3e0','3':'#fffde7','4':'#e6f7ee','5':'#e8f0fa'};
 const SAT_ICOS={'1':'ti-mood-sad','2':'ti-mood-confused','3':'ti-mood-neutral','4':'ti-mood-smile','5':'ti-mood-happy'};
-// ══ CATÁLOGO DE LAS 16 PLANTAS ELÉCTRICAS (inventario base — Formato de necesidad 2026) ══
-const CATALOGO=[
-  {serial:'PN001',descripcion:'Planta No Encabinada - Motobombas',tipoEq:'Planta No Encabinada',marca:'N/I',modelo:'',capacidad:'N/I',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'Palacio de Justicia Calle 21',despacho:'Palacio de Justicia Calle 21 — Motobombas',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'PN002',descripcion:'Planta Roja - Normal',tipoEq:'Planta Diésel Estacionaria',marca:'CUMMINS',modelo:'',capacidad:'75 kVA',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'Palacio de Justicia Calle 21',despacho:'Palacio de Justicia Calle 21 — Suministro normal',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'PN003',descripcion:'Planta Verde - Aires',tipoEq:'Planta Diésel Estacionaria',marca:'VERMA',modelo:'',capacidad:'N/I',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'Palacio de Justicia Calle 21',despacho:'Palacio de Justicia Calle 21 — Aires acondicionados',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'PA001',descripcion:'Planta Roja - Normal',tipoEq:'Planta Diésel Estacionaria',marca:'CUMMINS',modelo:'',capacidad:'75 kVA',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'Palacio de Justicia SPA',despacho:'Palacio de Justicia SPA (Sistema Penal Acusatorio)',estadoBase:'Revisión',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'CO001',descripcion:'Planta Roja - Normal',tipoEq:'Planta Diésel Estacionaria',marca:'CUMMINS',modelo:'',capacidad:'75 kVA',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'Contraloría',despacho:'Edificio Contraloría',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'IGU001',descripcion:'Planta Gris - Normal',tipoEq:'Planta Diésel Estacionaria',marca:'N/I',modelo:'',capacidad:'N/I',ubicacion:'Cuarto de planta',ciudad:'Arauca',inmueble:'CESPA',despacho:'CESPA — Centro de Servicios Judiciales para Adolescentes',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'SAF001',descripcion:'Planta Familia',tipoEq:'Planta Diésel',marca:'ALTERMAN',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Saravena',inmueble:'',despacho:'Juzgado de Familia — Saravena',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'SAP001',descripcion:'Planta Promiscuos',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Saravena',inmueble:'',despacho:'Juzgados Promiscuos — Saravena',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'SAC001',descripcion:'Planta Circuito',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Saravena',inmueble:'',despacho:'Juzgado de Circuito — Saravena',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'TA001',descripcion:'Planta Promiscuo 1',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Tame',inmueble:'',despacho:'Juzgado Promiscuo 1 — Tame',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'TA002',descripcion:'Planta Promiscuo 2',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Tame',inmueble:'',despacho:'Juzgado Promiscuo 2 — Tame',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'RO001',descripcion:'Planta Rondón',tipoEq:'Planta Diésel',marca:'ALTERMAN',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Puerto Rondón',inmueble:'',despacho:'Despacho judicial — Puerto Rondón',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'ARAU001',descripcion:'Planta Arauquita',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Arauquita',inmueble:'',despacho:'Despacho judicial — Arauquita',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'FOR001',descripcion:'Planta Fortul',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Fortul',inmueble:'',despacho:'Despacho judicial — Fortul',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'CUB001',descripcion:'Planta Cubará',tipoEq:'Planta Diésel',marca:'KAMA',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Cubará',inmueble:'',despacho:'Despacho judicial — Cubará (Boyacá)',estadoBase:'Operando',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''},
-  {serial:'CR001',descripcion:'Planta Cravo Norte',tipoEq:'Planta Diésel',marca:'ALTERMAN',modelo:'',capacidad:'N/I',ubicacion:'Despacho judicial',ciudad:'Cravo Norte',inmueble:'',despacho:'Despacho judicial — Cravo Norte',estadoBase:'Revisión',capTanque:'',tipoComb:'ACPM',usoCombPromedio:''}
-];
-// ══ ESPECIFICACIONES TÉCNICAS por marca (las detalladas provienen del estudio de necesidad) ══
-const SPECS_PLANTA={
-  'CUMMINS':[['Motor','Cummins — Diésel'],['Capacidad','75 kVA'],['RPM de trabajo','1800 RPM'],['Voltaje','220 V / 60 Hz'],['Sistema','Encabinada con tablero de control'],['Combustible','ACPM (Diésel)']]
-};
-// ══ BITÁCORA HISTÓRICA (seguimiento real — archivo RELACION_PLANTAS) — solo lectura ══
-const BITACORA_HIST=[]; // Datos históricos 2024–2025 eliminados a solicitud; la bitácora ahora se nutre solo de las órdenes SIGE
-// Normaliza el estado operativo de una planta a una de las 3 categorías base
-function normEstado(e){e=(e||'').trim().toLowerCase();if(e.startsWith('opera'))return 'Operando';if(e.startsWith('dañ')||e.startsWith('dan'))return 'Dañado';if(e.startsWith('revis'))return 'Revisión';return e?e.charAt(0).toUpperCase()+e.slice(1):'';}
-const EST_PLANTA_COLOR={'Operando':['#155230','#e6f7ee','#9ae6c0'],'Revisión':['#8a5a00','#fff3e0','#ffd699'],'Dañado':['#c0392b','#fce8e8','#f5b7b1'],'':['#555','#eee','#ccc']};
-function bdgEstadoPlanta(e){e=normEstado(e);const c=EST_PLANTA_COLOR[e]||EST_PLANTA_COLOR[''];const ico=e==='Operando'?'ti-circle-check':e==='Revisión'?'ti-alert-triangle':e==='Dañado'?'ti-alert-octagon':'ti-help';return `<span class="bdg" style="color:${c[0]};background:${c[1]};border:.5px solid ${c[2]}"><i class="ti ${ico}" style="font-size:10px"></i> ${e||'Sin dato'}</span>`;}
-// Devuelve equipos conocidos (registros previos + catálogo base), sin duplicar por serial
-// ══ CATÁLOGO DE EDICIONES DE PLANTAS (sobreescribe CATALOGO base, persiste en localStorage) ══
-const CAT_EDITS_KEY='sige_cat_v1';
-function cargarCatEdits(){try{return JSON.parse(localStorage.getItem(CAT_EDITS_KEY)||'{}');}catch(e){return {};}}
-function guardarCatEdits(edits){try{localStorage.setItem(CAT_EDITS_KEY,JSON.stringify(edits));}catch(e){}}
-function equiposConocidos(){
-  const edits=cargarCatEdits();
-  const map=new Map();
-  CATALOGO.forEach(e=>map.set((e.serial||'').toUpperCase(),{...e,...(edits[(e.serial||'').toUpperCase()]||{}),_catalogo:true}));
-  regs.filter(r=>r.serial).sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)
-      .forEach(r=>map.set((r.serial||'').toUpperCase(),{...map.get((r.serial||'').toUpperCase())||{},...r}));
-  return [...map.values()];
-}
-let regs=[],raReg=null,ordenActiva=null,decisionSeleccionada=null,firmaCtx=null,firmaVacia=true,chTipo=null,chEst=null,chSat=null,chFunc=null;
+let regs=[],raReg=null,ordenActiva=null,decisionSeleccionada=null,firmaCtx=null,firmaVacia=true,chTipo=null,chEst=null,chSat=null;
 let db=null,fbApp=null,isDemoMode=false;
 // ══ FIREBASE CONNECT ══
 window.conectarFirebase=async()=>{
@@ -1003,7 +781,7 @@ window.conectarFirebase=async()=>{
     const cfg=JSON.parse(raw.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*/g,''));
     fbApp=initializeApp(cfg,'sige_'+Date.now());
     db=getFirestore(fbApp);
-    await getDocs(query(collection(db,'ordenes_plantas')));
+    await getDocs(query(collection(db,'ordenes')));
     isDemoMode=false;
     localStorage.setItem('sige_fb_cfg',raw);
     setDbStatus('firebase');
@@ -1061,7 +839,7 @@ async function reconectar(){
   try{
     fbApp=initializeApp(cfg,'sige_rc_'+Date.now());
     db=getFirestore(fbApp);
-    await getDocs(query(collection(db,'ordenes_plantas'),orderBy('_ts','desc')));
+    await getDocs(query(collection(db,'ordenes'),orderBy('_ts','desc')));
     isDemoMode=false;
     setDbStatus('firebase');
     await loadData();
@@ -1078,7 +856,7 @@ async function loadData(){
     renderAll();return;
   }
   try{
-    const snap=await getDocs(query(collection(db,'ordenes_plantas'),orderBy('_ts','desc')));
+    const snap=await getDocs(query(collection(db,'ordenes'),orderBy('_ts','desc')));
     regs=snap.docs.map(d=>({...d.data(),id:d.id,_ts:d.data()._ts?.toMillis?.()??0}));
     renderAll();
   }catch(e){showToast('Error al cargar datos: '+e.message,'e');}
@@ -1095,11 +873,11 @@ async function saveData(reg,esNuevo=false){
     const {id,...datos}=reg;
     datos._ts=Timestamp.now();
     if(esNuevo){
-      const ref=await addDoc(collection(db,'ordenes_plantas'),datos);
+      const ref=await addDoc(collection(db,'ordenes'),datos);
       reg.id=ref.id;
       regs.unshift(reg);
     }else{
-      await updateDoc(doc(db,'ordenes_plantas',id),datos);
+      await updateDoc(doc(db,'ordenes',id),datos);
       const i=regs.findIndex(r=>r.id===id);if(i>=0)regs[i]=reg;
     }
     renderAll();
@@ -1112,7 +890,7 @@ async function deleteData(id){
     try{localStorage.setItem(STORE_KEY,JSON.stringify(regs));}catch(e){}
     renderAll();return;
   }
-  try{await deleteDoc(doc(db,'ordenes_plantas',id));regs=regs.filter(x=>x.id!==id);renderAll();}
+  try{await deleteDoc(doc(db,'ordenes',id));regs=regs.filter(x=>x.id!==id);renderAll();}
   catch(e){showToast('Error al eliminar: '+e.message,'e');}
 }
 const gid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
@@ -1121,179 +899,192 @@ const fmtNow=()=>new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'2-d
 const hoy=()=>new Date().toISOString().split('T')[0];
 function showToast(msg,t){const b=document.getElementById('toast-box');b.className='toast t'+(t||'s');b.innerHTML='<i class="ti ti-'+(t==='e'?'alert-circle':t==='w'?'alert-triangle':'circle-check')+'"></i>'+msg;b.classList.add('show');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('show'),3500);}
 function showA(msg,t){const el=document.getElementById('alert-box');el.className='alert show a'+(t||'s');el.innerHTML='<i class="ti ti-'+(t==='e'?'alert-circle':'circle-check')+'"></i> '+msg;setTimeout(()=>el.classList.remove('show'),3500);}
-function bdgOrden(e){const m={'Solicitud':'b-sol','Entregado al Técnico':'b-eval','En Mantenimiento':'b-mant','Pendiente Evaluación':'b-eval','Evaluación realizada':'b-conf','Tanqueo realizado':'b-conf','Entregado conforme':'b-conf','No conforme':'b-nconf'};const ico={'Solicitud':'ti-file-plus','Entregado al Técnico':'ti-user-check','En Mantenimiento':'ti-tool','Pendiente Evaluación':'ti-clock','Evaluación realizada':'ti-clipboard-check','Tanqueo realizado':'ti-droplet-filled','Entregado conforme':'ti-circle-check','No conforme':'ti-circle-x'};return`<span class="bdg ${m[e]||'b-def'}"><i class="ti ${ico[e]||'ti-circle'}" style="font-size:9px"></i>${e||'—'}</span>`;}
+function bdgOrden(e){const m={'Solicitud':'b-sol','Entregado al Técnico':'b-eval','En Mantenimiento':'b-mant','Pendiente Evaluación':'b-eval','Entregado conforme':'b-conf','No conforme':'b-nconf'};const ico={'Solicitud':'ti-file-plus','Entregado al Técnico':'ti-user-check','En Mantenimiento':'ti-tool','Pendiente Evaluación':'ti-clock','Entregado conforme':'ti-circle-check','No conforme':'ti-circle-x'};return`<span class="bdg ${m[e]||'b-def'}"><i class="ti ${ico[e]||'ti-circle'}" style="font-size:9px"></i>${e||'—'}</span>`;}
 function bdgTipo(t){const c=CT_TIPOS[t]||'#94a3b8';return`<span class="bdg" style="background:${c}22;color:${c}">${t||'—'}</span>`;}
-// ══════════ CONTROL DE ACCESO (roles y sesión) ══════════
-// NOTA: Las credenciales viven en el código del navegador, por lo que esta capa NO es
-// criptográficamente segura (cualquiera con acceso al archivo puede verlas). Sirve como
-// control de acceso operativo. Para seguridad real use Firebase Authentication + reglas.
-const USUARIOS=[
-  {usuario:'admin',       clave:'arauca2026',     rol:'admin',        nombre:'Administrador'},
-  {usuario:'tecnico',     clave:'tecnico2026',    rol:'tecnico',      nombre:'Tecnico de mantenimiento'},
-  {usuario:'contratista', clave:'contratista2026',rol:'contratista',  nombre:'Contratista - Inversiones Integrales'}
-];
-const PERMISOS={
-  admin:       {tabs:['dashboard','nuevo','historial','hojas','config'], crear:true, asignar:true, ejecutar:true, evaluar:true, editar:true, eliminar:true},
-  contratista: {tabs:['dashboard','nuevo','historial','hojas'],                  crear:false,asignar:true, ejecutar:true, evaluar:true, editar:true, eliminar:false},
-  tecnico:     {tabs:['nuevo','historial','hojas'],                      crear:false,asignar:false,ejecutar:true, evaluar:true, editar:false,eliminar:false},
-  final:       {tabs:['dashboard','hojas'],                              crear:false,asignar:false,ejecutar:false,evaluar:false,editar:false,eliminar:false, soloLectura:true}
-};
-let SESION=null;
-function rolActivo(){return SESION?SESION.rol:null;}
-function puede(accion){const p=PERMISOS[rolActivo()];return !!(p&&p[accion]);}
-function iniciarSesion(){
-  const u=(document.getElementById('login-user').value||'').trim().toLowerCase();
-  const c=document.getElementById('login-pass').value||'';
-  const err=document.getElementById('login-error');
-  const found=USUARIOS.find(x=>x.usuario===u && x.clave===c);
-  if(!found){ err.style.display='block'; document.getElementById('login-error-txt').textContent='Usuario o contraseña incorrectos.'; return; }
-  abrirSesion({rol:found.rol,nombre:found.nombre});
-}
-function entrarComoFinal(){ abrirSesion({rol:'final',nombre:'Usuario final (consulta)'}); }
-function abrirSesion(s){
-  SESION=s;
-  try{sessionStorage.setItem('sige_sesion',JSON.stringify(s));}catch(e){}
-  document.getElementById('login-overlay').style.display='none';
-  document.getElementById('app-main').style.display='';
-  document.getElementById('login-pass').value='';
-  document.getElementById('login-error').style.display='none';
-  aplicarPermisos();
-}
-function cerrarSesion(){
-  SESION=null;
-  try{sessionStorage.removeItem('sige_sesion');}catch(e){}
-  document.getElementById('app-main').style.display='none';
-  document.getElementById('login-overlay').style.display='flex';
-  document.getElementById('login-user').value='';
-  document.getElementById('login-pass').value='';
-}
-function aplicarPermisos(){
-  const p=PERMISOS[rolActivo()]; if(!p)return;
-  document.getElementById('user-chip').style.display='block';
-  document.getElementById('btn-logout').style.display='';
-  document.getElementById('user-nombre').textContent=SESION.nombre;
-  const rolLbl={admin:'Administrador',contratista:'Contratista',tecnico:'Técnico',final:'Consulta'};
-  document.getElementById('user-rol').textContent=rolLbl[SESION.rol]||SESION.rol;
-  document.querySelectorAll('.nav-btn[data-tab]').forEach(b=>{
-    const tab=b.getAttribute('data-tab');
-    // tecnico: tiene acceso al panel 'nuevo' para la firma, pero no como pestaña navegable
-    const navVisible = p.tabs.includes(tab) && !(['tecnico','contratista'].includes(rolActivo()) && tab==='nuevo');
-    b.style.display = navVisible ? '' : 'none';
-  });
-  const primera=p.tabs[0];
-  const btn=document.querySelector(`.nav-btn[data-tab="${primera}"]`);
-  if(btn) goTab(primera,btn);
-}
-function restaurarSesion(){
-  try{const s=JSON.parse(sessionStorage.getItem('sige_sesion'));if(s&&s.rol){abrirSesion(s);return true;}}catch(e){}
-  return false;
-}
-function goTab(t,btn){
-  if(SESION){const pr=PERMISOS[rolActivo()]; if(pr&&!pr.tabs.includes(t))return;}
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+t).classList.add('active');if(btn)btn.classList.add('active');if(t==='historial')renderHist();if(t==='dashboard')renderDash();if(t==='hojas'){renderHojas();}if(t==='nuevo'){mostrarPaso(1);limpiar();}if(t==='config'){const s=localStorage.getItem('sige_fb_cfg');if(s&&document.getElementById('fb-config-input'))document.getElementById('fb-config-input').value=s;}}
+function goTab(t,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+t).classList.add('active');btn.classList.add('active');if(t==='historial')renderHist();if(t==='dashboard')renderDash();if(t==='buscar'){document.getElementById('res-bus').innerHTML='<div class="empty"><i class="ti ti-search"></i>Escriba un número de serie</div>';document.getElementById('inp-bus').value='';}if(t==='nuevo'){mostrarPaso(1);limpiar();}if(t==='config'){const s=localStorage.getItem('sige_fb_cfg');if(s&&document.getElementById('fb-config-input'))document.getElementById('fb-config-input').value=s;}}
 function actualizarStepper(paso){[1,2,3,4,5].forEach(n=>{const si=document.getElementById('si'+n),sn=document.getElementById('sn'+n);if(!si)return;si.classList.remove('active','done');sn.classList.remove('active','done');if(n<paso){si.classList.add('done');sn.classList.add('done');sn.innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';}else if(n===paso){si.classList.add('active');sn.classList.add('active');sn.textContent=n===5?'⚖':n;}else{sn.textContent=n===5?'⚖':n;}});[1,2,3,4].forEach(n=>{const sc=document.getElementById('sc'+n);if(sc)sc.classList.toggle('done',n<paso);});}
-function mostrarPaso(n){['etapa1','etapa2b','etapa2','etapa3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});if(n===2){document.getElementById('etapa2b').style.display='block';}else{const e=document.getElementById('etapa'+(n<=2?n:n-1));if(e&&n!==2){}const ids={1:'etapa1',2:'etapa2b',3:'etapa2',4:'etapa3'};const el=document.getElementById(ids[n]);if(el)el.style.display='block';}actualizarStepper(n);if(n===4){initFirma();const b=document.getElementById('tecnico-firma-banner');if(b)b.style.display=rolActivo()==='tecnico'?'flex':'none';}window.scrollTo(0,0);}
-// Muestra el checklist de evaluación solo cuando el tipo de mantenimiento es Evaluación
-function onTipoMantChange(){
-  const tipo=document.getElementById('f-tipo').value;
-  const cl=document.getElementById('checklist-eval');
-  if(!cl)return;
-  if(tipo==='Tanqueo'){const cl2=document.getElementById('checklist-eval');if(cl2)cl2.style.display='none';const ct=document.getElementById('tanqueo-panel');if(ct)ct.style.display='block';const d2=document.getElementById('f-descripcion');if(d2&&!d2.value.trim())d2.value='Carga de combustible ACPM a la planta eléctrica';}else if(tipo==='Evaluación'){
-    cl.style.display='block';
-    const fe=document.getElementById('ev-fecha'); if(fe && !fe.value) fe.value=hoy();
-    const d=document.getElementById('f-descripcion'); if(d && !d.value.trim()) d.value='Encendido e inspección de planta eléctrica';
-  }else{
-    cl.style.display='none';
-  const ct2=document.getElementById('tanqueo-panel');if(ct2)ct2.style.display='none';
-  }
-}
-function onCiudadChange(){
-  const ciudad=document.getElementById('f-ciudad').value;
-  const gI=document.getElementById('grupo-inmueble');
-  const gP=document.getElementById('grupo-planta');
-  document.getElementById('f-inmueble').value='';
-  document.getElementById('f-despacho').value='';
-  limpiarSeleccionEquipo();
-  if(ciudad==='Arauca'){
-    gI.style.display='block';
-    gP.style.display='none';
-  }else if(ciudad){
-    gI.style.display='none';
-    poblarPlantas(ciudad,'');
-    gP.style.display='block';
-  }else{
-    gI.style.display='none';
-    gP.style.display='none';
-  }
-}
-function onInmuebleChange(){
-  const inm=document.getElementById('f-inmueble').value;
-  const gP=document.getElementById('grupo-planta');
-  limpiarSeleccionEquipo();
-  if(inm){ poblarPlantas('Arauca',inm); gP.style.display='block'; }
-  else{ gP.style.display='none'; }
-}
-function poblarPlantas(ciudad,inmueble){
-  const sel=document.getElementById('f-planta');
-  if(!sel)return;
-  sel.innerHTML='<option value="">Seleccionar planta...</option>';
-  const lista=CATALOGO.filter(e=>e.ciudad===ciudad && (inmueble? e.inmueble===inmueble : true));
-  lista.forEach(e=>{
-    const o=document.createElement('option');
-    o.value=e.serial;
-    o.textContent=`${e.serial} — ${e.descripcion}${e.marca&&e.marca!=='N/I'?' ('+e.marca+(e.capacidad&&e.capacidad!=='N/I'?' · '+e.capacidad:'')+')':''}`;
-    sel.appendChild(o);
-  });
-  if(!lista.length){const o=document.createElement('option');o.value='';o.disabled=true;o.textContent='(Sin plantas registradas en esta ubicación)';sel.appendChild(o);}
-}
-// Al elegir la planta: carga por defecto tipo, marca, capacidad y ubicación desde el catálogo
-function onPlantaChange(){
-  const serial=document.getElementById('f-planta').value;
+function mostrarPaso(n){['etapa1','etapa2b','etapa2','etapa3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});if(n===2){document.getElementById('etapa2b').style.display='block';}else{const e=document.getElementById('etapa'+(n<=2?n:n-1));if(e&&n!==2){}const ids={1:'etapa1',2:'etapa2b',3:'etapa2',4:'etapa3'};const el=document.getElementById(ids[n]);if(el)el.style.display='block';}actualizarStepper(n);if(n===4)initFirma();window.scrollTo(0,0);}
+function onCiudadChange(){const ciudad=document.getElementById('f-ciudad').value,gI=document.getElementById('grupo-inmueble'),gT=document.getElementById('grupo-despacho-texto'),gDA=document.getElementById('grupo-despacho-arauca');document.getElementById('f-inmueble').value='';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';document.getElementById('f-despacho').value='';const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';gDA.style.display='none';if(ciudad==='Arauca'){gI.style.display='block';gT.style.display='none';}else if(ciudad){gI.style.display='none';gT.style.display='block';}else{gI.style.display='none';gT.style.display='none';}}
+function onInmuebleChange(){const inm=document.getElementById('f-inmueble').value,sel=document.getElementById('f-despacho-arauca'),gDA=document.getElementById('grupo-despacho-arauca');sel.innerHTML='<option value="">Seleccionar despacho...</option>';document.getElementById('f-despacho').value='';if(inm&&INMUEBLES[inm]){INMUEBLES[inm].forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});gDA.style.display='block';}else{gDA.style.display='none';}}
+function getDespacho(){const ciudad=document.getElementById('f-ciudad').value;if(ciudad==='Arauca'){const inm=document.getElementById('f-inmueble').value,dep=document.getElementById('f-despacho-arauca').value;if(!inm||!dep)return null;return{despacho:`${inm} — ${dep}`,inmueble:inm};}else{const dep=(document.getElementById('f-despacho-texto')||{}).value||'';if(!dep.trim())return null;return{despacho:dep.trim(),inmueble:''};}}
+function buscarEquipo(){
+  const rawSerial=(document.getElementById('f-serial').value||'').trim().toUpperCase();
   const panel=document.getElementById('equipo-info-panel');
-  if(!serial){ document.getElementById('f-serial').value=''; if(panel)panel.style.display='none'; return; }
-  const e=CATALOGO.find(x=>x.serial===serial);
-  if(!e)return;
-  document.getElementById('f-serial').value=e.serial;
-  const cap=(e.capacidad&&e.capacidad!=='N/I')?e.capacidad:'No registrada';
-  document.getElementById('ei-tipo').textContent=e.tipoEq||'—';
-  document.getElementById('ei-marca').textContent=e.marca||'—';
-  document.getElementById('ei-cap').textContent=cap;
-  document.getElementById('ei-ubic').textContent=e.ubicacion||'—';
-  document.getElementById('ei-despacho').textContent=e.despacho||e.inmueble||e.ciudad||'—';
-  // Historial de intervenciones de la planta
-  const hist=regs.filter(x=>(x.serial||'').toUpperCase()===serial.toUpperCase()).sort((a,b)=>b.creadoEn>a.creadoEn?1:-1);
-  const histEl=document.getElementById('ei-historial');
-  histEl.innerHTML = hist.length? `
-    <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px"><i class="ti ti-history"></i> Historial (${hist.length} orden${hist.length>1?'es':''})</div>
-    <div style="max-height:130px;overflow-y:auto">${hist.map(h=>`
-      <div class="ei-hist-row">
-        <span style="font-family:monospace;font-size:10px;font-weight:700;color:var(--c1);flex-shrink:0">${fmtConsecutivo(h)}</span>
-        <span>${bdgTipo(h.tipoMant)}</span>
-        <span style="flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.despacho||'—'}</span>
-        <span style="color:var(--text3);font-size:10px;flex-shrink:0">${h.fechaSolicitud?fmt(h.fechaSolicitud):'—'}</span>
-        ${bdgOrden(h.estadoOrden||'Solicitud')}
-      </div>`).join('')}</div>` : '';
-  panel.style.display='block';
-}
-function getDespacho(){
-  const ciudad=document.getElementById('f-ciudad').value;
-  if(!ciudad)return null;
-  if(ciudad==='Arauca'){
-    const inm=document.getElementById('f-inmueble').value;
-    if(!inm)return null;
-    return {inmueble:inm, despacho:inm};          // la planta cubre todo el inmueble
-  }else{
-    const inm='Despacho Judicial de '+ciudad;
-    return {inmueble:inm, despacho:inm};
+  const grupoNuevo=document.getElementById('grupo-equipo-nuevo');
+  const sugBox=document.getElementById('serial-sugerencias');
+
+  if(!rawSerial){
+    panel.style.display='none';
+    grupoNuevo.style.display='grid';
+    sugBox.style.display='none';
+    return;
   }
-}
-// (Flujo por número de serie retirado: ahora la planta se elige desde el selector y autocompleta los datos)
-function limpiarSeleccionEquipo(){
-  const sel=document.getElementById('f-planta'); if(sel) sel.value='';
-  const panel=document.getElementById('equipo-info-panel'); if(panel) panel.style.display='none';
-  const s=document.getElementById('f-serial'); if(s) s.value='';
+
+  // Buscar coincidencias parciales para autocomplete
+  const coincidencias=[...new Map(
+    regs.filter(r=>(r.serial||'').toUpperCase().includes(rawSerial))
+        .sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)
+        .map(r=>[r.serial.toUpperCase(),r])
+  ).values()];
+
+  // Coincidencia exacta
+  const exacto = coincidencias.find(r=>(r.serial||'').toUpperCase()===rawSerial);
+
+  if(exacto){
+    // Ocultar sugerencias — match exacto
+    sugBox.style.display='none';
+    seleccionarEquipo(exacto);
+  } else if(coincidencias.length>0 && rawSerial.length>=2){
+    // Mostrar lista de sugerencias
+    sugBox.style.display='block';
+    sugBox.innerHTML=coincidencias.slice(0,8).map(r=>`
+      <div class="serial-sug-item" onclick="elegirSugerencia('${r.serial}')">
+        <div>
+          <div><span class="serial-sug-serial">${r.serial}</span></div>
+          <div class="serial-sug-info">${[r.tipoEq,r.marca,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')||'Sin datos'}</div>
+          <div class="serial-sug-desp"><i class="ti ti-building" style="font-size:10px"></i> ${r.despacho||'—'} · ${r.ciudad||'—'}</div>
+        </div>
+      </div>`).join('');
+    panel.style.display='none';
+    grupoNuevo.style.display='grid';
+  } else {
+    // Serial no encontrado en registros
+    sugBox.style.display='none';
+    panel.style.display='none';
+    grupoNuevo.style.display='grid';
+  }
 }
 
+function elegirSugerencia(serial){
+  document.getElementById('f-serial').value=serial;
+  document.getElementById('serial-sugerencias').style.display='none';
+  const r=regs.filter(x=>(x.serial||'').toUpperCase()===serial.toUpperCase())
+              .sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];
+  if(r) seleccionarEquipo(r);
+}
+
+function seleccionarEquipo(r){
+  const panel=document.getElementById('equipo-info-panel');
+  const grupoNuevo=document.getElementById('grupo-equipo-nuevo');
+
+  // Datos básicos
+  document.getElementById('ei-tipo').textContent=r.tipoEq||'—';
+  document.getElementById('ei-marca').textContent=r.marca||'—';
+  document.getElementById('ei-cap').textContent=r.capacidad?r.capacidad+' BTU':'—';
+  document.getElementById('ei-ubic').textContent=r.ubicacion||'—';
+  document.getElementById('ei-despacho').textContent=r.despacho||(r.ciudad||'—');
+
+  // Autocompletar ciudad y despacho en el formulario
+  const citySelect=document.getElementById('f-ciudad');
+  if(r.ciudad && citySelect){
+    citySelect.value=r.ciudad;
+    onCiudadChange();
+    // Rellenar inmueble y despacho según ciudad
+    if(r.ciudad==='Arauca'){
+      setTimeout(()=>{
+        const inmSel=document.getElementById('f-inmueble');
+        if(inmSel && r.inmueble){
+          inmSel.value=r.inmueble;
+          onInmuebleChange();
+          setTimeout(()=>{
+            const dspSel=document.getElementById('f-despacho-arauca');
+            // Extraer el despacho sin el prefijo del inmueble
+            const dspVal=r.despacho.includes('—')?r.despacho.split('—').slice(1).join('—').trim():r.despacho;
+            if(dspSel){
+              // Buscar opción que coincida
+              const opts=[...dspSel.options];
+              const found=opts.find(o=>o.value.trim()===dspVal.trim());
+              if(found) dspSel.value=found.value;
+              else{
+                // Agregar como opción si no existe
+                const opt=document.createElement('option');
+                opt.value=dspVal;opt.textContent=dspVal;
+                dspSel.appendChild(opt);dspSel.value=dspVal;
+              }
+              syncDespachoFromSel();
+            }
+          },80);
+        }
+      },50);
+    } else {
+      // Otros municipios: rellenar campo texto
+      setTimeout(()=>{
+        const dtxt=document.getElementById('f-despacho-texto');
+        if(dtxt && r.despacho) dtxt.value=r.despacho;
+        document.getElementById('f-despacho').value=r.despacho||'';
+      },50);
+    }
+  }
+
+  // Historial del equipo
+  const historiales=regs.filter(x=>(x.serial||'').toUpperCase()===(r.serial||'').toUpperCase())
+                        .sort((a,b)=>b.creadoEn>a.creadoEn?1:-1);
+  const histEl=document.getElementById('ei-historial');
+  if(historiales.length){
+    histEl.innerHTML=`
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px">
+        <i class="ti ti-history"></i> Historial (${historiales.length} orden${historiales.length>1?'es':''})
+      </div>
+      <div style="max-height:130px;overflow-y:auto">
+        ${historiales.map(h=>`
+          <div class="ei-hist-row">
+            <span style="font-family:monospace;font-size:10px;font-weight:700;color:var(--c1);flex-shrink:0">${fmtConsecutivo(h)}</span>
+            <span>${bdgTipo(h.tipoMant)}</span>
+            <span style="flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.despacho||'—'}</span>
+            <span style="color:var(--text3);font-size:10px;flex-shrink:0">${h.fechaSolicitud?fmt(h.fechaSolicitud):'—'}</span>
+            ${bdgOrden(h.estadoOrden||'Solicitud')}
+          </div>`).join('')}
+      </div>`;
+  } else {
+    histEl.innerHTML='';
+  }
+
+  panel.style.display='block';
+  grupoNuevo.style.display='none';
+
+  // Mostrar equipos del mismo despacho (buscador inverso)
+  mostrarEquiposDespacho(r.despacho,r.serial);
+}
+
+function mostrarEquiposDespacho(despacho, serialActual){
+  if(!despacho) return;
+  const panel=document.getElementById('busq-despacho-panel');
+  const resultado=document.getElementById('busq-despacho-resultado');
+  // Equipos únicos del mismo despacho (excluyendo el actual)
+  const otrosSeriales=[...new Map(
+    regs.filter(r=>r.despacho===despacho && (r.serial||'').toUpperCase()!==(serialActual||'').toUpperCase() && r.serial)
+        .map(r=>[r.serial.toUpperCase(),r])
+  ).values()];
+
+  if(!otrosSeriales.length){panel.style.display='none';return;}
+  panel.style.display='block';
+  resultado.innerHTML=`
+    <div style="font-size:11px;color:var(--amber);margin-bottom:6px">
+      Otros equipos registrados en <strong>${despacho.split('—').pop().trim()}</strong>:
+    </div>
+    ${otrosSeriales.map(r=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--amber-b);font-size:11px">
+        <span class="serial-tag" style="cursor:pointer" onclick="elegirSugerencia('${r.serial}')" title="Clic para seleccionar">${r.serial}</span>
+        <span style="color:var(--amber)">${[r.tipoEq,r.marca,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')||'—'}</span>
+        <span style="margin-left:auto;color:var(--text3);font-size:10px">${bdgOrden(r.estadoOrden||'Solicitud')}</span>
+        <button class="btn btn-sm" style="padding:2px 7px;font-size:10px" onclick="elegirSugerencia('${r.serial}')"><i class="ti ti-arrow-up-right"></i></button>
+      </div>`).join('')}`;
+}
+
+function limpiarSeleccionEquipo(){
+  document.getElementById('equipo-info-panel').style.display='none';
+  document.getElementById('grupo-equipo-nuevo').style.display='grid';
+  document.getElementById('serial-sugerencias').style.display='none';
+  document.getElementById('busq-despacho-panel').style.display='none';
+  document.getElementById('f-serial').value='';
+  document.getElementById('f-serial').focus();
+}
+
+function syncDespachoFromSel(){
+  const inm=document.getElementById('f-inmueble').value;
+  const dep=document.getElementById('f-despacho-arauca').value;
+  if(inm&&dep) document.getElementById('f-despacho').value=`${inm} — ${dep}`;
+}
 // ── CONSECUTIVO ──
 const CONSEC_KEY='sige_consecutivo_v1';
 function getNextConsecutivo(){
@@ -1312,7 +1103,7 @@ function fmtConsecutivo(r){
   return'—';
 }
 
-async function guardarSolicitud(){const gv=id=>{const e=document.getElementById(id);return e?(''+e.value).trim():'';};const ciudad=document.getElementById('f-ciudad').value,tipo=document.getElementById('f-tipo').value,serial=(document.getElementById('f-serial').value||'').trim().toUpperCase(),desc=document.getElementById('f-descripcion').value.trim();const funcionando=gv('f-funcionando');if(!ciudad||!tipo||!desc){showA('Complete todos los campos obligatorios (*)','e');return;}if(!funcionando){showA('Indique si la planta está funcionando (Sí/No)','e');return;}const despInfo=getDespacho();if(!despInfo){showA('Seleccione el inmueble','e');return;}if(!serial){showA('Seleccione la planta eléctrica','e');return;}const primero=equiposConocidos().filter(r=>(r.serial||'').toUpperCase()===serial)[0];const consec=getNextConsecutivo();const reg={id:gid(),consecutivo:consec.num,anioOrden:consec.anio,codigoOrden:consec.codigo,serial,ciudad,inmueble:despInfo.inmueble,despacho:despInfo.despacho,tipoMant:tipo,descripcion:desc,funcionando,evaluacion:(tipo==='Evaluación'?{encendido:gv('ev-encendido'),tiempo:gv('ev-tiempo'),fecha:gv('ev-fecha'),horas:gv('ev-horas'),aceite:gv('ev-aceite'),refrigerante:gv('ev-refrigerante'),combustible:gv('ev-combustible'),obs:gv('ev-obs')}:null),tanqueo:(tipo==='Tanqueo'?{tipoComb:gv('tq-tipo-comb'),litros:gv('tq-litros'),fecha:gv('tq-fecha'),nivelAntes:gv('tq-nivel-antes'),nivelDespues:gv('tq-nivel-despues'),obs:gv('tq-obs')}:null),fechaSolicitud:document.getElementById('f-fecha').value,tipoEq:primero?primero.tipoEq:'',marca:primero?primero.marca:'',modelo:primero?(primero.modelo||''):'',capacidad:primero?primero.capacidad:'',ubicacion:primero?primero.ubicacion:'',estadoOrden:(['Evaluación','Tanqueo'].includes(tipo)?tipo+' realizado':'Solicitud'),estado:(['Evaluación','Tanqueo'].includes(tipo)?tipo+' realizado':'Solicitado'),creadoEn:fmtNow(),timeline:[{fecha:fmtNow(),evento:(['Evaluación','Tanqueo'].includes(tipo)?tipo+' registrado — proceso finalizado':'Solicitud registrada'),tipo:(['Evaluación','Tanqueo'].includes(tipo)?'e':'i'),detalle:`${tipo} · ${despInfo.despacho} · ${ciudad}`}],contratista:'',empresa:'',fechaEjecucion:'',fechaSalida:'',actividades:'',obsTecnico:'',obsAdmin:'',estadoFin:'',responsableRecibe:'',cargoResp:'',obsEntrega:'',satisfaccion:'',firma:null,decision:'',motivoInconformidad:''};await saveData(reg,true);document.getElementById('last-update').textContent='Guardado: '+fmtNow();showA(['Evaluación','Tanqueo'].includes(tipo)?`✓ ${tipo} registrado y finalizado — ${serial}`:`✓ Solicitud guardada — ${serial} · ${despInfo.despacho}`,'s');limpiar();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
+async function guardarSolicitud(){const ciudad=document.getElementById('f-ciudad').value,tipo=document.getElementById('f-tipo').value,serial=(document.getElementById('f-serial').value||'').trim().toUpperCase(),desc=document.getElementById('f-descripcion').value.trim();if(!ciudad||!tipo||!desc){showA('Complete todos los campos obligatorios (*)','e');return;}const despInfo=getDespacho();if(!despInfo){showA('Seleccione el inmueble y el despacho','e');return;}const primero=regs.filter(r=>(r.serial||'').toUpperCase()===serial).sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];const consec=getNextConsecutivo();const reg={id:gid(),consecutivo:consec.num,anioOrden:consec.anio,codigoOrden:consec.codigo,serial,ciudad,inmueble:despInfo.inmueble,despacho:despInfo.despacho,tipoMant:tipo,descripcion:desc,fechaSolicitud:document.getElementById('f-fecha').value,tipoEq:primero?primero.tipoEq:document.getElementById('f-tipo-eq').value,marca:primero?primero.marca:document.getElementById('f-marca').value,modelo:'',capacidad:primero?primero.capacidad:document.getElementById('f-capacidad').value,ubicacion:primero?primero.ubicacion:document.getElementById('f-ubicacion').value,estadoOrden:'Solicitud',estado:'Solicitado',creadoEn:fmtNow(),timeline:[{fecha:fmtNow(),evento:'Solicitud registrada',tipo:'i',detalle:`${tipo} · ${despInfo.despacho} · ${ciudad}`}],contratista:'',empresa:'',fechaEjecucion:'',fechaSalida:'',actividades:'',obsTecnico:'',obsAdmin:'',estadoFin:'',responsableRecibe:'',cargoResp:'',obsEntrega:'',satisfaccion:'',firma:null,decision:'',motivoInconformidad:''};await saveData(reg,true);showA(`✓ Solicitud guardada — ${serial} · ${despInfo.despacho}`,'s');limpiar();document.getElementById('last-update').textContent='Guardado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
 
 async function guardarEntregaTecnico(){
   const tec=(document.getElementById('g-tec-asignado').value||'').trim();
@@ -1335,9 +1126,7 @@ async function guardarEntregaTecnico(){
   document.getElementById('last-update').textContent='Actualizado: '+fmtNow();
   setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);
 }
-async function guardarEjecucion(){const contratista=document.getElementById('g-contratista').value.trim(),fechaej=document.getElementById('g-fechaej').value,actividades=document.getElementById('g-actividades').value.trim();if(!contratista||!fechaej||!actividades){showA('Complete contratista, fecha de ejecución y actividades','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}r.contratista=contratista;r.empresa='';r.fechaEjecucion=fechaej;r.fechaSalida='';r.actividades=actividades;r.obsTecnico=document.getElementById('g-obs-tec').value;r.obsAdmin='';r.estadoFin=document.getElementById('g-estado-fin').value;
-  r.funcionando=(r.estadoFin==='Dañado')?'No':'Sí';
-  r.estadoOrden='En Mantenimiento';r.estado='En Mantenimiento';r.timeline.push({fecha:fmtNow(),evento:'Trabajos completados — notificación al administrativo',tipo:'l',detalle:`Técnico: ${contratista} | ${actividades.substring(0,60)}`});await saveData(r,false);showA('✓ Ejecución guardada correctamente','s');ordenActiva=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
+async function guardarEjecucion(){const contratista=document.getElementById('g-contratista').value.trim(),fechaej=document.getElementById('g-fechaej').value,actividades=document.getElementById('g-actividades').value.trim();if(!contratista||!fechaej||!actividades){showA('Complete contratista, fecha de ejecución y actividades','e');return;}if(!ordenActiva){showA('Error: no hay orden activa','e');return;}const r=regs.find(x=>x.id===ordenActiva.id);if(!r){showA('Error: orden no encontrada','e');return;}r.contratista=contratista;r.empresa='';r.fechaEjecucion=fechaej;r.fechaSalida='';r.actividades=actividades;r.obsTecnico=document.getElementById('g-obs-tec').value;r.obsAdmin='';r.estadoFin=document.getElementById('g-estado-fin').value;r.estadoOrden='En Mantenimiento';r.estado='En Mantenimiento';r.timeline.push({fecha:fmtNow(),evento:'Trabajos completados — notificación al administrativo',tipo:'l',detalle:`Técnico: ${contratista} | ${actividades.substring(0,60)}`});await saveData(r,false);showA('✓ Ejecución guardada correctamente','s');ordenActiva=null;document.getElementById('last-update').textContent='Actualizado: '+fmtNow();setTimeout(()=>{document.querySelectorAll('.nav-btn')[2].click();},1200);}
 async function guardarEvaluacion(){
   if(!decisionSeleccionada){showA('Seleccione Conforme o No conforme antes de finalizar','e');return;}
   const resp=document.getElementById('g-resp-recibe').value.trim();
@@ -1389,11 +1178,8 @@ function continuarOrden(id,paso){
     document.getElementById('g-fechaej').value=hoy();
     mostrarPaso(3);
   }else if(paso===4){
-    // Evaluación / firma y entrega
-    const ev=r.evaluacion||{};
-    document.getElementById('e3-resumen').innerHTML = r.tipoMant==='Evaluación'
-      ? `<i class="ti ti-clipboard-check"></i> <strong>Evaluación:</strong> ${r.serial||'—'} · ${r.despacho||''} · Encendió: <strong>${ev.encendido||'—'}</strong> · Aceite: ${ev.aceite||'—'} · Refrigerante: ${ev.refrigerante||'—'} · Combustible: ${ev.combustible||'—'}`
-      : `<i class="ti ti-info-circle"></i> <strong>Ejecución:</strong> ${r.tipoMant} · Técnico: <strong>${r.contratista||r.tecnicoAsignado||'—'}</strong> · ${r.fechaEjecucion||'—'}`;
+    // Evaluación
+    document.getElementById('e3-resumen').innerHTML=`<i class="ti ti-info-circle"></i> <strong>Ejecución:</strong> ${r.tipoMant} · Técnico: <strong>${r.contratista||r.tecnicoAsignado||'—'}</strong> · ${r.fechaEjecucion||'—'}`;
     renderEncuesta();decisionSeleccionada=null;
     document.getElementById('btn-finalizar').disabled=true;
     document.getElementById('btn-finalizar').style.opacity='.5';
@@ -1406,9 +1192,9 @@ function initFirma(){const canvas=document.getElementById('firma-c');if(!canvas)
 function clrFirma(){const c=document.getElementById('firma-c');if(firmaCtx)firmaCtx.clearRect(0,0,c.width,c.height);firmaVacia=true;document.getElementById('firma-estado').textContent='';}
 function renderEncuesta(){document.getElementById('enc-opciones').innerHTML=[{val:'5',lbl:'Muy Satisfactorio',ico:'ti-mood-happy'},{val:'4',lbl:'Satisfactorio',ico:'ti-mood-smile'},{val:'3',lbl:'Normal',ico:'ti-mood-neutral'},{val:'2',lbl:'Poco Satisfactorio',ico:'ti-mood-confused'},{val:'1',lbl:'No Satisfactorio',ico:'ti-mood-sad'}].map(o=>`<label class="enc-opt" onmouseover="this.style.borderColor='${SCOLORS[o.val]}';this.style.background='${SBGS[o.val]}'" onmouseout="syncEncuesta()"><input type="radio" name="enc-sat" value="${o.val}" style="accent-color:${SCOLORS[o.val]};width:15px;height:15px;flex-shrink:0" onchange="syncEncuesta()"><i class="ti ${o.ico}" style="font-size:20px;color:${SCOLORS[o.val]};flex-shrink:0"></i><span style="font-size:12px;font-weight:600;color:${SCOLORS[o.val]}">${o.lbl}</span><span style="font-size:11px;color:var(--text2);flex:1;padding-left:4px">${o.val}/5</span></label>`).join('');}
 function syncEncuesta(){document.querySelectorAll('#enc-opciones label').forEach(lbl=>{const inp=lbl.querySelector('input');lbl.style.borderColor=inp.checked?SCOLORS[inp.value]:'var(--border)';lbl.style.background=inp.checked?SBGS[inp.value]:'#fff';});}
-function limpiar(){['f-ciudad','f-inmueble','f-planta','f-tipo','f-funcionando','f-serial','f-tipo-eq','f-marca','f-capacidad','f-ubicacion','f-descripcion','ev-tiempo','ev-fecha','ev-horas','ev-obs','tq-litros','tq-fecha','tq-obs'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';if(el.tagName==='SELECT')el.selectedIndex=0;}});document.getElementById('f-despacho').value='';document.getElementById('f-fecha').value=hoy();document.getElementById('grupo-inmueble').style.display='none';document.getElementById('grupo-planta').style.display='none';document.getElementById('equipo-info-panel').style.display='none';const cl=document.getElementById('checklist-eval');if(cl)cl.style.display='none';const ct=document.getElementById('tanqueo-panel');if(ct)ct.style.display='none';mostrarPaso(1);}
-function miniTimeline(r){const e=r.estadoOrden||'Solicitud';const fin=['Entregado conforme','No conforme'].includes(e);const pasos=r.tipoMant==='Evaluación'?[{lbl:'Solicitud',done:true},{lbl:'Evaluación realizada',done:(e==='Evaluación realizada'||fin)}]:[{lbl:'Solicitud',done:true},{lbl:'Al técnico',done:['Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Ejecución',done:['En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Evaluación',done:fin}];const last=pasos.length-1;let h='<div class="mtl">';pasos.forEach((p,i)=>{const curr=!p.done&&(i===0||(pasos[i-1]&&pasos[i-1].done));h+=`<div class="mtl-dot ${p.done?'done':curr?'curr':''}"><i class="ti ${p.done?'ti-check':curr?'ti-point':'ti-circle'}" style="font-size:9px"></i></div><span class="mtl-lbl">${p.lbl}</span>`;if(i<last)h+=`<div class="mtl-line ${p.done?'done':''}"></div>`;});return h+'</div>';}
-function btnSiguiente(r){const e=r.estadoOrden||'Solicitud';if(['Entregado conforme','No conforme'].includes(e))return'';if(r.tipoMant==='Evaluación')return'';if(e==='Solicitud')return puede('asignar')?`<button class="btn btn-p btn-sm" onclick="continuarOrden('${r.id}',2)"><i class="ti ti-user-check"></i>Entregar al técnico</button>`:'';if(e==='Entregado al Técnico')return puede('ejecutar')?`<button class="btn btn-sm" style="background:#1e8449;color:#fff;border-color:#1e8449" onclick="continuarOrden('${r.id}',3)"><i class="ti ti-tool"></i>Registrar ejecución</button>`:'';if(e==='En Mantenimiento')return puede('evaluar')?`<button class="btn btn-sm btn-w" onclick="continuarOrden('${r.id}',4)"><i class="ti ti-star"></i>Registrar evaluación</button>`:'';return'';}
+function limpiar(){['f-ciudad','f-inmueble','f-tipo','f-serial','f-tipo-eq','f-marca','f-capacidad','f-ubicacion','f-descripcion'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';if(el.tagName==='SELECT')el.selectedIndex=0;}});const dt=document.getElementById('f-despacho-texto');if(dt)dt.value='';document.getElementById('f-despacho').value='';document.getElementById('f-fecha').value=hoy();document.getElementById('grupo-inmueble').style.display='none';document.getElementById('grupo-despacho-arauca').style.display='none';document.getElementById('grupo-despacho-texto').style.display='none';document.getElementById('equipo-info-panel').style.display='none';document.getElementById('grupo-equipo-nuevo').style.display='grid';document.getElementById('f-despacho-arauca').innerHTML='<option value="">Seleccionar despacho...</option>';mostrarPaso(1);}
+function miniTimeline(r){const e=r.estadoOrden||'Solicitud';const pasos=[{lbl:'Solicitud',done:true},{lbl:'Al técnico',done:['Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Ejecución',done:['En Mantenimiento','Entregado conforme','No conforme'].includes(e)},{lbl:'Evaluación',done:['Entregado conforme','No conforme'].includes(e)}];let h='<div class="mtl">';pasos.forEach((p,i)=>{const curr=!p.done&&(i===0||(pasos[i-1]&&pasos[i-1].done));h+=`<div class="mtl-dot ${p.done?'done':curr?'curr':''}"><i class="ti ${p.done?'ti-check':curr?'ti-point':'ti-circle'}" style="font-size:9px"></i></div><span class="mtl-lbl">${p.lbl}</span>`;if(i<3)h+=`<div class="mtl-line ${p.done?'done':''}"></div>`;});return h+'</div>';}
+function btnSiguiente(r){const e=r.estadoOrden||'Solicitud';if(e==='Solicitud')return`<button class="btn btn-p btn-sm" onclick="continuarOrden('${r.id}',2)"><i class="ti ti-user-check"></i>Entregar al técnico</button>`;if(e==='Entregado al Técnico')return`<button class="btn btn-sm" style="background:#1e8449;color:#fff;border-color:#1e8449" onclick="continuarOrden('${r.id}',3)"><i class="ti ti-tool"></i>Registrar ejecución</button>`;if(e==='En Mantenimiento')return`<button class="btn btn-sm btn-w" onclick="continuarOrden('${r.id}',4)"><i class="ti ti-star"></i>Registrar evaluación</button>`;return'';}
 // ── CONTROL DE FILTROS HISTORIAL ──
 function onFiltroMunicipioChange(){
   const mun = document.getElementById('fil-municipio').value;
@@ -1487,8 +1273,6 @@ function renderHist(){
     const mD = !filDes || despachoSimple === filDes;
     return mQ && mE && mM && mI && mT && mD;
   });
-  // El técnico solo ve órdenes asignadas (de "Entregado al Técnico" en adelante)
-  if(rolActivo()==='tecnico'){ data=data.filter(r=>['Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'].includes(r.estadoOrden)); }
 
   // ── Contador de resultados ──
   const c = document.getElementById('tabla-hist');
@@ -1511,8 +1295,8 @@ function renderHist(){
     return;
   }
 
-  const activas  = data.filter(r=>!['Entregado conforme','No conforme','Evaluación realizada','Tanqueo realizado'].includes(r.estadoOrden));
-  const cerradas = data.filter(r=> ['Entregado conforme','No conforme','Evaluación realizada','Tanqueo realizado'].includes(r.estadoOrden));
+  const activas  = data.filter(r=>!['Entregado conforme','No conforme'].includes(r.estadoOrden));
+  const cerradas = data.filter(r=> ['Entregado conforme','No conforme'].includes(r.estadoOrden));
 
   const renderCard = r => {
     const sig = btnSiguiente(r);
@@ -1539,14 +1323,14 @@ function renderHist(){
         <div class="oc-actions">
           ${sig}
           <button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button>
-          ${puede('editar')?`<button class="btn btn-sm" onclick="abrirEditar('${r.id}')" style="background:var(--blue-bg);color:var(--c2);border-color:var(--blue-b)"><i class="ti ti-edit"></i></button>`:''}
-          ${puede('eliminar')?`<button class="btn btn-sm" onclick="eliminarReg('${r.id}')" style="background:var(--red-bg);color:var(--red);border-color:var(--red-b)"><i class="ti ti-trash"></i></button>`:''}
+          <button class="btn btn-sm" onclick="abrirEditar('${r.id}')" style="background:var(--blue-bg);color:var(--c2);border-color:var(--blue-b)"><i class="ti ti-edit"></i></button>
+          <button class="btn btn-sm" onclick="eliminarReg('${r.id}')" style="background:var(--red-bg);color:var(--red);border-color:var(--red-b)"><i class="ti ti-trash"></i></button>
           <button class="btn btn-sm" onclick="imprimirResumenId('${r.id}')"><i class="ti ti-printer"></i></button>
         </div>
       </div>
       ${(r.tipoEq||r.marca||r.contratista)?`
       <div class="oc-foot">
-        ${r.tipoEq||r.marca?`<span><i class="ti ti-engine" style="margin-right:3px"></i>${[r.tipoEq,r.marca,r.capacidad||''].filter(Boolean).join(' · ')}</span>`:''}
+        ${r.tipoEq||r.marca?`<span><i class="ti ti-wind" style="margin-right:3px"></i>${[r.tipoEq,r.marca,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')}</span>`:''}
         ${r.contratista?`<span><i class="ti ti-user-check" style="margin-right:3px"></i>${r.contratista}</span>`:''}
         ${r.responsableRecibe?`<span><i class="ti ti-pen" style="margin-right:3px"></i>${r.responsableRecibe}</span>`:''}
         ${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]}"><i class="ti ti-star-filled" style="margin-right:3px"></i>${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:''}
@@ -1566,193 +1350,8 @@ function renderHist(){
   c.innerHTML = html2;
 }
 async function eliminarReg(id){const r=regs.find(x=>x.id===id);if(!r)return;if(!confirm(`¿Eliminar la orden de ${r.serial} — ${r.despacho}?\n\nEsta acción no se puede deshacer.`))return;await deleteData(id);}
-let hojaActiva=null;
-function renderHojas(){
-  const sel=document.getElementById('hoja-selector');
-  if(!sel)return;
-  const grupos={};
-  CATALOGO.forEach(e=>{(grupos[e.ciudad]=grupos[e.ciudad]||[]).push(e);});
-  let opts='<option value="">Seleccione una planta...</option>';
-  Object.keys(grupos).forEach(ciudad=>{
-    opts+=`<optgroup label="${ciudad} (${grupos[ciudad].length})">`;
-    grupos[ciudad].forEach(e=>{
-      const est=estadoActualPlanta(e);
-      opts+=`<option value="${e.serial}">${e.serial} — ${e.descripcion||e.tipoEq}${est?' · '+est:''}</option>`;
-    });
-    opts+=`</optgroup>`;
-  });
-  sel.innerHTML=`<div class="field"><label>Planta eléctrica (agrupadas por municipio)</label><select id="hoja-select" onchange="verHojaVida(this.value)">${opts}</select></div>`;
-  const cur=(hojaActiva && CATALOGO.some(e=>e.serial===hojaActiva)) ? hojaActiva : CATALOGO[0].serial;
-  const hs=document.getElementById('hoja-select'); if(hs) hs.value=cur;
-  verHojaVida(cur);
-}
-
-// Bitácora combinada (histórico de RELACION_PLANTAS + órdenes registradas en SIGE), orden cronológico descendente
-// Chips del checklist de evaluación (verde=normal/sí, rojo=bajo/no)
-function nivelChip(label,val){
-  if(!val)return '';
-  const bajo=/bajo/i.test(val);
-  const c=bajo?['#c0392b','#fce8e8']:['#155230','#e6f7ee'];
-  return `<span style="display:inline-flex;align-items:center;gap:3px;font-size:10.5px;background:${c[1]};color:${c[0]};padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ${bajo?'ti-arrow-down':'ti-check'}" style="font-size:10px"></i>${label}: ${val}</span>`;
-}
-function renderChecklistEval(ev){
-  if(!ev)return '';
-  const enc=ev.encendido||'';const noEnc=/^no/i.test(enc);
-  const encChip = enc?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:10.5px;background:${noEnc?'#fce8e8':'#e6f7ee'};color:${noEnc?'#c0392b':'#155230'};padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ${noEnc?'ti-x':'ti-check'}" style="font-size:10px"></i>Encendió: ${enc}</span>`:'';
-  const chips=[encChip,
-    ev.tiempo?`<span style="font-size:10.5px;background:var(--bg2);color:var(--text2);padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ti-clock" style="font-size:10px"></i> ${ev.tiempo}</span>`:'',
-    ev.horas?`<span style="font-size:10.5px;background:#e8f0fa;color:#1a3a5c;padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ti-gauge" style="font-size:10px"></i> Horómetro: ${ev.horas} h</span>`:'',
-    ev.fecha?`<span style="font-size:10.5px;background:var(--bg2);color:var(--text2);padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ti-calendar" style="font-size:10px"></i> ${fmt(ev.fecha)}</span>`:'',
-    nivelChip('Aceite',ev.aceite),nivelChip('Refrigerante',ev.refrigerante),nivelChip('Combustible',ev.combustible)
-  ].filter(Boolean).join(' ');
-  if(!chips && !ev.obs)return '';
-  return `<div style="margin-top:5px;padding:7px 9px;background:var(--purple-bg);border-radius:7px">
-      <div style="font-size:9.5px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px"><i class="ti ti-clipboard-check"></i> Checklist de evaluación</div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px">${chips}</div>
-      ${ev.obs?`<div style="font-size:11px;color:var(--text2);margin-top:6px"><span style="font-weight:600">Observaciones: </span>${ev.obs}</div>`:''}
-    </div>`;
-}
-function renderTanqueo(tq){
-  if(!tq||!tq.litros)return '';
-  const nivelChipTq=(lbl,val)=>val?`<span style="font-size:10.5px;background:#e0f7f7;color:#0d7377;padding:2px 8px;border-radius:8px;font-weight:600">${lbl}: ${val}</span>`:'';
-  const chips=[
-    `<span style="font-size:10.5px;background:#0d7377;color:#fff;padding:2px 10px;border-radius:8px;font-weight:700"><i class="ti ti-droplet-filled" style="font-size:10px"></i> ${tq.litros} Lts</span>`,
-    tq.tipoComb?`<span style="font-size:10.5px;background:#e0f7f7;color:#0d7377;padding:2px 8px;border-radius:8px;font-weight:600">${tq.tipoComb}</span>`:'',
-    tq.fecha?`<span style="font-size:10.5px;background:var(--bg2);color:var(--text2);padding:2px 8px;border-radius:8px;font-weight:600"><i class="ti ti-calendar" style="font-size:10px"></i> ${fmt(tq.fecha)}</span>`:'',
-    nivelChipTq('Antes',tq.nivelAntes), nivelChipTq('Después',tq.nivelDespues)
-  ].filter(Boolean).join(' ');
-  return `<div style="margin-top:5px;padding:7px 9px;background:#e0f7f7;border-radius:7px">
-    <div style="font-size:9.5px;font-weight:700;color:#0d7377;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px"><i class="ti ti-droplet-filled"></i> Registro de tanqueo</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px">${chips}</div>
-    ${tq.obs?`<div style="font-size:11px;color:var(--text2);margin-top:6px"><span style="font-weight:600">Observaciones: </span>${tq.obs}</div>`:''}
-  </div>`;
-}
-function bitacoraDe(serial){
-  const s=(serial||'').toUpperCase();
-  const hist=BITACORA_HIST.filter(b=>b.codigo.toUpperCase()===s)
-    .map(b=>({fecha:b.fecha,tipo:b.tipo,diagnostico:b.diagnostico,procedimiento:b.procedimiento,observaciones:b.observaciones,estado:b.estado,fuente:'Histórico'}));
-  const live=regs.filter(r=>(r.serial||'').toUpperCase()===s)
-    .map(r=>({fecha:r.fechaEjecucion||r.fechaSolicitud||r.creadoEn||'',tipo:r.tipoMant,diagnostico:r.descripcion||'',procedimiento:r.actividades||'',observaciones:[r.obsTecnico,r.obsEntrega].filter(Boolean).join(' — '),estado:r.estadoFin||'',evaluacion:r.evaluacion||null,tanqueo:r.tanqueo||null,fuente:'SIGE',id:r.id,cons:fmtConsecutivo(r)}));
-  return [...hist,...live].sort((a,b)=>((a.fecha||'')<(b.fecha||'')?1:-1));
-}
-// ══ ESTADO OPERATIVO UNIFICADO ══
-// Fuente unica de verdad: lee estadoFin (Paso 3) y funcionando (Paso 1) del mismo registro,
-// priorizando la intervencion mas reciente que tenga alguno de los dos campos.
-function estadoOperativoPlanta(eq){
-  const s=(eq.serial||'').toUpperCase();
-  const candidatos=regs
-    .filter(r=>(r.serial||'').toUpperCase()===s && (r.estadoFin||r.funcionando))
-    .sort((a,b)=>{
-      const fa=a.fechaEjecucion||a.fechaSolicitud||a.creadoEn||'';
-      const fb=b.fechaEjecucion||b.fechaSolicitud||b.creadoEn||'';
-      return fa<fb?1:-1;
-    });
-  const ult=candidatos[0];
-  if(ult){
-    if(ult.estadoFin) return normEstado(ult.estadoFin);
-    if(ult.funcionando==='No') return normEstado('Dañado');
-    if(ult.funcionando==='Si'||ult.funcionando==='Sí') return 'Operando';
-  }
-  return normEstado(eq.estadoBase)||'';
-}
-function estadoActualPlanta(eq){ return estadoOperativoPlanta(eq); }
-function funcionandoDe(eq){
-  const est=estadoOperativoPlanta(eq);
-  return (est==='Dañado')?'No':'Sí';
-}
-
-function verHojaVida(serial){
-  hojaActiva=serial;
-  const eq=CATALOGO.find(e=>e.serial.toUpperCase()===serial.toUpperCase())
-        || equiposConocidos().find(e=>(e.serial||'').toUpperCase()===serial.toUpperCase());
-  const cont=document.getElementById('hoja-detalle');
-  if(!eq||!cont)return;
-  const hs=document.getElementById('hoja-select'); if(hs && hs.value!==serial) hs.value=serial;
-  const bit=bitacoraDe(serial);
-  const prev=bit.filter(x=>x.tipo==='Preventivo').length;
-  const corr=bit.filter(x=>x.tipo==='Correctivo').length;
-  const evalu=bit.filter(x=>x.tipo==='Evaluación').length;
-  const ult=bit.find(x=>x.fecha);
-  const estadoActual=estadoActualPlanta(eq);
-  const cap=eq.capacidad&&eq.capacidad!=='N/I'?eq.capacidad:'No registrada';
-  const specs=SPECS_PLANTA[(eq.marca||'').toUpperCase()]||[];
-  const specHtml=specs.length
-    ? specs.map(([l,v])=>`<div class="ecard-dato"><div class="ed-l">${l}</div><div class="ed-v">${v}</div></div>`).join('')
-    : `<div class="ecard-dato" style="grid-column:span 4"><div class="ed-v" style="color:var(--text2)">Ficha técnica detallada por registrar. Marca: <strong>${eq.marca||'N/I'}</strong>. Para plantas KAMA / ALTERMAN / VERMA aún no se cuenta con placa de especificaciones documentada.</div></div>`;
-
-  let h=`<div class="ecard">
-    <div class="ecard-hdr">
-      <span class="ecard-serial">${eq.serial}</span>
-      <div class="ecard-info"><h3>${eq.descripcion||eq.marca}</h3><p>${eq.marca}${cap!=='No registrada'?' · '+cap:''} · ${eq.tipoEq}</p></div>
-      <span class="ecard-badge-hdr"><i class="ti ti-map-pin" style="font-size:10px"></i> ${eq.ciudad}</span>
-      ${puede('editar')?`<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" onclick="abrirEditarPlanta('${eq.serial}')"><i class="ti ti-edit"></i>Editar planta</button>`:''}
-    </div>
-    <div class="ecard-body">
-
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg2);border-radius:9px;padding:9px 12px;margin-bottom:4px">
-        <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Estado operativo</span>
-        ${bdgEstadoPlanta(estadoActual)}
-        <span style="font-size:11px;color:var(--text2)">${ult?'· Última intervención: '+fmt(ult.fecha):'· Sin intervenciones registradas'}</span>
-        ${puede('crear')?`<button class="btn btn-sm btn-p" style="margin-left:auto" onclick="usarEquipoEnNuevaOrden('${eq.serial}')"><i class="ti ti-plus"></i>Registrar mantenimiento</button>`:''}
-      </div>
-
-      <div class="ecard-section-lbl"><i class="ti ti-clipboard-list"></i> Datos generales ${cargarCatEdits()[(eq.serial||'').toUpperCase()]?'<span style="font-size:9px;background:#e8f0fa;color:#1a3a5c;padding:1px 7px;border-radius:7px;font-weight:600;margin-left:6px"><i class="ti ti-edit" style="font-size:9px"></i> Datos actualizados</span>':''}</div>
-      <div class="ecard-datos">
-        <div class="ecard-dato"><div class="ed-l">Código</div><div class="ed-v" style="font-family:monospace">${eq.serial}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Descripción</div><div class="ed-v">${eq.descripcion||'—'}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Marca</div><div class="ed-v">${eq.marca||'N/I'}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Capacidad</div><div class="ed-v">${cap}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Tipo</div><div class="ed-v">${eq.tipoEq}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Municipio</div><div class="ed-v">${eq.ciudad}</div></div>
-        <div class="ecard-dato" style="grid-column:span 2"><div class="ed-l">Ubicación / Despacho</div><div class="ed-v" style="font-size:11px">${eq.despacho||eq.inmueble||'—'}</div></div>
-      </div>
-
-      <div class="ecard-section-lbl"><i class="ti ti-settings-2"></i> Especificaciones técnicas</div>
-      <div class="ecard-datos">${specHtml}</div>
-
-      <div class="ecard-section-lbl"><i class="ti ti-droplet-filled" style="color:#0d7377"></i> Combustible</div>
-      <div class="ecard-datos">
-        <div class="ecard-dato"><div class="ed-l">Tipo</div><div class="ed-v">${eq.tipoComb||'ACPM (Diésel)'}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Cap. tanque</div><div class="ed-v">${eq.capTanque?eq.capTanque+' Lts':'No registrada'}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Uso promedio</div><div class="ed-v">${eq.usoCombPromedio?eq.usoCombPromedio+' Lts/hora':'No registrado'}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Último tanqueo</div><div class="ed-v" style="color:#0d7377">${(()=>{const tq=bit.filter(b=>b.tipo==='Tanqueo'&&b.tanqueo&&b.tanqueo.litros);return tq.length?`${tq[0].tanqueo.litros} Lts · ${fmt(tq[0].fecha)}`:'Sin registro';})()}</div></div>
-        <div class="ecard-dato"><div class="ed-l">Total tanqueado</div><div class="ed-v" style="font-weight:700;color:#0d7377">${(()=>{const tots=bit.filter(b=>b.tipo==='Tanqueo'&&b.tanqueo&&b.tanqueo.litros).reduce((s,b)=>s+parseFloat(b.tanqueo.litros||0),0);return tots>0?tots.toFixed(1)+' Lts':'0 Lts';})()}</div></div>
-      </div>
-      <div class="ecard-stats" style="grid-template-columns:repeat(6,1fr)">
-        <div class="ecard-stat"><div class="sv" style="color:var(--c1)">${bit.length}</div><div class="sl">Intervenciones</div></div>
-        <div class="ecard-stat"><div class="sv" style="color:#378ADD">${prev}</div><div class="sl">Preventivos</div></div>
-        <div class="ecard-stat"><div class="sv" style="color:#EF9F27">${corr}</div><div class="sl">Correctivos</div></div>
-        <div class="ecard-stat"><div class="sv" style="color:#7C3AED">${evalu}</div><div class="sl">Evaluaciones</div></div>
-        <div class="ecard-stat"><div class="sv" style="color:#1a3a5c;font-size:13px;padding-top:5px">${(()=>{const lecturas=bit.filter(b=>b.evaluacion&&b.evaluacion.horas).map(b=>Number(b.evaluacion.horas));return lecturas.length?lecturas[0]+' h':'—';})()}</div><div class="sl">Horómetro</div></div>
-        <div class="ecard-stat"><div class="sv" style="color:var(--green);font-size:13px;padding-top:5px">${ult?fmt(ult.fecha):'—'}</div><div class="sl">Última interv.</div></div>
-      </div>
-
-      <div class="ecard-section-lbl"><i class="ti ti-history"></i> Bitácora de funcionamiento (${bit.length})</div>`;
-  if(bit.length){
-    h+=bit.map(b=>{
-      const c=EST_PLANTA_COLOR[normEstado(b.estado)]||EST_PLANTA_COLOR[''];
-      return `<div style="border:.5px solid var(--border);border-left:3px solid ${c[0]};border-radius:8px;padding:9px 12px;margin-bottom:7px;background:#fff">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px">
-          <span style="font-family:monospace;font-weight:700;color:var(--c1);font-size:12px"><i class="ti ti-calendar-event" style="font-size:11px"></i> ${b.fecha?fmt(b.fecha):'—'}</span>
-          ${bdgTipo(b.tipo)}
-          ${bdgEstadoPlanta(b.estado)}
-          <span style="margin-left:auto;font-size:9px;color:var(--text2);background:var(--bg2);padding:1px 7px;border-radius:7px">${b.fuente}${b.cons?' · '+b.cons:''}</span>
-          ${b.id?`<button class="btn btn-sm" style="padding:2px 7px" onclick="abrirMod('${b.id}')"><i class="ti ti-eye"></i></button>`:''}
-        </div>
-        ${b.diagnostico?`<div style="font-size:11.5px;margin-bottom:3px"><span style="color:var(--text2);font-weight:600">Diagnóstico: </span>${b.diagnostico}</div>`:''}
-        ${b.procedimiento?`<div style="font-size:11.5px;margin-bottom:3px"><span style="color:var(--text2);font-weight:600">Procedimiento del servicio: </span>${b.procedimiento}</div>`:''}
-        ${b.observaciones?`<div style="font-size:11.5px;color:var(--text2)"><span style="font-weight:600">Observaciones: </span>${b.observaciones}</div>`:''}
-        ${b.evaluacion?renderChecklistEval(b.evaluacion):''}
-        ${b.tanqueo?renderTanqueo(b.tanqueo):''}
-      </div>`;
-    }).join('');
-  }else{
-    h+=`<div class="ecard-empty"><i class="ti ti-clipboard-off" style="font-size:24px;display:block;margin-bottom:6px;opacity:.4"></i>Esta planta aún no tiene intervenciones registradas en la bitácora.</div>`;
-  }
-  h+=`</div></div>`;
-  cont.innerHTML=h;
-}
-function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span style="font-family:monospace;font-size:12px;font-weight:700;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px;margin-right:6px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span> &nbsp;`:''} ${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=dr('N° de Orden',`<span style="font-family:monospace;font-size:14px;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</span>`);if(!r.serial)h+=`<div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:7px;padding:8px 12px;margin:6px 0;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:8px"><i class="ti ti-barcode"></i><span>Esta orden no tiene número de serie asignado.</span><button class="btn btn-sm" style="margin-left:auto;background:var(--amber);color:#fff;border-color:var(--amber)" onclick="cerrar();abrirEditar('${r.id}')"><i class="ti ti-barcode"></i> Asignar serial</button></div>`;h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('¿Planta funcionando?',r.funcionando?`<strong style="color:${r.funcionando==='No'?'#c0392b':'#1e8449'}">${r.funcionando}</strong>`:'');h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-engine');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad||'');h+=dr('Ubicación',r.ubicacion);if(r.tecnicoAsignado||r.fechaAsignacion){h+=sec('Paso 2 — Entregado al Técnico','ti-user-check');h+=dr('Técnico asignado',r.tecnicoAsignado);h+=dr('Fecha de asignación',r.fechaAsignacion?fmt(r.fechaAsignacion):'');h+=dr('Hora',r.horaAsignacion||'');h+=dr('Instrucciones',r.instruccionesTec);}if(r.contratista||r.actividades){h+=sec('Paso 3 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
+function buscarGlobal(){const q=document.getElementById('inp-bus').value.trim().toUpperCase();const c=document.getElementById('res-bus');if(!q){c.innerHTML='<div class="empty"><i class="ti ti-search"></i>Escriba un número de serie</div>';return;}const res=regs.filter(r=>(r.serial||'').toUpperCase().includes(q));if(!res.length){c.innerHTML=`<div class="empty"><i class="ti ti-file-off"></i>No se encontraron registros para "${q}"</div>`;return;}const primero=res.sort((a,b)=>a.creadoEn>b.creadoEn?1:-1)[0];let h=`<div style="background:var(--blue-bg);border-radius:9px;padding:10px 12px;margin-bottom:10px;border:.5px solid var(--blue-b)"><div style="font-size:10px;font-weight:700;color:var(--c1);margin-bottom:6px">DATOS DEL EQUIPO</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-size:11px">${[['Serial',primero.serial],['Tipo',primero.tipoEq||'—'],['Marca',primero.marca||'—'],['Modelo',primero.modelo||'—'],['Capacidad',primero.capacidad?primero.capacidad+' BTU':'—'],['Ubicación',primero.ubicacion||'—'],['Ciudad',primero.ciudad||'—']].map(([l,v])=>`<div><div style="color:var(--text2);font-size:10px">${l}</div><div style="font-weight:600;color:var(--c1)">${v}</div></div>`).join('')}</div></div>`;h+=`<div style="font-size:11px;color:var(--text2);margin-bottom:8px">${res.length} registro(s) encontrado(s)</div>`;h+='<div class="tw"><table><thead><tr><th>N° Orden</th><th>Tipo mant.</th><th>Solicitud</th><th>Ejecución</th><th>Contratista</th><th>Responsable</th><th>Satisfacción</th><th>Estado</th><th></th></tr></thead><tbody>'+res.map(r=>`<tr><td style="font-family:monospace;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</td><td>${bdgTipo(r.tipoMant)}</td><td>${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'}</td><td>${r.fechaEjecucion?fmt(r.fechaEjecucion):'—'}</td><td>${r.contratista||'—'}</td><td>${r.responsableRecibe||'—'}</td><td>${r.satisfaccion?`<span style="color:${SCOLORS[r.satisfaccion]};font-weight:600">${SATS[r.satisfaccion]} (${r.satisfaccion}/5)</span>`:'—'}</td><td>${bdgOrden(r.estadoOrden||'Solicitud')}</td><td style="white-space:nowrap"><button class="btn btn-sm" onclick="abrirMod('${r.id}')"><i class="ti ti-eye"></i>Ver</button> <button class="btn btn-sm btn-p" onclick="usarEquipoEnNuevaOrden('${r.serial}')" title="Usar este equipo en nueva orden"><i class="ti ti-plus"></i>Nueva orden</button></td></tr>`).join('')+'</tbody></table></div>';c.innerHTML=h;}
+function abrirMod(id){raReg=regs.find(r=>r.id===id);if(!raReg)return;const r=raReg;document.getElementById('m-title').innerHTML=`<span style="font-family:monospace;font-size:12px;font-weight:700;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 8px;border-radius:5px;margin-right:6px">${fmtConsecutivo(r)}</span>${r.serial?`<span class="serial-tag">${r.serial}</span> &nbsp;`:''} ${r.tipoEq||''} ${r.marca?'· '+r.marca:''} — ${r.ciudad||''}`;const sec=(titulo,ico)=>`<div style="font-size:10px;font-weight:700;color:var(--c1);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:5px;padding-bottom:5px;border-bottom:.5px solid var(--border)"><i class="ti ${ico}"></i>${titulo}</div>`;const dr=(l,v)=>v?`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:.5px solid var(--bg2);font-size:12px"><span style="color:var(--text2);min-width:150px;flex-shrink:0;font-size:11px">${l}</span><span style="font-weight:500">${v}</span></div>`:'';let h=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${bdgTipo(r.tipoMant)} ${bdgOrden(r.estadoOrden||'Solicitud')}</div>`;h+=miniTimeline(r);h+=dr('N° de Orden',`<span style="font-family:monospace;font-size:14px;font-weight:700;color:var(--c1)">${fmtConsecutivo(r)}</span>`);if(!r.serial)h+=`<div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:7px;padding:8px 12px;margin:6px 0;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:8px"><i class="ti ti-barcode"></i><span>Esta orden no tiene número de serie asignado.</span><button class="btn btn-sm" style="margin-left:auto;background:var(--amber);color:#fff;border-color:var(--amber)" onclick="cerrar();abrirEditar('${r.id}')"><i class="ti ti-barcode"></i> Asignar serial</button></div>`;h+=sec('Paso 1 — Solicitud','ti-file-description');h+=dr('Fecha solicitud',r.fechaSolicitud?fmt(r.fechaSolicitud):'—');h+=dr('Ciudad',r.ciudad);h+=dr('Inmueble',r.inmueble);h+=dr('Despacho',r.despacho);h+=dr('Tipo de mantenimiento',r.tipoMant);h+=dr('Descripción',r.descripcion);h+=sec('Equipo','ti-wind');h+=dr('Serial',`<span style="font-family:monospace">${r.serial}</span>`);h+=dr('Tipo',r.tipoEq);h+=dr('Marca · Modelo',[r.marca,r.modelo].filter(Boolean).join(' · '));h+=dr('Capacidad',r.capacidad?r.capacidad+' BTU':'');h+=dr('Ubicación',r.ubicacion);if(r.tecnicoAsignado||r.fechaAsignacion){h+=sec('Paso 2 — Entregado al Técnico','ti-user-check');h+=dr('Técnico asignado',r.tecnicoAsignado);h+=dr('Fecha de asignación',r.fechaAsignacion?fmt(r.fechaAsignacion):'');h+=dr('Hora',r.horaAsignacion||'');h+=dr('Instrucciones',r.instruccionesTec);}if(r.contratista||r.actividades){h+=sec('Paso 3 — Ejecución','ti-tool');h+=dr('Contratista',r.contratista);h+=dr('Fecha ejecución',r.fechaEjecucion?fmt(r.fechaEjecucion):'');h+=dr('Estado final equipo',r.estadoFin);h+=dr('Actividades realizadas',r.actividades);h+=dr('Obs. técnico',r.obsTecnico);}if(r.responsableRecibe){const s=r.satisfaccion;h+=sec('Paso 3 — Evaluación y Firma','ti-star');h+=dr('Responsable que recibe',r.responsableRecibe);h+=dr('Cargo',r.cargoResp);if(s)h+=dr('Calificación',`<span style="color:${SCOLORS[s]};font-weight:700"><i class="ti ${SAT_ICOS[s]}"></i> ${SATS[s]} (${s}/5)</span>`);h+=dr('Observaciones',r.obsEntrega);if(r.firma)h+=dr('Firma',`<img src="${r.firma}" style="max-width:220px;border:.5px solid var(--border);border-radius:6px;background:#fff">`);}if(r.decision){h+=dr('Resultado',bdgOrden(r.estadoOrden));h+=dr('Fecha entrega',r.fechaEntrega?fmt(r.fechaEntrega):'');h+=dr('Motivo inconformidad',r.motivoInconformidad);}h+=`<hr class="divd"><div class="slbl"><i class="ti ti-history"></i>Línea de tiempo</div><ul class="tl">${(r.timeline||[]).map(t=>`<li class="tli"><div class="tld ${t.tipo==='g'?'g':t.tipo==='e'?'e':t.tipo==='l'?'l':t.tipo==='p'?'p':''}"></div><div class="tlc"><strong style="font-size:12px">${t.evento}</strong><p>${t.fecha}${t.detalle?' — '+t.detalle.substring(0,80):''}</p></div></li>`).join('')}</ul>`;document.getElementById('m-body').innerHTML=h;document.getElementById('modal').classList.add('open');}
 function cerrar(){document.getElementById('modal').classList.remove('open');raReg=null;}
 function abrirEditar(id){
   const r=regs.find(x=>x.id===id); if(!r) return;
@@ -1760,7 +1359,7 @@ function abrirEditar(id){
     `<i class="ti ti-edit"></i> Editar orden &nbsp;<span style="font-family:monospace;font-size:12px;background:var(--blue-bg);color:var(--c1);border:.5px solid var(--blue-b);padding:2px 9px;border-radius:5px">${fmtConsecutivo(r)}</span>`;
   const sel=(arr,val)=>arr.map(v=>`<option value="${v}"${v===val?' selected':''}>${v}</option>`).join('');
   const TM=['Preventivo','Correctivo','Instalación','Desmonte'];
-  const TE=['Planta Diésel Estacionaria','Planta Diésel Portátil','Grupo Electrógeno','Otro'];
+  const TE=['Mini-split','Multi-V','Cassete','Pared','Ventana','Otro'];
   const EO=['Solicitud','Entregado al Técnico','En Mantenimiento','Entregado conforme','No conforme'];
 
   document.getElementById('me-body').innerHTML=`
@@ -1794,7 +1393,7 @@ function abrirEditar(id){
     <div class="fg fg2" style="margin-bottom:10px">
       <div class="field"><label>Tipo equipo</label><select id="me-tipoeq">${sel(TE,r.tipoEq)}</select></div>
       <div class="field"><label>Marca</label><input type="text" id="me-marca" value="${(r.marca||'').replace(/"/g,'&quot;')}"></div>
-      <div class="field"><label>Capacidad (kVA / kW)</label><input type="text" id="me-cap" value="${r.capacidad||''}"></div>
+      <div class="field"><label>Capacidad (BTU)</label><input type="text" id="me-cap" value="${r.capacidad||''}"></div>
       <div class="field"><label>Ubicación</label><input type="text" id="me-ubic" value="${(r.ubicacion||'').replace(/"/g,'&quot;')}"></div>
     </div>
 
@@ -1860,7 +1459,7 @@ function buscarSerialEnEdicion(){
       encontrados.slice(0,5).map(r=>`
         <div onclick="aplicarEquipoEdicion('${r.serial}')" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;border:.5px solid var(--border);margin-bottom:4px;background:#fff;transition:all .15s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='#fff'">
           <span style="font-family:monospace;font-weight:700;font-size:12px;color:var(--c1);background:var(--blue-bg);padding:2px 8px;border-radius:4px">${r.serial}</span>
-          <span style="font-size:11px;color:var(--text2)">${[r.tipoEq,r.marca,r.capacidad||''].filter(Boolean).join(' · ')||'Sin datos'}</span>
+          <span style="font-size:11px;color:var(--text2)">${[r.tipoEq,r.marca,r.capacidad?r.capacidad+' BTU':''].filter(Boolean).join(' · ')||'Sin datos'}</span>
           <span style="margin-left:auto;font-size:10px;color:var(--text3)">${r.despacho||'—'}</span>
         </div>`).join('');
   }
@@ -1881,7 +1480,7 @@ function renderEquipoEdicion(r){
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:11px;margin-bottom:8px">
         <div><div style="color:var(--text2);font-size:10px">Tipo</div><div style="font-weight:600">${r.tipoEq||'—'}</div></div>
         <div><div style="color:var(--text2);font-size:10px">Marca</div><div style="font-weight:600">${r.marca||'—'}</div></div>
-        <div><div style="color:var(--text2);font-size:10px">Capacidad</div><div style="font-weight:600">${r.capacidad||'—'}</div></div>
+        <div><div style="color:var(--text2);font-size:10px">Capacidad</div><div style="font-weight:600">${r.capacidad?r.capacidad+' BTU':'—'}</div></div>
         <div><div style="color:var(--text2);font-size:10px">Ubicación</div><div style="font-weight:600;font-size:10px">${r.ubicacion||'—'}</div></div>
       </div>
       <div style="font-size:10px;color:var(--text2);font-weight:600;margin-bottom:4px">Historial (${historial.length} orden${historial.length!==1?'es':''}):</div>
@@ -1949,45 +1548,7 @@ async function guardarEdicion(id){
   setTimeout(()=>{cerrarEditar();renderAll();},1200);
 }
 function cerrarEditar(){document.getElementById('modal-editar').classList.remove('open');}
-// ── Editar datos de la planta ──
-function abrirEditarPlanta(serial){
-  const eq=equiposConocidos().find(e=>(e.serial||'').toUpperCase()===serial.toUpperCase());
-  if(!eq)return;
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  set('mp-serial',eq.serial); set('mp-serial-vis',eq.serial);
-  set('mp-descripcion',eq.descripcion||''); set('mp-tipo',eq.tipoEq||'');
-  set('mp-marca',eq.marca||''); set('mp-modelo',eq.modelo||'');
-  set('mp-capacidad',eq.capacidad||''); set('mp-ubicacion',eq.ubicacion||'');
-  set('mp-ciudad',eq.ciudad||''); set('mp-despacho',eq.despacho||eq.inmueble||'');
-  set('mp-nserie',eq.nSerie||''); set('mp-anio',eq.anioFab||''); set('mp-notas',eq.notas||'');
-  set('mp-cap-tanque',eq.capTanque||''); set('mp-tipo-comb',eq.tipoComb||'ACPM'); set('mp-uso-comb',eq.usoCombPromedio||'');
-  document.getElementById('mp-title').innerHTML=`<i class="ti ti-engine"></i> Editar — ${eq.serial} · ${eq.descripcion||eq.marca}`;
-  document.getElementById('modal-planta').classList.add('open');
-}
-function cerrarEditarPlanta(){document.getElementById('modal-planta').classList.remove('open');}
-function guardarEditarPlanta(){
-  const serial=(document.getElementById('mp-serial').value||'').toUpperCase();
-  if(!serial)return;
-  const gv=id=>(document.getElementById(id)||{value:''}).value.trim();
-  const edit={
-    descripcion:gv('mp-descripcion'), tipoEq:gv('mp-tipo'), marca:gv('mp-marca'),
-    modelo:gv('mp-modelo'), capacidad:gv('mp-capacidad'), ubicacion:gv('mp-ubicacion'),
-    ciudad:gv('mp-ciudad'), despacho:gv('mp-despacho'), inmueble:gv('mp-despacho'),
-    nSerie:gv('mp-nserie'), anioFab:gv('mp-anio'), notas:gv('mp-notas'),
-    capTanque:gv('mp-cap-tanque'), tipoComb:gv('mp-tipo-comb'), usoCombPromedio:gv('mp-uso-comb')
-  };
-  // Remove empty keys so they fall back to base catalog
-  Object.keys(edit).forEach(k=>{if(!edit[k]) delete edit[k];});
-  const edits=cargarCatEdits();
-  edits[serial]={...(edits[serial]||{}),...edit};
-  guardarCatEdits(edits);
-  cerrarEditarPlanta();
-  showToast(`✓ Datos de la planta ${serial} actualizados`,'s');
-  // Refresh hoja de vida
-  if(hojaActiva===serial) verHojaVida(serial);
-  else renderHojas();
-}
-function exportar(){if(!regs.length){alert('No hay datos para exportar');return;}const enc=s=>`"${(s||'').toString().replace(/"/g,"''")}"`; const cab='ID,Serial,Ciudad,Inmueble,Despacho,Tipo Mant.,Fecha Solicitud,Tipo Equipo,Marca,Modelo,Capacidad,Ubicación,Estado Orden,Contratista,Fecha Ejecución,Actividades,Responsable Recibe,Cargo,Satisfacción,Decisión\n';const fil=regs.map(r=>[r.id,r.serial,r.ciudad,r.inmueble,enc(r.despacho),r.tipoMant,r.fechaSolicitud||'',r.tipoEq||'',r.marca||'',r.modelo||'',r.capacidad||'',enc(r.ubicacion||''),r.estadoOrden||'',r.contratista||'',r.fechaEjecucion||'',enc(r.actividades||''),r.responsableRecibe||'',r.cargoResp||'',r.satisfaccion?SATS[r.satisfaccion]:'',r.decision||''].join(',')).join('\n');const blob=new Blob(['\uFEFF'+cab+fil],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`SIGE_PE_${hoy()}.csv`;a.click();}
+function exportar(){if(!regs.length){alert('No hay datos para exportar');return;}const enc=s=>`"${(s||'').toString().replace(/"/g,"''")}"`; const cab='ID,Serial,Ciudad,Inmueble,Despacho,Tipo Mant.,Fecha Solicitud,Tipo Equipo,Marca,Modelo,Capacidad,Ubicación,Estado Orden,Contratista,Fecha Ejecución,Actividades,Responsable Recibe,Cargo,Satisfacción,Decisión\n';const fil=regs.map(r=>[r.id,r.serial,r.ciudad,r.inmueble,enc(r.despacho),r.tipoMant,r.fechaSolicitud||'',r.tipoEq||'',r.marca||'',r.modelo||'',r.capacidad||'',enc(r.ubicacion||''),r.estadoOrden||'',r.contratista||'',r.fechaEjecucion||'',enc(r.actividades||''),r.responsableRecibe||'',r.cargoResp||'',r.satisfaccion?SATS[r.satisfaccion]:'',r.decision||''].join(',')).join('\n');const blob=new Blob(['\uFEFF'+cab+fil],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`SIGE_AC_${hoy()}.csv`;a.click();}
 function imprimirResumen(){if(raReg)imprimirResumenId(raReg.id);}
 function imprimirResumenId(id){
   const r=regs.find(x=>x.id===id);
@@ -2140,7 +1701,7 @@ function imprimirResumenId(id){
       <table class="inner-table">
         <thead>
           <tr>
-            <th>Tipo de equipo</th><th>Marca</th><th>Capacidad (kVA / kW)</th><th>Ubicación</th>
+            <th>Tipo de equipo</th><th>Marca</th><th>Capacidad (BTU)</th><th>Ubicación</th>
           </tr>
         </thead>
         <tbody>
@@ -2295,17 +1856,11 @@ function guardarPDF(){
   win.document.close();
 }
 
-function renderDash(){const tot=regs.length,sol=regs.filter(r=>r.estadoOrden==='Solicitud').length,tec=regs.filter(r=>r.estadoOrden==='Entregado al Técnico').length,mant=regs.filter(r=>r.estadoOrden==='En Mantenimiento').length,conf=regs.filter(r=>r.estadoOrden==='Entregado conforme').length,nconf=regs.filter(r=>r.estadoOrden==='No conforme').length,tasaConf=tot>0?Math.round(conf/tot*100):0,satNums=regs.filter(r=>r.satisfaccion).map(r=>parseInt(r.satisfaccion)),satProm=satNums.length?(satNums.reduce((a,b)=>a+b,0)/satNums.length).toFixed(1):'—',pendEval=mant;document.getElementById('krow').innerHTML=`<div class="kpi"><div class="val" style="color:var(--c1)">${tot}</div><div class="lbl">Total órdenes</div><div class="sub">${new Set(regs.map(r=>r.serial)).size} equipo(s)</div></div><div class="kpi"><div class="val" style="color:#378ADD">${sol}</div><div class="lbl">Solicitudes</div><div class="sub">Pendientes de asignar</div></div><div class="kpi"><div class="val" style="color:#7C3AED">${tec}</div><div class="lbl">Con el técnico</div><div class="sub">Entregadas para ejecución</div></div><div class="kpi"><div class="val" style="color:#EF9F27">${mant}</div><div class="lbl">En mantenimiento</div><div class="sub">Trabajos en curso</div></div><div class="kpi"><div class="val" style="color:var(--green)">${conf}</div><div class="lbl">Conformes</div><div class="sub">${tasaConf}% tasa conformidad</div></div><div class="kpi"><div class="val" style="color:var(--red)">${nconf}</div><div class="lbl">No conformes</div><div class="sub">${nconf>0?'Requieren atención':'Sin inconformidades'}</div></div><div class="kpi"><div class="val" style="color:${pendEval>0?'#7c5800':'var(--green)'}">${pendEval}</div><div class="lbl">Pend. evaluación</div><div class="sub">${pendEval>0?'Ejecutadas sin evaluar':'Sin pendientes'}</div></div>`;
-// ── Funcionamiento de las plantas ──
-const fl=CATALOGO.map(e=>({e,f:funcionandoDe(e)}));const fSi=fl.filter(x=>x.f==='Sí').length,fNo=fl.filter(x=>x.f==='No').length;
-document.getElementById('func-leg').innerHTML=`<div style="text-align:center;margin-bottom:10px"><div style="font-size:30px;font-weight:800;color:var(--green);line-height:1">${fSi}<span style="font-size:14px;color:var(--text2);font-weight:600"> / ${CATALOGO.length}</span></div><div style="font-size:11px;color:var(--text2)">plantas funcionando</div></div><div class="vrow" style="padding:5px 0"><span class="lsq" style="background:#1e8449;display:inline-block;margin-right:6px;border-radius:2px"></span><span style="font-size:12px">Funcionando</span><span style="margin-left:auto;font-weight:700;color:#1e8449">${fSi}</span></div><div class="vrow" style="padding:5px 0"><span class="lsq" style="background:#c0392b;display:inline-block;margin-right:6px;border-radius:2px"></span><span style="font-size:12px">Fuera de servicio</span><span style="margin-left:auto;font-weight:700;color:#c0392b">${fNo}</span></div>`;
-const ctxF=document.getElementById('ch-func');if(chFunc)chFunc.destroy();if(ctxF){chFunc=new Chart(ctxF,{type:'doughnut',data:{labels:['Funcionando','Fuera de servicio'],datasets:[{data:[fSi,fNo],backgroundColor:['#1e8449','#c0392b'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}});}
-const fuera=fl.filter(x=>x.f==='No');
-document.getElementById('func-det').innerHTML=fuera.length?fuera.map(x=>`<div class="vrow" style="padding:6px 0;border-bottom:.5px solid var(--border)"><span class="serial-tag" style="cursor:pointer" onclick="goTab('hojas',document.querySelectorAll('.nav-btn')[3]);setTimeout(()=>verHojaVida('${x.e.serial}'),200)">${x.e.serial}</span><span style="font-size:11px;color:var(--text2);margin-left:8px;flex:1">${x.e.descripcion||''} · ${x.e.ciudad}</span><span class="bdg b-nconf" style="font-size:9px"><i class="ti ti-alert-octagon" style="font-size:9px"></i>Fuera de servicio</span></div>`).join(''):`<div style="text-align:center;padding:18px;color:var(--green)"><i class="ti ti-circle-check" style="font-size:28px;display:block;margin-bottom:6px"></i><span style="font-size:12px;font-weight:600">Todas las plantas están funcionando</span></div>`;const tipos=['Preventivo','Correctivo','Evaluación','Tanqueo','Instalación'];const tC=tipos.map(t=>regs.filter(r=>r.tipoMant===t).length);document.getElementById('leg-tipo').innerHTML=tipos.map((t,i)=>`<span><span class="lsq" style="background:${CT_TIPOS[t]}"></span>${t} (${tC[i]})</span>`).join('');const ctxT=document.getElementById('ch-tipo');if(!tot){if(ctxT)ctxT.style.display='none';}else{if(ctxT)ctxT.style.display='block';if(chTipo)chTipo.destroy();chTipo=new Chart(ctxT,{type:'bar',data:{labels:tipos,datasets:[{data:tC,backgroundColor:tipos.map(t=>CT_TIPOS[t]),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});}const muns=[...new Set(regs.map(r=>r.ciudad).filter(Boolean))];const munSorted=muns.map(m=>({m,c:regs.filter(r=>r.ciudad===m).length})).sort((a,b)=>b.c-a.c);const maxMun=Math.max(...munSorted.map(x=>x.c),1);document.getElementById('mun-act').innerHTML=munSorted.map(x=>`<div class="vrow"><span style="font-size:12px;min-width:90px;flex-shrink:0">${x.m}</span><div class="pbar"><div class="pfill" style="width:${Math.round(x.c/maxMun*100)}%;background:var(--c2)"></div></div><span style="font-size:11px;font-weight:600;color:var(--c2);min-width:24px;text-align:right">${x.c}</span></div>`).join('')||'<div class="empty" style="padding:1rem"><i class="ti ti-engine"></i>Sin datos</div>';const ctxS=document.getElementById('ch-sat');if(chSat)chSat.destroy();const munConSat=muns.filter(m=>regs.some(r=>r.ciudad===m&&r.satisfaccion));if(munConSat.length){const promsMun=munConSat.map(m=>{const ss=regs.filter(r=>r.ciudad===m&&r.satisfaccion).map(r=>parseInt(r.satisfaccion));return{m,p:(ss.reduce((a,b)=>a+b,0)/ss.length).toFixed(1)};});if(chSat)chSat.destroy();chSat=new Chart(ctxS,{type:'bar',data:{labels:promsMun.map(x=>x.m),datasets:[{label:'Satisfacción',data:promsMun.map(x=>x.p),backgroundColor:'rgba(37,99,168,.75)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:5,ticks:{stepSize:1}}}}});}const estC=ESTADOS_ORDEN.map(e=>regs.filter(r=>(r.estadoOrden||'Solicitud')===e).length);const ctxE=document.getElementById('ch-est');if(chEst)chEst.destroy();if(!estC.every(x=>x===0)){if(ctxE)ctxE.style.display='block';chEst=new Chart(ctxE,{type:'doughnut',data:{labels:ESTADOS_ORDEN,datasets:[{data:estC,backgroundColor:CE_ESTADOS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});}document.getElementById('leg-est').innerHTML=ESTADOS_ORDEN.map((e,i)=>`<div class="vrow" style="padding:4px 0"><span class="lsq" style="background:${CE_ESTADOS[i]};display:inline-block;margin-right:5px;border-radius:2px"></span><span style="font-size:11px">${e}</span><span style="margin-left:auto;font-weight:700;font-size:12px;color:${CE_ESTADOS[i]}">${estC[i]}</span></div>`).join('');const enProceso=regs.filter(r=>!['Entregado conforme','No conforme','Evaluación realizada','Tanqueo realizado'].includes(r.estadoOrden)).length;document.getElementById('ind-panel').innerHTML=`<div class="ebar"><span class="elbl">Conformidad</span><div class="etr"><div class="efl" style="width:${tasaConf}%;background:#1e8449"></div></div><span class="evl">${tasaConf}%</span></div><div class="ebar"><span class="elbl">En proceso</span><div class="etr"><div class="efl" style="width:${tot?Math.round(enProceso/tot*100):0}%;background:#EF9F27"></div></div><span class="evl">${enProceso}</span></div><div class="ebar"><span class="elbl">Al técnico</span><div class="etr"><div class="efl" style="width:${tot?Math.round(tec/tot*100):0}%;background:#7C3AED"></div></div><span class="evl">${tec}</span></div><div class="ebar"><span class="elbl">Con firma</span><div class="etr"><div class="efl" style="width:${tot?Math.round(regs.filter(r=>r.firma).length/tot*100):0}%;background:#378ADD"></div></div><span class="evl">${regs.filter(r=>r.firma).length}</span></div><div class="ebar"><span class="elbl">Con calif.</span><div class="etr"><div class="efl" style="width:${tot?Math.round(satNums.length/tot*100):0}%;background:#1e8449"></div></div><span class="evl">${satNums.length}</span></div>`;const rec=regs.slice(0,5);document.getElementById('act-rec').innerHTML=rec.length?rec.map(r=>`<div class="tli-row"><div class="tld" style="width:8px;height:8px;border-radius:50%;background:${CE_ESTADOS[ESTADOS_ORDEN.indexOf(r.estadoOrden||'Solicitud')]||'#94a3b8'};flex-shrink:0;margin-top:4px"></div><div><div style="font-size:12px;font-weight:600"><span class="serial-tag">${r.serial}</span> ${r.tipoMant}</div><div style="font-size:11px;color:var(--text2)">${r.ciudad||'—'} · ${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'} · ${bdgOrden(r.estadoOrden||'Solicitud')}</div></div></div>`).join(''):'<div class="empty" style="padding:1.5rem"><i class="ti ti-engine"></i>Sin actividad</div>';const seriales=[...new Set(regs.map(r=>r.serial))];document.getElementById('equipo-det').innerHTML=seriales.slice(0,8).map(s=>{const ur=regs.find(r=>r.serial===s);return`<div class="vrow"><span style="font-size:11px"><span class="serial-tag">${s}</span></span>${bdgOrden(ur&&ur.estadoOrden||'Solicitud')}</div>`;}).join('')||'<div class="empty" style="padding:1rem"><i class="ti ti-engine"></i>Sin equipos</div>';renderSatGlobal();}
+function renderDash(){const tot=regs.length,sol=regs.filter(r=>r.estadoOrden==='Solicitud').length,tec=regs.filter(r=>r.estadoOrden==='Entregado al Técnico').length,mant=regs.filter(r=>r.estadoOrden==='En Mantenimiento').length,conf=regs.filter(r=>r.estadoOrden==='Entregado conforme').length,nconf=regs.filter(r=>r.estadoOrden==='No conforme').length,tasaConf=tot>0?Math.round(conf/tot*100):0,satNums=regs.filter(r=>r.satisfaccion).map(r=>parseInt(r.satisfaccion)),satProm=satNums.length?(satNums.reduce((a,b)=>a+b,0)/satNums.length).toFixed(1):'—',pendEval=mant;document.getElementById('krow').innerHTML=`<div class="kpi"><div class="val" style="color:var(--c1)">${tot}</div><div class="lbl">Total órdenes</div><div class="sub">${new Set(regs.map(r=>r.serial)).size} equipo(s)</div></div><div class="kpi"><div class="val" style="color:#378ADD">${sol}</div><div class="lbl">Solicitudes</div><div class="sub">Pendientes de asignar</div></div><div class="kpi"><div class="val" style="color:#7C3AED">${tec}</div><div class="lbl">Con el técnico</div><div class="sub">Entregadas para ejecución</div></div><div class="kpi"><div class="val" style="color:#EF9F27">${mant}</div><div class="lbl">En mantenimiento</div><div class="sub">Trabajos en curso</div></div><div class="kpi"><div class="val" style="color:var(--green)">${conf}</div><div class="lbl">Conformes</div><div class="sub">${tasaConf}% tasa conformidad</div></div><div class="kpi"><div class="val" style="color:var(--red)">${nconf}</div><div class="lbl">No conformes</div><div class="sub">${nconf>0?'Requieren atención':'Sin inconformidades'}</div></div><div class="kpi"><div class="val" style="color:${pendEval>0?'#7c5800':'var(--green)'}">${pendEval}</div><div class="lbl">Pend. evaluación</div><div class="sub">${pendEval>0?'Ejecutadas sin evaluar':'Sin pendientes'}</div></div>`;const tipos=['Preventivo','Correctivo','Instalación','Desmonte'];const tC=tipos.map(t=>regs.filter(r=>r.tipoMant===t).length);document.getElementById('leg-tipo').innerHTML=tipos.map((t,i)=>`<span><span class="lsq" style="background:${CT_TIPOS[t]}"></span>${t} (${tC[i]})</span>`).join('');const ctxT=document.getElementById('ch-tipo');if(!tot){if(ctxT)ctxT.style.display='none';}else{if(ctxT)ctxT.style.display='block';if(chTipo)chTipo.destroy();chTipo=new Chart(ctxT,{type:'bar',data:{labels:tipos,datasets:[{data:tC,backgroundColor:tipos.map(t=>CT_TIPOS[t]),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});}const muns=[...new Set(regs.map(r=>r.ciudad).filter(Boolean))];const munSorted=muns.map(m=>({m,c:regs.filter(r=>r.ciudad===m).length})).sort((a,b)=>b.c-a.c);const maxMun=Math.max(...munSorted.map(x=>x.c),1);document.getElementById('mun-act').innerHTML=munSorted.map(x=>`<div class="vrow"><span style="font-size:12px;min-width:90px;flex-shrink:0">${x.m}</span><div class="pbar"><div class="pfill" style="width:${Math.round(x.c/maxMun*100)}%;background:var(--c2)"></div></div><span style="font-size:11px;font-weight:600;color:var(--c2);min-width:24px;text-align:right">${x.c}</span></div>`).join('')||'<div class="empty" style="padding:1rem"><i class="ti ti-wind"></i>Sin datos</div>';const ctxS=document.getElementById('ch-sat');if(chSat)chSat.destroy();const munConSat=muns.filter(m=>regs.some(r=>r.ciudad===m&&r.satisfaccion));if(munConSat.length){const promsMun=munConSat.map(m=>{const ss=regs.filter(r=>r.ciudad===m&&r.satisfaccion).map(r=>parseInt(r.satisfaccion));return{m,p:(ss.reduce((a,b)=>a+b,0)/ss.length).toFixed(1)};});if(chSat)chSat.destroy();chSat=new Chart(ctxS,{type:'bar',data:{labels:promsMun.map(x=>x.m),datasets:[{label:'Satisfacción',data:promsMun.map(x=>x.p),backgroundColor:'rgba(37,99,168,.75)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:5,ticks:{stepSize:1}}}}});}const estC=ESTADOS_ORDEN.map(e=>regs.filter(r=>(r.estadoOrden||'Solicitud')===e).length);const ctxE=document.getElementById('ch-est');if(chEst)chEst.destroy();if(!estC.every(x=>x===0)){if(ctxE)ctxE.style.display='block';chEst=new Chart(ctxE,{type:'doughnut',data:{labels:ESTADOS_ORDEN,datasets:[{data:estC,backgroundColor:CE_ESTADOS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});}document.getElementById('leg-est').innerHTML=ESTADOS_ORDEN.map((e,i)=>`<div class="vrow" style="padding:4px 0"><span class="lsq" style="background:${CE_ESTADOS[i]};display:inline-block;margin-right:5px;border-radius:2px"></span><span style="font-size:11px">${e}</span><span style="margin-left:auto;font-weight:700;font-size:12px;color:${CE_ESTADOS[i]}">${estC[i]}</span></div>`).join('');const enProceso=regs.filter(r=>!['Entregado conforme','No conforme'].includes(r.estadoOrden)).length;document.getElementById('ind-panel').innerHTML=`<div class="ebar"><span class="elbl">Conformidad</span><div class="etr"><div class="efl" style="width:${tasaConf}%;background:#1e8449"></div></div><span class="evl">${tasaConf}%</span></div><div class="ebar"><span class="elbl">En proceso</span><div class="etr"><div class="efl" style="width:${tot?Math.round(enProceso/tot*100):0}%;background:#EF9F27"></div></div><span class="evl">${enProceso}</span></div><div class="ebar"><span class="elbl">Al técnico</span><div class="etr"><div class="efl" style="width:${tot?Math.round(tec/tot*100):0}%;background:#7C3AED"></div></div><span class="evl">${tec}</span></div><div class="ebar"><span class="elbl">Con firma</span><div class="etr"><div class="efl" style="width:${tot?Math.round(regs.filter(r=>r.firma).length/tot*100):0}%;background:#378ADD"></div></div><span class="evl">${regs.filter(r=>r.firma).length}</span></div><div class="ebar"><span class="elbl">Con calif.</span><div class="etr"><div class="efl" style="width:${tot?Math.round(satNums.length/tot*100):0}%;background:#1e8449"></div></div><span class="evl">${satNums.length}</span></div>`;const rec=regs.slice(0,5);document.getElementById('act-rec').innerHTML=rec.length?rec.map(r=>`<div class="tli-row"><div class="tld" style="width:8px;height:8px;border-radius:50%;background:${CE_ESTADOS[ESTADOS_ORDEN.indexOf(r.estadoOrden||'Solicitud')]||'#94a3b8'};flex-shrink:0;margin-top:4px"></div><div><div style="font-size:12px;font-weight:600"><span class="serial-tag">${r.serial}</span> ${r.tipoMant}</div><div style="font-size:11px;color:var(--text2)">${r.ciudad||'—'} · ${r.fechaSolicitud?fmt(r.fechaSolicitud):'—'} · ${bdgOrden(r.estadoOrden||'Solicitud')}</div></div></div>`).join(''):'<div class="empty" style="padding:1.5rem"><i class="ti ti-wind"></i>Sin actividad</div>';const seriales=[...new Set(regs.map(r=>r.serial))];document.getElementById('equipo-det').innerHTML=seriales.slice(0,8).map(s=>{const ur=regs.find(r=>r.serial===s);return`<div class="vrow"><span style="font-size:11px"><span class="serial-tag">${s}</span></span>${bdgOrden(ur&&ur.estadoOrden||'Solicitud')}</div>`;}).join('')||'<div class="empty" style="padding:1rem"><i class="ti ti-wind"></i>Sin equipos</div>';renderSatGlobal();}
 function renderSatGlobal(){const todos=regs.filter(r=>r.satisfaccion).map(r=>parseInt(r.satisfaccion));if(!todos.length){document.getElementById('sat-global').innerHTML='<div class="empty" style="padding:1rem"><i class="ti ti-star"></i>Sin calificaciones</div>';return;}const promGlobal=(todos.reduce((a,b)=>a+b,0)/todos.length).toFixed(1);const dist=[5,4,3,2,1].map(v=>({v,c:todos.filter(x=>x===v).length,col:SCOLORS[v],lbl:SATS[v]}));const mx=Math.max(...dist.map(d=>d.c),1);document.getElementById('sat-global').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="font-size:28px;font-weight:700;color:${SCOLORS[Math.round(parseFloat(promGlobal))]||'#1e8449'}">${promGlobal}/5</div><div><div style="font-size:12px;font-weight:600;color:var(--c1)">${SATS[Math.round(parseFloat(promGlobal))]||''}</div><div style="font-size:11px;color:var(--text2)">${todos.length} calificación(es)</div></div></div>${dist.map(d=>`<div class="ebar"><span class="elbl" style="color:${d.col};min-width:120px">${d.lbl}</span><div class="etr"><div class="efl" style="width:${Math.round(d.c/mx*100)}%;background:${d.col}"></div></div><span class="evl">${d.c}</span></div>`).join('')}`;}
 
 async function recargarDatos(){await loadData();showToast('Datos actualizados','s');}
-function renderAll(){if(document.getElementById('panel-historial').classList.contains('active'))renderHist();if(document.getElementById('panel-dashboard').classList.contains('active'))renderDash();if(document.getElementById('panel-hojas').classList.contains('active'))renderHojas();document.getElementById('last-update').textContent='Actualizado: '+fmtNow();}
+function renderAll(){if(document.getElementById('panel-historial').classList.contains('active'))renderHist();if(document.getElementById('panel-dashboard').classList.contains('active'))renderDash();if(document.getElementById('panel-buscar').classList.contains('active')){const q=document.getElementById('inp-bus').value;if(q)buscarGlobal();}document.getElementById('last-update').textContent='Actualizado: '+fmtNow();}
 
 // ══════════════════════════════════════════════════════
 // VISTA PÚBLICA DE ENCUESTA — solo encuesta de 1 orden
@@ -2449,7 +2004,7 @@ async function enviarEncuestaPublica(){
     const app=initializeApp(cfg,'sige_enc_'+Date.now());
     const dbEnc=getFirestore(app);
     // Actualizar el documento de la orden
-    await updateDoc(doc(dbEnc,'ordenes_plantas',encPubData.id),datos);
+    await updateDoc(doc(dbEnc,'ordenes',encPubData.id),datos);
     // Éxito
     document.getElementById('enc-pub-form').style.display='none';
     document.getElementById('enc-pub-exito').style.display='block';
@@ -2468,14 +2023,9 @@ async function enviarEncuestaPublica(){
     return; // No cargar el resto del aplicativo
   }
 
-  ['modal','modal-editar','modal-planta'].forEach(id=>{const m=document.getElementById(id);if(m)m.addEventListener('click',function(e){if(e.target===this){if(id==='modal')cerrar();else if(id==='modal-editar')cerrarEditar();else cerrarEditarPlanta();}});});
+  ['modal','modal-editar'].forEach(id=>{const m=document.getElementById(id);if(m)m.addEventListener('click',function(e){if(e.target===this){if(id==='modal')cerrar();else cerrarEditar();}});});
   document.getElementById('f-fecha').value=hoy();
   renderEncuesta();
-
-  // ── Control de acceso: restaurar sesión o mostrar login ──
-  if(!restaurarSesion()){
-    document.getElementById('login-overlay').style.display='flex';
-  }
 
   // ── Conexión automática a Firebase ──
   // Prioridad: 1) FB_CONFIG embebida en el archivo
@@ -2503,7 +2053,7 @@ async function enviarEncuestaPublica(){
       fbApp = initializeApp(cfg, 'sige_' + Date.now());
       db    = getFirestore(fbApp);
       // Test de conexión
-      await getDocs(query(collection(db,'ordenes_plantas'), orderBy('_ts','desc')));
+      await getDocs(query(collection(db,'ordenes'), orderBy('_ts','desc')));
       isDemoMode = false;
       // Guardar en localStorage para respaldo offline
       try{ localStorage.setItem('sige_fb_cfg', JSON.stringify(cfg)); }catch(e){}
@@ -2586,34 +2136,26 @@ document.addEventListener('click',function(e){
 });
 // ── Exponer funciones al window (requerido por type="module") ──
 window.goTab = goTab;
-window.iniciarSesion = iniciarSesion;
-window.entrarComoFinal = entrarComoFinal;
-window.cerrarSesion = cerrarSesion;
 window.actualizarStepper = actualizarStepper;
 window.mostrarPaso = mostrarPaso;
 window.onCiudadChange = onCiudadChange;
-window.onTipoMantChange = onTipoMantChange;
 window.onInmuebleChange = onInmuebleChange;
-window.poblarPlantas = poblarPlantas;
-window.onPlantaChange = onPlantaChange;
-
+window.buscarEquipo = buscarEquipo;
+window.elegirSugerencia = elegirSugerencia;
+window.seleccionarEquipo = seleccionarEquipo;
 window.limpiarSeleccionEquipo = limpiarSeleccionEquipo;
+window.mostrarEquiposDespacho = mostrarEquiposDespacho;
 window.usarEquipoEnNuevaOrden = function(serial){
+  // Ir a nueva orden y preseleccionar el equipo
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn')[1].classList.add('active');
   document.getElementById('panel-nuevo').classList.add('active');
   limpiar();
-  const e=CATALOGO.find(x=>x.serial.toUpperCase()===serial.toUpperCase());
-  if(!e)return;
+  // Establecer el serial y buscar
   setTimeout(()=>{
-    document.getElementById('f-ciudad').value=e.ciudad; onCiudadChange();
-    if(e.ciudad==='Arauca'){
-      setTimeout(()=>{ document.getElementById('f-inmueble').value=e.inmueble; onInmuebleChange();
-        setTimeout(()=>{ document.getElementById('f-planta').value=e.serial; onPlantaChange(); },60); },60);
-    }else{
-      setTimeout(()=>{ document.getElementById('f-planta').value=e.serial; onPlantaChange(); },60);
-    }
+    document.getElementById('f-serial').value=serial;
+    buscarEquipo();
   },100);
 };
 window.guardarSolicitud = guardarSolicitud;
@@ -2643,14 +2185,10 @@ window.onFiltroMunicipioChange = onFiltroMunicipioChange;
 window.onFiltroInmuebleChange = onFiltroInmuebleChange;
 window.limpiarFiltros = limpiarFiltros;
 window.eliminarReg = eliminarReg;
-window.renderHojas = renderHojas;
-window.verHojaVida = verHojaVida;
+window.buscarGlobal = buscarGlobal;
 window.abrirMod = abrirMod;
 window.cerrar = cerrar;
 window.abrirEditar = abrirEditar;
-window.abrirEditarPlanta = abrirEditarPlanta;
-window.cerrarEditarPlanta = cerrarEditarPlanta;
-window.guardarEditarPlanta = guardarEditarPlanta;
 window.guardarEdicion = guardarEdicion;
 window.buscarSerialEnEdicion = buscarSerialEnEdicion;
 window.aplicarEquipoEdicion = aplicarEquipoEdicion;
