@@ -7,6 +7,7 @@
 <title>SIGE — Mantenimiento Aires Acondicionados · Rama Judicial Arauca</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--c1:#1a3a5c;--c2:#2563a8;--bg:#f4f6f9;--card:#fff;--border:#e2e8f0;--text:#1e293b;--text2:#64748b;--bg2:#f8fafc;
@@ -591,6 +592,32 @@ tr:hover td{background:#f8fafc}
     </div>
 
     <div class="card">
+      <div class="slbl"><i class="ti ti-file-import"></i>Importar Corte 2 (mantenimientos realizados)</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Carga las <strong>73 órdenes de servicio</strong> del Corte 2 (CM-2926 a CM-3067), que cubren Arauca capital y los municipios de <strong>Saravena, Tame, Fortul, Arauquita, Cravo Norte y Cubará</strong>. Todas se registran como <strong>entregadas conforme</strong>, con su técnico, fecha, municipio, inmueble/despacho y satisfacción. Los mantenimientos preventivo + correctivo se cargan como dos órdenes. La operación es segura: si vuelve a presionar el botón, <strong>no se duplican</strong> las que ya existan.</p>
+      <div style="background:var(--amber-bg);border:.5px solid var(--amber-b);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--amber);margin-bottom:12px">
+        <i class="ti ti-alert-triangle"></i> Se escribirán en la base de datos que tenga activa (Firebase si está conectado, o local). Puede importar el Corte 1 y el Corte 2 de forma independiente.
+      </div>
+      <div class="arow" style="margin-top:0">
+        <button class="btn btn-p" id="btn-import-c2" onclick="importarCorte2()"><i class="ti ti-database-import"></i>Importar 73 órdenes del Corte 2</button>
+      </div>
+      <div id="import-c2-status" style="margin-top:10px;font-size:12px"></div>
+    </div>
+
+    <div class="card">
+      <div class="slbl"><i class="ti ti-upload"></i>Importar órdenes desde archivo (Excel / CSV)</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Cargue una hoja de cálculo (<strong>.xlsx</strong> o <strong>.csv</strong>) con la relación de mantenimientos y el aplicativo creará automáticamente cada fila como una orden de servicio <strong>entregada conforme</strong>. Reconoce columnas como <em>Fecha, Municipio, Inmueble/Sede, Ubicación/Despacho, Tipo sistema, Actividad, Marca, Modelo, Capacidad, Refrig., No. Serial, No. Inventario, Técnico, Auxiliar, Responsable, Trabajos realizados</em> y, opcionalmente, <em>Corte</em>. Los mantenimientos preventivo + correctivo se crean como dos órdenes. Las órdenes que ya existan <strong>no se duplican</strong>.</p>
+      <div class="arow" style="margin-top:0;align-items:center;flex-wrap:wrap">
+        <input type="file" id="imp-file" accept=".xlsx,.xls,.csv" onchange="previsualizarImport(event)" style="font-size:12px">
+        <button class="btn btn-sm" onclick="descargarPlantillaImport()"><i class="ti ti-download"></i>Descargar plantilla CSV</button>
+      </div>
+      <div id="imp-preview" style="margin-top:10px;font-size:12px"></div>
+      <div class="arow" id="imp-actions" style="display:none;margin-top:8px">
+        <button class="btn btn-p" id="btn-imp-file" onclick="confirmarImportArchivo()"><i class="ti ti-database-import"></i>Crear órdenes</button>
+      </div>
+      <div id="imp-status" style="margin-top:10px;font-size:12px"></div>
+    </div>
+
+    <div class="card">
       <div class="slbl"><i class="ti ti-brand-github"></i>Publicar en GitHub Pages (opcional)</div>
       <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Para que el sistema esté disponible desde cualquier navegador sin instalar nada:</p>
       <div style="font-size:12px;color:var(--text2);line-height:2">
@@ -879,18 +906,18 @@ function buildRegCorte1(o){
   const resp=o.resp||'Funcionario del despacho';
   const desc=`Mantenimiento ${o.tm.toLowerCase()} de aire acondicionado ${o.mar||''} ${o.cap?o.cap+' BTU':''} — ${o.ub}`.replace(/\s+/g,' ').trim();
   return {
-    id:gid(), origen:'CORTE1', refOrden:o.cm,
+    id:gid(), origen:(o.og||'CORTE1'), refOrden:o.cm,
     consecutivo:o.n, anioOrden:2026, codigoOrden:o.cod,
-    serial:o.s, ciudad:'Arauca', inmueble:o.inm, despacho:o.dsp,
+    serial:o.s, ciudad:(o.mun||'Arauca'), inmueble:o.inm, despacho:o.dsp,
     tipoMant:o.tm, descripcion:desc, fechaSolicitud:o.f,
-    tipoEq:'Mini-split', marca:o.mar, modelo:o.mod, capacidad:o.cap, ubicacion:o.ub, refrigerante:o.ref,
+    tipoEq:(o.te||'Mini-split'), marca:o.mar, modelo:o.mod, capacidad:o.cap, ubicacion:o.ub, refrigerante:o.ref,
     estadoOrden:'Entregado conforme', estado:'Entregado conforme', creadoEn:fdisp,
     contratista:o.tec, empresa:EMPRESA_C1, fechaEjecucion:o.f, fechaSalida:o.f,
     actividades:actividades, obsTecnico:(o.aux?('Auxiliar: '+o.aux):''), obsAdmin:'', estadoFin:'Operativo',
     responsableRecibe:resp, cargoResp:'Responsable del despacho', obsEntrega:'',
     satisfaccion:'5', firma:null, decision:'conforme', motivoInconformidad:'', fechaEntrega:o.f,
     timeline:[
-      {fecha:fdisp,evento:'Solicitud registrada',tipo:'i',detalle:`${o.tm} · ${o.dsp} · Arauca`},
+      {fecha:fdisp,evento:'Solicitud registrada',tipo:'i',detalle:`${o.tm} · ${o.dsp} · ${o.mun||'Arauca'}`},
       {fecha:fdisp,evento:'Trabajos completados — notificación al administrativo',tipo:'l',detalle:`Técnico: ${o.tec} | ${actividades.substring(0,60)}`},
       {fecha:fdisp,evento:'Entregado conforme — proceso finalizado',tipo:'e',detalle:`Responsable: ${resp} | Satisfacción: Muy Satisfactorio`}
     ]
@@ -920,6 +947,292 @@ async function importarCorte1(){
 }
 window.ORDENES_CORTE1=ORDENES_CORTE1;
 window.importarCorte1=importarCorte1;
+
+/* ===== ÓRDENES DE SERVICIO — IMPORTACIÓN CORTE 2 (mantenimientos realizados, todos los municipios) ===== */
+const ORDENES_CORTE2=[
+{cod:'OS-2026-0114',n:114,cm:'CM-2926',f:'2026-07-17',tm:'Preventivo',s:'928',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Juzgado 1 administrativo equipo 2 OF- 303',ub:'Juzgado 1 administrativo equipo 2 OF- 303',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Ginna días',act:'',og:'CORTE2'},
+{cod:'OS-2026-0115',n:115,cm:'CM-2927',f:'2026-07-17',tm:'Preventivo',s:'886',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Juzgado 2 administrativo de oralidad equipo 1 OF- 302',ub:'Juzgado 2 administrativo de oralidad equipo 1 OF- 302',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Julio melo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0116',n:116,cm:'CM-2928',f:'2026-07-17',tm:'Preventivo',s:'891',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Juzgado 2 administrativo de oralidad equipo 2 OF-302',ub:'Juzgado 2 administrativo de oralidad equipo 2 OF-302',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Julio melo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0117',n:117,cm:'CM-2929',f:'2026-07-17',tm:'Preventivo',s:'',mar:'Mabe',mod:'MMI18CDBWCC8',cap:'18.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Secretaría/ juzgado 7 administrativo',ub:'Secretaría/ juzgado 7 administrativo',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Piedad Cristiana Gallego',act:'',og:'CORTE2'},
+{cod:'OS-2026-0118',n:118,cm:'CM-2930',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW12GSJA0',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho/ juzgado 7 administrativo',ub:'Despacho/ juzgado 7 administrativo',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Piedad Cristiana Gallego',act:'',og:'CORTE2'},
+{cod:'OS-2026-0119',n:119,cm:'CM-2931',f:'2026-07-17',tm:'Preventivo',s:'00047',mar:'LG',mod:'AMNC28GTQA2',cap:'18.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 1 Tribunal Administrativo equipo 1 OF 408',ub:'Despacho 1 Tribunal Administrativo equipo 1 OF 408',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Silvana Morales',act:'',og:'CORTE2'},
+{cod:'OS-2026-0120',n:120,cm:'CM-2932',f:'2026-07-17',tm:'Preventivo',s:'30081',mar:'Midea',mod:'MSAG11D22CRFN1MTOW',cap:'24.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 1 Tribunal Administrativo equipo 2 OF - 408',ub:'Despacho 1 Tribunal Administrativo equipo 2 OF - 408',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Silvana Morales',act:'',og:'CORTE2'},
+{cod:'OS-2026-0121',n:121,cm:'CM-2933',f:'2026-07-17',tm:'Preventivo',s:'881',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 2 Tribunal Administrativo equipo 1 OF- 407',ub:'Despacho 2 Tribunal Administrativo equipo 1 OF- 407',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Judith Garcés',act:'',og:'CORTE2'},
+{cod:'OS-2026-0122',n:122,cm:'CM-2934',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW24GTBA0',cap:'24.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Secretaría juzgado 7 administrativo',ub:'Secretaría juzgado 7 administrativo',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Piedad Cristiana Gallego',act:'',og:'CORTE2'},
+{cod:'OS-2026-0123',n:123,cm:'CM-2935',f:'2026-07-17',tm:'Preventivo',s:'884',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 2 Tribunal Administrativo equipo 2 OF-407',ub:'Despacho 2 Tribunal Administrativo equipo 2 OF-407',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Judith Garcés',act:'',og:'CORTE2'},
+{cod:'OS-2026-0124',n:124,cm:'CM-2936',f:'2026-07-17',tm:'Preventivo',s:'894',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 3 Tribunal Administrativo equipo 1',ub:'Despacho 3 Tribunal Administrativo equipo 1',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Silgary urrueda',act:'',og:'CORTE2'},
+{cod:'OS-2026-0125',n:125,cm:'CM-2937',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'VM181C7',cap:'18.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho/ Despacho 3 tribunal superior',ub:'Despacho/ Despacho 3 tribunal superior',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Juan Esteban Ocampo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0126',n:126,cm:'CM-2938',f:'2026-07-17',tm:'Preventivo',s:'930',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 2 Tribunal Superior equipo 1 OF-404',ub:'Despacho 2 Tribunal Superior equipo 1 OF-404',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Janeth Borbón',act:'',og:'CORTE2'},
+{cod:'OS-2026-0127',n:127,cm:'CM-2939',f:'2026-07-17',tm:'Preventivo',s:'1990',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 2 Tribunal Superior equipo 2 OF-404',ub:'Despacho 2 Tribunal Superior equipo 2 OF-404',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Janeth Borbón',act:'',og:'CORTE2'},
+{cod:'OS-2026-0128',n:128,cm:'CM-2940',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW12GSJA0',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Secretaría/ despacho 3 tribunal superior',ub:'Secretaría/ despacho 3 tribunal superior',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Juan Esteban Ocampo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0129',n:129,cm:'CM-2941',f:'2026-07-17',tm:'Preventivo',s:'900',mar:'LG',mod:'AMNW12GSJAO',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 1 Tribunal Superior equipo 1 OF- 403',ub:'Despacho 1 Tribunal Superior equipo 1 OF- 403',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Jesica ramos',act:'',og:'CORTE2'},
+{cod:'OS-2026-0130',n:130,cm:'CM-2942',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW12GSJA0',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Secretaría/ despacho 1 tribunal superior',ub:'Secretaría/ despacho 1 tribunal superior',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Yesica Ramos',act:'',og:'CORTE2'},
+{cod:'OS-2026-0131',n:131,cm:'CM-2943',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW12GSJA0',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho/ despacho 3 tribunal administrativo',ub:'Despacho/ despacho 3 tribunal administrativo',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Silgary urrueda',act:'',og:'CORTE2'},
+{cod:'OS-2026-0132',n:132,cm:'CM-2944',f:'2026-07-17',tm:'Preventivo',s:'100171',mar:'York',mod:'YSEA24FSADA',cap:'24.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Despacho 3 Tribunal Municipal administrativo equipo 2 OF 406',ub:'Despacho 3 Tribunal Municipal administrativo equipo 2 OF 406',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Silgary urrueda',act:'',og:'CORTE2'},
+{cod:'OS-2026-0133',n:133,cm:'CM-2945',f:'2026-07-17',tm:'Preventivo',s:'',mar:'LG',mod:'AMNW24GTBA0',cap:'24.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Sala plena tribunal administrativo',ub:'Sala plena tribunal administrativo',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Jaider Carvajal',act:'',og:'CORTE2'},
+{cod:'OS-2026-0134',n:134,cm:'CM-2946',f:'2026-07-17',tm:'Preventivo',s:'2615',mar:'LG',mod:'AMNW24GTBAO',cap:'24.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Sala plena Tribunal Superior OF-402',ub:'Sala plena Tribunal Superior OF-402',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Alexander Salazar',act:'',og:'CORTE2'},
+{cod:'OS-2026-0135',n:135,cm:'CM-2947',f:'2026-07-17',tm:'Preventivo',s:'8100025',mar:'BLUE LINE',mod:'MS1210G2',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Rack piso 4',ub:'Rack piso 4',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Carlos puentes',act:'Se realizan las siguientes actividades: Se recomienda el cambio de tubería de cobre ya que la tubería que está actualmente no corresponde al diámetro requerido por el fabricante. Tambien se recomienda el cambio del rubatex ya que el que está actualmente no se encuentra en buen estado',og:'CORTE2'},
+{cod:'OS-2026-0136',n:136,cm:'CM-2948',f:'2026-07-17',tm:'Preventivo',s:'810040',mar:'BLUE LINE',mod:'MS-1210G2',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Rack piso 1',ub:'Rack piso 1',tec:'Danilo Echavarria',aux:'Jhon Andersson',resp:'Carlos Puentes',act:'Se realizan las siguientes actividades: Se recomienda el cambio de tubería de cobre ya que la tubería que está actualmente no corresponde al diámetro requerido por el fabricante. Tambien se recomienda el cambio del rubatex ya que el que está actualmente no se encuentra en buen estado',og:'CORTE2'},
+{cod:'OS-2026-0137',n:137,cm:'CM-2949',f:'2026-07-17',tm:'Preventivo',s:'3831',mar:'McQuay',mod:'MQS-104036CWF216A',cap:'36.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Rack piso 3',ub:'Rack piso 3',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Carlos puentes',act:'Se realizan las siguientes actividades: Se recomienda el cambio de tubería de cobre ya que la tubería que está actualmente no corresponde al diámetro requerido por el fabricante. Tambien se recomienda el cambio del rubatex ya que el que está actualmente no se encuentra en buen estado',og:'CORTE2'},
+{cod:'OS-2026-0138',n:138,cm:'CM-2950',f:'2026-07-17',tm:'Preventivo',s:'10032',mar:'BLUE LINE',mod:'MS1210G2',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Rack piso 2',ub:'Rack piso 2',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Carlos Puentes',act:'Se realizan las siguientes actividades: Se cambia rubatex. Se recomienda el cambio de tubería de cobre ya que la tubería que esta actualmente no corresponde al diámetro requerido por el fabricante, se realiza ajuste de gas refrigerante.',og:'CORTE2'},
+{cod:'OS-2026-0139',n:139,cm:'CM-2950',f:'2026-07-17',tm:'Correctivo',s:'10032',mar:'BLUE LINE',mod:'MS1210G2',cap:'12.000',ref:'R410',mun:'Arauca',inm:'Palacio de Justicia Calle 21',dsp:'Palacio de Justicia Calle 21 — Rack piso 2',ub:'Rack piso 2',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Carlos Puentes',act:'Se realizan las siguientes actividades: Se cambia rubatex. Se recomienda el cambio de tubería de cobre ya que la tubería que esta actualmente no corresponde al diámetro requerido por el fabricante, se realiza ajuste de gas refrigerante.',og:'CORTE2'},
+{cod:'OS-2026-0140',n:140,cm:'CM-2951',f:'2026-07-18',tm:'Preventivo',s:'5054',mar:'LG',mod:'VM242C7',cap:'24.000',ref:'R410',mun:'Arauca',inm:'CESPA',dsp:'CESPA — Sala de audiencia # 2 equipo 1 cespa',ub:'Sala de audiencia # 2 equipo 1 cespa',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Uber Ramírez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0141',n:141,cm:'CM-2952',f:'2026-07-18',tm:'Preventivo',s:'619',mar:'LG',mod:'VM18C7',cap:'18.000',ref:'R410',mun:'Arauca',inm:'CESPA',dsp:'CESPA — Sala de audiencia # 2 equipo 2 cespa',ub:'Sala de audiencia # 2 equipo 2 cespa',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Uber Ramírez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0142',n:142,cm:'CM-2953',f:'2026-07-18',tm:'Preventivo',s:'588',mar:'LG',mod:'VM18C7',cap:'18.000',ref:'R410',mun:'Arauca',inm:'CESPA',dsp:'CESPA — Sala de audiencias #1 equipo 1 cespa',ub:'Sala de audiencias #1 equipo 1 cespa',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Uber Ramírez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0143',n:143,cm:'CM-2954',f:'2026-07-18',tm:'Preventivo',s:'272',mar:'LG',mod:'VM24C7',cap:'24.000',ref:'R410',mun:'Arauca',inm:'CESPA',dsp:'CESPA — Sala de audiencias #1 equipo 2 cespa',ub:'Sala de audiencias #1 equipo 2 cespa',tec:'Sergio Vanegas',aux:'Ever barragan',resp:'Uber Ramírez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0144',n:144,cm:'CM-2990',f:'2026-07-27',tm:'Preventivo',s:'54122000B1F27180130036',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Despacho juez',ub:'Despacho juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gladys zenit Páez Ortega',act:'',og:'CORTE2'},
+{cod:'OS-2026-0145',n:145,cm:'CM-2991',f:'2026-07-27',tm:'Preventivo',s:'CT23101621GSG0077',mar:'Mabe',mod:'MMI18CDBWCCCI8',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Sala audiencia equipo 1',ub:'Sala audiencia equipo 1',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gladys zenit Páez Ortega',act:'',og:'CORTE2'},
+{cod:'OS-2026-0146',n:146,cm:'CM-2992',f:'2026-07-27',tm:'Preventivo',s:'',mar:'Midea',mod:'No aplica',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Sala audiencia equipo 2',ub:'Sala audiencia equipo 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gladys zenit Páez Ortega',act:'',og:'CORTE2'},
+{cod:'OS-2026-0147',n:147,cm:'CM-2993',f:'2026-07-27',tm:'Preventivo',s:'54122000B1F27180130094',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Sala secretaria',ub:'Sala secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'María Alejandra Manrique',act:'',og:'CORTE2'},
+{cod:'OS-2026-0148',n:148,cm:'CM-2994',f:'2026-07-27',tm:'Preventivo',s:'54122000B1FZ27180130111',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Sala secretaria equipo 2',ub:'Sala secretaria equipo 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Carlos Eduardo bernal',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo, debido a una fuga de gas, por los reacores',og:'CORTE2'},
+{cod:'OS-2026-0149',n:149,cm:'CM-2994',f:'2026-07-27',tm:'Correctivo',s:'54122000B1FZ27180130111',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Fortul',inm:'Sede Judicial de Fortul',dsp:'Sede Judicial de Fortul — Sala secretaria equipo 2',ub:'Sala secretaria equipo 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Carlos Eduardo bernal',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo, debido a una fuga de gas, por los reacores',og:'CORTE2'},
+{cod:'OS-2026-0150',n:150,cm:'CM-2995',f:'2026-07-29',tm:'Preventivo',s:'707TAQPAR580',mar:'LG',mod:'77PKG009',cap:'12.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala de espera, juzgado de primero de familia',ub:'Sala de espera, juzgado de primero de familia',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerardo ballestero gomez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0151',n:151,cm:'CM-2996',f:'2026-07-29',tm:'Preventivo',s:'707TAFZCE779',mar:'LG',mod:'77PKG003',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Secretaría de juzgado',ub:'Secretaría de juzgado',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Yenny Andrea Córdoba Rios',act:'',og:'CORTE2'},
+{cod:'OS-2026-0152',n:152,cm:'CM-2997',f:'2026-07-29',tm:'Preventivo',s:'707TAZFBX501',mar:'LG',mod:'77PKG00Z',cap:'24.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Secretaría de juzgado equipo 2',ub:'Secretaría de juzgado equipo 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Yenny Andrea Córdoba Rios',act:'',og:'CORTE2'},
+{cod:'OS-2026-0153',n:153,cm:'CM-2998',f:'2026-07-29',tm:'Preventivo',s:'707TAHQAR577',mar:'LG',mod:'77PKG009',cap:'12.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala archivos',ub:'Sala archivos',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Yenny Andrea Córdoba Rios',act:'',og:'CORTE2'},
+{cod:'OS-2026-0154',n:154,cm:'CM-2999',f:'2026-07-29',tm:'Preventivo',s:'707TAULAS430',mar:'LG',mod:'77PK00L',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerardo ballestero gomez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0155',n:155,cm:'CM-3011',f:'2026-07-30',tm:'Preventivo',s:'',mar:'LG',mod:'9J1G00TB',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Laura Marcela gerrero',act:'',og:'CORTE2'},
+{cod:'OS-2026-0156',n:156,cm:'CM-3012',f:'2026-07-30',tm:'Preventivo',s:'910TABNB5077',mar:'LG',mod:'9K1G00XQ',cap:'24.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina de citador',ub:'Oficina de citador',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Fabuer padilla',act:'',og:'CORTE2'},
+{cod:'OS-2026-0157',n:157,cm:'CM-3013',f:'2026-07-30',tm:'Preventivo',s:'909TATGDX313',mar:'LG',mod:'9J1G00EY',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina secretaria',ub:'Oficina secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Rosi campiño',act:'',og:'CORTE2'},
+{cod:'OS-2026-0158',n:158,cm:'CM-3014',f:'2026-07-30',tm:'Preventivo',s:'909TARUDX302',mar:'LG',mod:'9J1G00EY',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Secretaría juzgado',ub:'Secretaría juzgado',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Armando delgado sanchez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0159',n:159,cm:'CM-3015',f:'2026-07-30',tm:'Preventivo',s:'910TALBDQ248',mar:'LG',mod:'9K1G00A7',cap:'24.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Secretaría 2',ub:'Secretaría 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Orlando Barahona',act:'',og:'CORTE2'},
+{cod:'OS-2026-0160',n:160,cm:'CM-3016',f:'2026-07-30',tm:'Preventivo',s:'910TANSDQ255',mar:'LG',mod:'9K1G00A7',cap:'24.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala audiencia 2',ub:'Sala audiencia 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Laura Marcela gerrero',act:'',og:'CORTE2'},
+{cod:'OS-2026-0161',n:161,cm:'CM-3017',f:'2026-07-30',tm:'Preventivo',s:'910TAWMB5049',mar:'LG',mod:'9K1G00XQ',cap:'24.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala audiencia',ub:'Sala audiencia',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Laura Marcela gerrero',act:'',og:'CORTE2'},
+{cod:'OS-2026-0162',n:162,cm:'CM-3018',f:'2026-07-30',tm:'Preventivo',s:'909TALBDX624',mar:'LG',mod:'9J1G00TB',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina escribiente',ub:'Oficina escribiente',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Melliza Ortega',act:'',og:'CORTE2'},
+{cod:'OS-2026-0163',n:163,cm:'CM-3019',f:'2026-07-30',tm:'Preventivo',s:'ST23101621GCG0476',mar:'Mabe',mod:'MMI18CDBWCCCI8',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina oficial mayor',ub:'Oficina oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gualter Uribe parra',act:'',og:'CORTE2'},
+{cod:'OS-2026-0164',n:164,cm:'CM-3020',f:'2026-07-30',tm:'Preventivo',s:'ST23101621GCG0289',mar:'Mabe',mod:'MMI18CDBWCCC18',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Danna valdivieso',act:'',og:'CORTE2'},
+{cod:'OS-2026-0165',n:165,cm:'CM-3021',f:'2026-07-30',tm:'Preventivo',s:'ST23101621GCG0073',mar:'Mabe',mod:'MMl18CDBWCCC8',cap:'18.000',ref:'R410',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Secretaria',ub:'Secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Ever jimenez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0166',n:166,cm:'CM-3022',f:'2026-07-30',tm:'Preventivo',s:'B732534501307626400048',mar:'Conforstyle',mod:'U36C2DB3',cap:'36.000',ref:'R22',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala audiencia',ub:'Sala audiencia',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Melizza ortega',act:'',og:'CORTE2'},
+{cod:'OS-2026-0167',n:167,cm:'CM-3023',f:'2026-07-30',tm:'Preventivo',s:'B731412158606C18400319',mar:'Conforstyle',mod:'U36C2DB3',cap:'36.000',ref:'R22',mun:'Saravena',inm:'Sede Judicial de Saravena',dsp:'Sede Judicial de Saravena — Sala audiencia 2',ub:'Sala audiencia 2',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Meliza Ramirez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0168',n:168,cm:'CM-3026',f:'2026-07-31',tm:'Preventivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Cubará',inm:'Sede Judicial de Cubará',dsp:'Sede Judicial de Cubará — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Carlos Roa',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo. Reacores flojos',og:'CORTE2'},
+{cod:'OS-2026-0169',n:169,cm:'CM-3026',f:'2026-07-31',tm:'Correctivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Cubará',inm:'Sede Judicial de Cubará',dsp:'Sede Judicial de Cubará — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Carlos Roa',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo. Reacores flojos',og:'CORTE2'},
+{cod:'OS-2026-0170',n:170,cm:'CM-3027',f:'2026-07-31',tm:'Preventivo',s:'ST23111521GCC0394',mar:'Mabe',mod:'MMI12CABWCCCI8',cap:'12.000',ref:'R410',mun:'Cubará',inm:'Sede Judicial de Cubará',dsp:'Sede Judicial de Cubará — Secretaría del juzgado',ub:'Secretaría del juzgado',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Carlos Roa',act:'',og:'CORTE2'},
+{cod:'OS-2026-0171',n:171,cm:'CM-3028',f:'2026-07-31',tm:'Preventivo',s:'54122000B1F27180130100',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Arauquita',inm:'Sede Judicial de Arauquita',dsp:'Sede Judicial de Arauquita — Secretaria',ub:'Secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Ana Isabel prada',act:'',og:'CORTE2'},
+{cod:'OS-2026-0172',n:172,cm:'CM-3029',f:'2026-07-31',tm:'Preventivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Arauquita',inm:'Sede Judicial de Arauquita',dsp:'Sede Judicial de Arauquita — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Diana Gutiérrez',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo.',og:'CORTE2'},
+{cod:'OS-2026-0173',n:173,cm:'CM-3029',f:'2026-07-31',tm:'Correctivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Arauquita',inm:'Sede Judicial de Arauquita',dsp:'Sede Judicial de Arauquita — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Diana Gutiérrez',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo.',og:'CORTE2'},
+{cod:'OS-2026-0174',n:174,cm:'CM-3040',f:'2026-08-05',tm:'Preventivo',s:'906TAXTCT858',mar:'LG',mod:'MM182C7',cap:'24.000',ref:'R410',mun:'Cravo Norte',inm:'Sede Judicial de Cravo Norte',dsp:'Sede Judicial de Cravo Norte — Secretaria',ub:'Secretaria',tec:'Williams Alejandro Ballesteros Rodríguez',aux:'Williams Alejandro Ballesteros Rodríguez',resp:'Nestor Eduardo Cardenas',act:'',og:'CORTE2'},
+{cod:'OS-2026-0175',n:175,cm:'CM-3041',f:'2026-08-05',tm:'Preventivo',s:'USNU242K2P0',mar:'LG',mod:'VM242C7',cap:'24.000',ref:'R410',mun:'Cravo Norte',inm:'Sede Judicial de Cravo Norte',dsp:'Sede Judicial de Cravo Norte — Despacho del Juez',ub:'Despacho del Juez',tec:'Williams Alejandro Ballesteros Rodríguez',aux:'Williams Alejandro Ballesteros Rodríguez',resp:'Nestor Eduardo Cardenas',act:'',og:'CORTE2'},
+{cod:'OS-2026-0176',n:176,cm:'CM-3054',f:'2026-08-06',tm:'Preventivo',s:'54122000B1F27180130026',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Sala audiencia',ub:'Sala audiencia',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'José castillo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0177',n:177,cm:'CM-3055',f:'2026-08-06',tm:'Preventivo',s:'54122000B1F27180130018',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Secretaria',ub:'Secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'José castillo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0178',n:178,cm:'CM-3056',f:'2026-08-06',tm:'Preventivo',s:'909TARUDX590',mar:'LG',mod:'9J1G00TB',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'José castillo',act:'',og:'CORTE2'},
+{cod:'OS-2026-0179',n:179,cm:'CM-3057',f:'2026-08-06',tm:'Preventivo',s:'1000017421209000212',mar:'York',mod:'YSES12FS-ADA',cap:'12.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Secretaria',ub:'Secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerson hernandez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0180',n:180,cm:'CM-3058',f:'2026-08-06',tm:'Preventivo',s:'910TAACDQ208',mar:'LG',mod:'9K1G00A7',cap:'24.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Secretaría',ub:'Secretaría',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerson hernandez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0181',n:181,cm:'CM-3059',f:'2026-08-06',tm:'Preventivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerson hernandez',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo.',og:'CORTE2'},
+{cod:'OS-2026-0182',n:182,cm:'CM-3059',f:'2026-08-06',tm:'Correctivo',s:'910TAPEDQ240',mar:'LG',mod:'9K1G00A7',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Oficial mayor',ub:'Oficial mayor',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerson hernandez',act:'Se realizan las siguientes actividades: Se le recargó refrigerante al equipo.',og:'CORTE2'},
+{cod:'OS-2026-0183',n:183,cm:'CM-3060',f:'2026-08-06',tm:'Preventivo',s:'',mar:'LG',mod:'No aplica',cap:'12.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Seir salamanca',resp:'Gerson hernandez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0184',n:184,cm:'CM-3065',f:'2026-08-10',tm:'Preventivo',s:'54122000B1F28180130043',mar:'Midea',mod:'G6091905',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Sala audiencia',ub:'Sala audiencia',tec:'Milton Joel Martínez Rodríguez',aux:'Milton Joel Martínez Rodríguez',resp:'Juan José rodriguez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0185',n:185,cm:'CM-3066',f:'2026-08-10',tm:'Preventivo',s:'54122000B1F27180130045',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Oficina juez',ub:'Oficina juez',tec:'Milton Joel Martínez Rodríguez',aux:'Milton Joel Martínez Rodríguez',resp:'Juan José rodriguez',act:'',og:'CORTE2'},
+{cod:'OS-2026-0186',n:186,cm:'CM-3067',f:'2026-08-10',tm:'Preventivo',s:'54122000B1F27180130073',mar:'Midea',mod:'G3121102',cap:'18.000',ref:'R410',mun:'Tame',inm:'Sede Judicial de Tame',dsp:'Sede Judicial de Tame — Secretaria',ub:'Secretaria',tec:'Milton Joel Martínez Rodríguez',aux:'Milton Joel Martínez Rodríguez',resp:'Juan José rodriguez',act:'',og:'CORTE2'}
+];
+
+window.ORDENES_CORTE2=ORDENES_CORTE2;
+async function importarCorte2(){
+  const btn=document.getElementById('btn-import-c2');
+  const stat=document.getElementById('import-c2-status');
+  const setStat=(h)=>{if(stat)stat.innerHTML=h;};
+  const existentes=new Set(regs.filter(r=>r.origen==='CORTE2').map(r=>r.codigoOrden));
+  const pendientes=ORDENES_CORTE2.filter(o=>!existentes.has(o.cod));
+  if(!pendientes.length){
+    setStat('<span style="color:var(--green)"><i class="ti ti-circle-check"></i> El Corte 2 ya está importado ('+existentes.size+' órdenes). No se duplicó nada.</span>');
+    return;
+  }
+  const destino=(isDemoMode||!db)?'el almacenamiento local de este navegador':'Firebase Firestore (nube)';
+  if(!confirm('Se crearán '+pendientes.length+' órdenes de servicio del Corte 2 (todas entregadas conforme, en Arauca y demás municipios) en '+destino+'.\n\n¿Desea continuar?'))return;
+  if(btn){btn.disabled=true;btn.style.opacity=.6;}
+  let ok=0,err=0;
+  for(let i=0;i<pendientes.length;i++){
+    try{ await saveData(buildRegCorte1(pendientes[i]),true); ok++; }catch(e){ err++; console.error('Import CORTE2',e); }
+    if(i%5===0||i===pendientes.length-1) setStat('<span style="color:var(--c1)"><i class="ti ti-loader-2"></i> Importando… '+(i+1)+' / '+pendientes.length+'</span>');
+  }
+  if(btn){btn.disabled=false;btn.style.opacity=1;}
+  setStat('<span style="color:var(--green)"><i class="ti ti-circle-check"></i> Importación completada: <strong>'+ok+'</strong> órdenes creadas'+(err?(' · '+err+' con error'):'')+'. Revise el Dashboard y el Historial.</span>');
+  try{ renderAll(); if(document.getElementById('panel-dashboard'))renderDash(); }catch(e){}
+}
+window.importarCorte2=importarCorte2;
+
+/* ===== IMPORTADOR GENÉRICO DE ÓRDENES DESDE ARCHIVO (Excel / CSV) ===== */
+/* ===== IMPORTADOR GENÉRICO DE ÓRDENES (Excel / CSV) — núcleo lógico ===== */
+function _norm(s){return (s==null?'':String(s)).toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();}
+function _sinDato(v){return !String(v||'').trim() || /no\s+(tiene|aplica|aparece|legible|registra)|^n\/?a$/i.test(String(v).trim());}
+function _cap(v){return String(v||'').replace(/\s*BTU\s*$/i,'').trim();}
+function _fechaISO(v){
+  if(v==null) return '';
+  if(v instanceof Date && !isNaN(v)) return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
+  var s=String(v).trim();
+  var m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/); // DD/MM/AAAA
+  if(m){var a=m[3].length===4?m[3]:'20'+m[3];return a+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');}
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  var d=new Date(s); if(!isNaN(d)) return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return '';
+}
+// Diccionario de columnas: campo -> lista de fragmentos que puede contener el encabezado
+var _COLMAP={
+  corte:['corte'], orden:['orden cm','orden de trabajo','orden'], fecha:['fecha'],
+  municipio:['municipio','ciudad'], inmueble:['inmueble','sede'],
+  ubicacion:['ubicacion','despacho'], tiposis:['tipo sistema','tipo de sistema'],
+  tipomant:['tipo mantenimiento','tipo de mantenimiento'], actividad:['actividad'],
+  marca:['marca'], modelo:['modelo'], capacidad:['capacidad'], refrig:['refrig'],
+  serial:['serial','no. serial','no serial'], inventario:['inventario'],
+  tecnico:['tecnico'], auxiliar:['auxiliar'], responsable:['responsable','vobo'],
+  trabajos:['trabajo'], satisfaccion:['satisfaccion','satisfaccio']
+};
+function _mapColumns(headers){
+  var H=headers.map(_norm); var idx={};
+  for(var campo in _COLMAP){
+    for(var j=0;j<H.length;j++){
+      if(_COLMAP[campo].some(function(frag){return H[j].indexOf(frag)>=0;})){ idx[campo]=j; break; }
+    }
+  }
+  return idx;
+}
+function _findHeaderRow(rows){
+  for(var i=0;i<Math.min(rows.length,15);i++){
+    var H=rows[i].map(_norm).join('|');
+    if((H.indexOf('marca')>=0)&&(H.indexOf('fecha')>=0||H.indexOf('orden')>=0)) return i;
+  }
+  return 0;
+}
+function _tipoEqNorm(v){
+  var s=_norm(v);
+  if(s.indexOf('casspe')>=0||s.indexOf('casse')>=0||s.indexOf('caset')>=0) return 'Cassette';
+  if(s.indexOf('piso')>=0) return 'Piso Techo';
+  if(s.indexOf('ventana')>=0) return 'Ventana';
+  if(s.indexOf('pared')>=0) return 'Pared';
+  if(s.indexOf('multi')>=0) return 'Multi-V';
+  return 'Mini-split';
+}
+// Convierte un arreglo de filas (matriz) en órdenes listas para buildRegCorte1.
+// Devuelve {ordenes:[...], filas:N, avisos:[...]}
+function filasAOrdenes(rows){
+  var avisos=[];
+  if(!rows||!rows.length) return {ordenes:[],filas:0,avisos:['El archivo está vacío.']};
+  var hr=_findHeaderRow(rows);
+  var idx=_mapColumns(rows[hr]);
+  if(idx.marca==null&&idx.orden==null&&idx.fecha==null)
+    return {ordenes:[],filas:0,avisos:['No se reconocieron columnas (se esperan encabezados como Fecha, Marca, Ubicación/Despacho, etc.).']};
+  var get=function(row,campo){return idx[campo]!=null?String(row[idx[campo]]==null?'':row[idx[campo]]).trim():'';};
+  var ordenes=[]; var filas=0;
+  for(var i=hr+1;i<rows.length;i++){
+    var row=rows[i]; if(!row||row.every(function(c){return String(c||'').trim()==='';})) continue;
+    // requiere al menos marca o fecha o municipio para considerarse fila válida
+    if(!get(row,'marca') && !get(row,'fecha') && !get(row,'ubicacion')) continue;
+    filas++;
+    var mun=get(row,'municipio')||'Arauca';
+    var inm=get(row,'inmueble');
+    var area=get(row,'ubicacion');
+    var dsp = inm ? (area? inm+' — '+area : inm) : (area||'—');
+    var fISO=_fechaISO(get(row,'fecha'));
+    if(!fISO) avisos.push('Fila '+(i+1)+': fecha no reconocida ("'+get(row,'fecha')+'").');
+    var serial=_sinDato(get(row,'serial'))?'':get(row,'serial');
+    var corteVal=get(row,'corte');
+    var og = corteVal ? ('CORTE'+String(corteVal).replace(/[^0-9]/g,'')) : 'IMPORT';
+    var base={cm:get(row,'orden'),f:fISO,mun:mun,inm:inm,dsp:dsp,ub:area,
+      s:serial,mar:get(row,'marca'),mod:get(row,'modelo'),cap:_cap(get(row,'capacidad')),
+      ref:get(row,'refrig'),te:_tipoEqNorm(get(row,'tiposis')),tec:get(row,'tecnico'),
+      aux:get(row,'auxiliar'),resp:get(row,'responsable'),
+      act:(function(t){t=(t||'').trim();var core=t.replace(/^se realizan las siguientes actividades:?/i,'').trim().replace(/^[.\s]+|[.\s]+$/g,'');return (!core||/^n\/?a$/i.test(core))?'':t;})(get(row,'trabajos')),
+      og:og};
+    // tipo de mantenimiento: columna explícita, o inferido de "Actividad"
+    var tm=get(row,'tipomant'); var actTxt=_norm(get(row,'actividad'));
+    if(tm){ base.tm=/correct/i.test(tm)?'Correctivo':(/instal/i.test(tm)?'Instalación':(/desmont/i.test(tm)?'Desmonte':'Preventivo')); ordenes.push(base); }
+    else if(actTxt.indexOf('correctivo')>=0 && actTxt.indexOf('preventivo')>=0){
+      var p=Object.assign({},base); p.tm='Preventivo'; ordenes.push(p);
+      var c=Object.assign({},base); c.tm='Correctivo'; ordenes.push(c);
+    } else if(actTxt.indexOf('correctivo')>=0){ base.tm='Correctivo'; ordenes.push(base); }
+    else { base.tm='Preventivo'; ordenes.push(base); }
+  }
+  return {ordenes:ordenes,filas:filas,avisos:avisos};
+}
+// CSV parser sencillo (maneja comillas y comas dentro de comillas)
+function _parseCSV(text){
+  var rows=[],row=[],cur='',q=false;
+  for(var i=0;i<text.length;i++){var ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=ch; }
+    else { if(ch==='"')q=true; else if(ch===','){row.push(cur);cur='';}
+      else if(ch==='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+      else if(ch==='\r'){} else cur+=ch; }
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);}
+  return rows.filter(function(r){return r.length>1||String(r[0]||'').trim()!=='';});
+}
+
+/* ===== IMPORTADOR — capa de interfaz (DOM) ===== */
+function previsualizarImport(ev){
+  var file=ev.target.files&&ev.target.files[0]; if(!file)return;
+  var prev=document.getElementById('imp-preview');
+  document.getElementById('imp-status').innerHTML='';
+  document.getElementById('imp-actions').style.display='none';
+  window._IMP_BUFFER=null;
+  prev.innerHTML='<span style="color:var(--c1)"><i class="ti ti-loader-2"></i> Leyendo archivo…</span>';
+  var ext=(file.name.split('.').pop()||'').toLowerCase();
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var rows;
+      if(ext==='csv'){ rows=_parseCSV(String(e.target.result)); }
+      else {
+        if(typeof XLSX==='undefined'){ prev.innerHTML='<span style="color:#c0392b"><i class="ti ti-alert-triangle"></i> No se pudo cargar el lector de Excel (revise su conexión) o exporte el archivo como CSV.</span>'; return; }
+        var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+        var ws=wb.Sheets[wb.SheetNames[0]];
+        rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+      }
+      var res=filasAOrdenes(rows);
+      if(!res.ordenes.length){ prev.innerHTML='<span style="color:#c0392b"><i class="ti ti-alert-triangle"></i> '+(res.avisos[0]||'No se detectaron órdenes en el archivo.')+'</span>'; return; }
+      window._IMP_BUFFER=res.ordenes;
+      var byTipo={},byMun={};
+      res.ordenes.forEach(function(o){byTipo[o.tm]=(byTipo[o.tm]||0)+1;byMun[o.mun]=(byMun[o.mun]||0)+1;});
+      var tipoStr=Object.keys(byTipo).map(function(k){return k+': '+byTipo[k];}).join(' · ');
+      var munStr=Object.keys(byMun).map(function(k){return k+' ('+byMun[k]+')';}).join(', ');
+      var avisoStr=res.avisos.length?'<div style="color:var(--amber);margin-top:6px"><i class="ti ti-alert-triangle"></i> '+res.avisos.length+' aviso(s): '+res.avisos.slice(0,3).join(' ')+(res.avisos.length>3?' …':'')+'</div>':'';
+      prev.innerHTML='<div style="background:var(--blue-bg);border:.5px solid var(--blue-b);border-radius:8px;padding:9px 12px">'
+        +'<div><strong>'+res.filas+'</strong> filas leídas → se crearán <strong>'+res.ordenes.length+'</strong> órdenes de servicio.</div>'
+        +'<div style="margin-top:4px;color:var(--text2)">Tipo — '+tipoStr+'</div>'
+        +'<div style="color:var(--text2)">Municipios — '+munStr+'</div>'+avisoStr+'</div>';
+      document.getElementById('imp-actions').style.display='flex';
+    }catch(err){ prev.innerHTML='<span style="color:#c0392b"><i class="ti ti-alert-triangle"></i> Error al leer el archivo: '+err.message+'</span>'; }
+  };
+  reader.onerror=function(){ prev.innerHTML='<span style="color:#c0392b">No se pudo leer el archivo.</span>'; };
+  if(ext==='csv') reader.readAsText(file,'utf-8'); else reader.readAsArrayBuffer(file);
+}
+async function confirmarImportArchivo(){
+  var buf=window._IMP_BUFFER; if(!buf||!buf.length)return;
+  var st=document.getElementById('imp-status'), btn=document.getElementById('btn-imp-file');
+  var set=function(h){st.innerHTML=h;};
+  var destino=(isDemoMode||!db)?'el almacenamiento local de este navegador':'Firebase Firestore (nube)';
+  if(!confirm('Se crearán '+buf.length+' órdenes de servicio (entregadas conforme) en '+destino+'.\n\nLas que ya existan no se duplicarán.\n\n¿Desea continuar?'))return;
+  var existentes=new Set(regs.map(function(r){return (r.refOrden||'')+'|'+r.tipoMant+'|'+(r.serial||'')+'|'+(r.fechaSolicitud||'');}));
+  var pend=buf.filter(function(o){return !existentes.has((o.cm||'')+'|'+o.tm+'|'+(o.s||'')+'|'+(o.f||''));});
+  if(!pend.length){ set('<span style="color:var(--green)"><i class="ti ti-circle-check"></i> Todas las órdenes del archivo ya estaban registradas. No se duplicó nada.</span>'); return; }
+  var nextN=Math.max.apply(null,[0].concat(regs.map(function(r){return parseInt(r.consecutivo)||0;})));
+  if(btn){btn.disabled=true;btn.style.opacity=.6;}
+  var ok=0,err=0;
+  for(var i=0;i<pend.length;i++){
+    var o=pend[i]; nextN++;
+    o.n=nextN; var anio=(o.f&&o.f.slice(0,4))||String(new Date().getFullYear());
+    o.cod='OS-'+anio+'-'+String(nextN).padStart(4,'0');
+    try{ await saveData(buildRegCorte1(o),true); ok++; }catch(e){ err++; console.error('Import archivo',e); }
+    if(i%5===0||i===pend.length-1) set('<span style="color:var(--c1)"><i class="ti ti-loader-2"></i> Importando… '+(i+1)+' / '+pend.length+'</span>');
+  }
+  if(btn){btn.disabled=false;btn.style.opacity=1;}
+  var yaExist=buf.length-pend.length;
+  set('<span style="color:var(--green)"><i class="ti ti-circle-check"></i> Importación completada: <strong>'+ok+'</strong> órdenes creadas'+(err?(' · '+err+' con error'):'')+(yaExist?(' · '+yaExist+' ya existían'):'')+'. Revise el Dashboard y el Historial.</span>');
+  try{ renderAll(); if(document.getElementById('panel-dashboard'))renderDash(); }catch(e){}
+}
+function descargarPlantillaImport(){
+  var head=['Corte','Orden CM','Fecha','Municipio','Inmueble / Sede','Ubicación / Despacho','Tipo sistema','Actividad','Marca','Modelo','Capacidad','Refrig.','No. Serial','No. Inventario','Técnico','Auxiliar','Responsable (VoBo)','Trabajos realizados'];
+  var ej=['3','CM-3100','15/08/2026','Arauca','Palacio de Justicia Calle 21','Juzgado 1 administrativo','Mini Split','Mantenimiento Preventivo','LG','AMNW12GSJA0','12.000','R410','ABC123','','Milton Joel Martínez Rodríguez','Seir Salamanca','Gladys Páez','N/A'];
+  var esc=function(c){return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;};
+  var csv=head.map(esc).join(',')+'\n'+ej.map(esc).join(',')+'\n';
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='plantilla_ordenes.csv'; a.click();
+}
+
+window.previsualizarImport=previsualizarImport;
+window.confirmarImportArchivo=confirmarImportArchivo;
+window.descargarPlantillaImport=descargarPlantillaImport;
+
+
 window.buildRegCorte1=buildRegCorte1;
 
 function catBuscar(q){q=(q||'').trim().toUpperCase();if(!q)return [];return CATALOGO_EQUIPOS.filter(e=>e.serial&&e.serial.toUpperCase().includes(q));}
